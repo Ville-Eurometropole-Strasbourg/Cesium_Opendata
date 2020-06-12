@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <link rel="icon" type="src/img/logo" href="logo-strasbourg.png">
+  <title>Viewer 3D - OPENDATA</title>
+  <link rel="stylesheet" href="lib/jQuery/jquery-ui.min.css" />
+  <link rel="stylesheet" href="src/index.css" media="screen" />
+  <script src="lib/Cesium/Build/Cesium/Cesium.js"></script>
+  <!--<script src="lib/cesium-navigation-development/dist/standalone/viewerCesiumNavigationMixin.js"></script> -->
+</head>
+<body>
+  <!-- Conteneur pour le globe cesium -->
+  <div id="cesiumContainer">
+    
+  </div>
+
+  <!-- Partie à gauche de l'écran collée au menu, qui accueille les légendes et les formulaires
+  Zone morte sur laquelle on ne peut pas naviguer avec la souris  -->
+  <div id=left-pane>
+    <div id="toggle-menu" class="hamburger-icon">Menu</div>
+
+    <!-- Formulaires de la boîte à outils -->
+    <div class="backdrop hidden" id="coordsList">
+      <h2>Coordonnées <br/> (CC48 / IGN69)</h2>
+      <p>X (m): <span id="coordX"></span></p>
+      <p>Y (m): <span id="coordY"></span></p>
+      <p>Z (m): <span id="coordZ"></span></p>
+    </div>
+
+    <div class="backdrop hidden" id="distanceList">
+      <h2>Mesures de distance</h2>
+      <p>Distance horizontale (m): <span id="distance"></span></p>
+      <p><span class="tab"></span>- cumulée (m):<span id="distancecumulee"></span></p>
+      <p>Distance inclinée (m): <span id="distanceinclinee"></span></p>
+      <p><span class="tab"></span>- cumulée (m):<span id="distanceinclineecum"></span></p>
+      <p>Différence d'altitude (m): <span id="hauteur"></span></p>
+      <button class="nouv">Nouvelle mesure</button>
+      <p>Appuyer sur 'Nouvelle mesure' pour effectuer une 2ème mesure </p>
+    </div>
+
+    <div class="backdrop hidden" id="aireList">
+      <h2>Mesures de surface</h2>
+      <p>Surface (m²): <span id="aire"></span></p>
+      <button class="nouv">Nouvelle mesure</button>
+      <p>Appuyer sur 'Nouvelle mesure' pour effectuer une 2ème mesure </p>
+    </div>
+
+    <div class="backdrop hidden" id="pointList">
+      <h2>Ajout de point</h2>
+      <p><span> Couleur : </span> <input type="color" id="couleurpoint" value="#FF0000"></p>
+
+      <p>Taille :
+        <select id="taille">
+          <option value="metre">mètres</option>
+          <option value="pixel">pixels</option>
+        </select></p>
+        <p>Valeur : <input id="hauteurpoint" type="text" size="6" value="48"/> </p>
+        <p>Symbole :
+          <select id="makisymbol">
+            <option value="marker-stroked">Neutre</option>
+            <option value="restaurant">Restaurant</option>
+            <option value="bicycle">Vélo</option>
+            <option value="bus">Bus</option>
+            <option value="rail-light">Tram</option>
+            <option value="camera">Photo</option>
+            <option value="car">Voiture</option>
+            <option value="college">Etudiant</option>
+            <option value="chemist">Science</option>
+            <option value="disability">Handicap</option>
+            <option value="dog-park">Canisite</option>
+            <option value="grocery">Magasin</option>
+            <option value="park">Parc</option>
+            <option value="garden">Jardin/espace vert</option>
+            <option value="college">Etudiant</option>
+            <option value="parking">Parking</option>
+            <option value="playground">Aire de jeux</option>
+            <option value="school">Ecole</option>
+            <option value="hospital">Hopital</option>
+            <option value="toilets">Toilettes</option>
+            <option value="building">Maison</option>
+            <option value="industrial">Usine</option>
+          </select></p>
+          <button id="envoyerpoint">Ajouter</button>
+          <button id="annulerpoint">Annuler</button>
+          <button id="supprimerpoint">Supprimer</button>
+          <p>Cliquez sur 'ajouter' pour commencer à dessiner</p>
+          <p>Faire un clic droit une fois les dessins de points terminés</p>
+        </div>
+
+        <div class="backdrop hidden" id="ligneList">
+          <form>
+            <h2>Propriétés de la ligne</h2>
+            <p>Largeur ligne (pixels):<input id="largeur" type="text" size="3" value="3"/> </p>
+            <p>Style de ligne:
+              <select id="styleligne">
+                <option value="simple">Simple</option>
+                <option value="pointille">Pointillés</option>
+                <option value="fleche">Fleche</option>
+              </select></p>
+              <p><span> Couleur : </span> <input type="color" id="couleur" value="#FF0000"></p>
+              <p>Transparence : <span>0</span><input type="range" id="transparence"  min="0" max="1" value="1" step="0.1"><span>1</span> </p>
+              <p>Plaquée au photomaillage :
+                <select id="clampligne">
+                  <option value="colle">Oui</option>
+                  <option value="noncolle">Non</option>
+                </select></p>
+              </form>
+              <button id="envoyerligne">Ajouter</button>
+              <button id="annulerligne">Annuler</button>
+              <button id="supprimerligne">Supprimer</button>
+              <p>Cliquez sur 'ajouter' pour commencer à dessiner</p>
+            </div>
+
+            <div class="backdrop hidden" id="surfaceList">
+              <form>
+                <h2>Propriétés de la surface</h2>
+                <p><span> Couleur : </span> <input type="color" id="couleursurf" value="#F1B559"></p>
+                <p>Transparence :</p>
+                <span>0</span><input type="range" id="transparencesurf"  min="0" max="1" value="0.5" step="0.1"><span>1</span> <br/>
+              </form>
+              <button id="envoyersurf">Ajouter</button>
+              <button id="annulersurf">Annuler</button>
+              <button id="supprimersurf">Supprimer</button>
+              <p>Cliquez sur 'ajouter' pour commencer à dessiner</p>
+            </div>
+
+            <div class="backdrop hidden" id="volumeList">
+              <form>
+                <h2>Propriétés de la boîte </h2>
+                <p>Hauteur (m):<input id="hauteurvol" type="text" size="6" value="20"/> </p>
+                <p><span> Couleur : </span> <input type="color" id="couleurvol" value="#FFFFFF"></p>
+                <p>Transparence :</p>
+                <span>0</span><input type="range" id="transparencevol"  min="0" max="1" value="1" step="0.1"><span>1</span> <br/>
+              </form>
+              <button id="envoyervol">Ajouter</button>
+              <button id="annulervol">Annuler</button>
+              <button id="supprimervol">Supprimer</button>
+              <p>Cliquez sur 'ajouter' pour commencer à dessiner</p>
+            </div>
+
+            <div class="backdrop hidden" id="planList">
+              <h2>Propriétés du plan de coupe</h2>
+              <form>
+                <p>Coordonnées du point central : <br/>
+                  X :<input id="X" type="text" size="10"/> <br/>
+                  Y :<input id="Y" type="text" size="10"/> <br/>
+                </p>
+                <p>Altitude (m):<input id="hauteurcoupe" type="text" size="6"/> </p>
+                <p>Cliquez sur le photomaillage pour rentrer les coordonnées </p>
+                <p>Longueur (m):<input id="longueurcoupe" type="text" size="6" value="200"/> </p>
+                <p>Largeur (m):<input id="largeurcoupe" type="text" size="6" value="200"/> </p>
+                <p><span> Couleur : </span> <input type="color" id="couleurcoupe" value="#FFFFFF"></p>
+              </form>
+              <p>Différence de hauteur (m): <span id="alticoupe"></span></p>
+              <button id="envoyercoupe">Ajouter</button>
+              <button id="annulercoupe">Annuler</button>
+              <button id="supprimercoupe">Supprimer</button> <br/>
+            </div>
+
+            <div class="backdrop hidden" id="decoupeList">
+              <h2>Découpe dans le photomaillage</h2>
+              <button id="envoyerdecoupe">Ajouter</button>
+              <p>Cliquer sur le photomaillage pour dessiner la forme à découper</p>
+              <p>Clic droit pour effectuer la découpe</p>
+
+              <div id="toolbar">
+                <input id="decoupetrou" type="checkbox" data-bind="checked: trou, valueUpdate: 'input'"/>
+                <label for="decoupetrou">Inverser la découpe</label> <br/>
+                <input id="afficherdecoupe" type="checkbox" value="true" data-bind="checked: affich, valueUpdate: 'input'"/>
+                <label for="afficherdecoupe">Afficher</label>
+              </div>
+            </div>
+
+            <div class="backdrop hidden" id="cameraList">
+              <h2>Ajouter un point de vue</h2>
+              <form>
+                <p>Nom :<input id="nomcamera" type="text" size="20"/> </p>
+              </form>
+              <p><button id="ajoutercamera">Ajouter</button> </p>
+            </div>
+
+            <div class="backdrop hidden" id="linkList">
+              <h2>Créez un lien de partage</h2>
+              <form>
+                <p><input id="nomlink" type="text" onClick="this.select();" size="20"/> </p>
+              </form>
+              <p><button id="addlink">Créer</button> </p>
+            </div>
+
+            <!-- Ajout de couches -->
+            <div class="backdrop hidden" id="fileList">
+              <h2>Ajouter une couche</h2>
+              <form>
+                <p>Identifiant : <input id="idEMS" type="text" size="15" /> </p>
+              </form>
+              <p><button id="affichercouche">Ajouter</button> </p>
+            </div>
+
+            <div class="backdrop hidden" id="classifList">
+              <h2>Représentation de la couche </h2>
+              <div id="choixDiv">
+                <p>Type de donnée :
+                  <select id="typeclassif">
+                    <option value="ponctuelle">Ponctuelle</option>
+                    <option value="surfacique">Surfacique</option>
+                  </select></p>
+                  <p><button id="ajoutertype">Suivant</button> </p>
+                </div>
+
+                <div class="hidden" id="surfaciqueDiv">
+                  <h4>Données surfaciques </h4>
+                  <form id="classifForm">
+                    <p>Champ à classifier:<input id="classif" type="text" size="10" /> </p>
+                  </form>
+                  <button class="button" id="addclassif"><img src="src/img/icons8-plus.png"></button>
+                  <span style="font-size:small;"> Ajouter classification </span>
+                  <p>Transparence :</p>
+                  <span>0</span><input type="range" id="classiftransparence"  min="0" max="1" value="0.7" step="0.1"><span>1</span>
+                </div>
+
+
+                <div class="hidden" id="ponctuelleDiv">
+                  <h4>Données ponctuelles </h4>
+                  <p><span> Couleur : </span> <input type="color" id="classifpoint" value="#FFFFFF"></p>
+                  <p>Symbole :
+                    <select id="makiclassif">
+                      <option value="marker-stroked">Neutre</option>
+                      <option value="restaurant">Restaurant</option>
+                      <option value="bicycle">Vélo</option>
+                      <option value="bus">Bus</option>
+                      <option value="rail-light">Tram</option>
+                      <option value="camera">Photo</option>
+                      <option value="car">Voiture</option>
+                      <option value="college">Etudiant</option>
+                      <option value="chemist">Science</option>
+                      <option value="disability">Handicap</option>
+                      <option value="dog-park">Canisite</option>
+                      <option value="grocery">Magasin</option>
+                      <option value="park">Parc</option>
+                      <option value="garden">Jardin/espace vert</option>
+                      <option value="college">Etudiant</option>
+                      <option value="parking">Parking</option>
+                      <option value="playground">Aire de jeux</option>
+                      <option value="school">Ecole</option>
+                      <option value="hospital">Hopital</option>
+                      <option value="toilets">Toilettes</option>
+                      <option value="building">Maison</option>
+                      <option value="industrial">Usine</option>
+                    </select></p>
+                  </div>
+                  <p><button id="ajouterclassif" class="hidden">Ajouter</button> </p>
+                </div>
+
+
+                <div class="backdrop hidden" id="configList">
+                  <h2>Choisissez votre configuration</h2>
+                  <p><button id="configDefaut">Configuration par défaut</button></p>
+                  <p><button id="configPLU">Configuration PLU</button></p>
+                  <p><button id="configEco">Configuration écologie du territoire</button></p>
+                  <p><button id="configSIRENE">Configuration SIRENE</button></p>
+                </div>
+
+              </div>
+
+              <!-- En bas à droite de l'écran -->
+              <div id=right-pane>
+                <div class="annotation hidden">
+                  <h4>Tracé des figures géométriques</h4>
+                  <p>Clic gauche pour ajouter un point</p>
+                  <p>Clic droit pour terminer la figure</p>
+                </div>
+              </div>
+
+
+              <!-- Menu latéral déroulant -->
+              <div id="menu">
+                <div class="panel">
+                  <div id="menu-content"> MENU </div>
+
+                  <div class="nowrap" id="photo">
+                    <input id="photoMaillage" type="checkbox" checked/>
+                    <label for="photoMaillage">Afficher le Photomaillage EmS 2018</label>
+                  </div>
+                  <div class="nowrap" id="photo2017">
+                    <input id="photoMaillage2017" type="checkbox"/>
+                    <label for="photoMaillage2017">Afficher le Photomaillage PSMV 2017</label>
+                  </div>
+
+
+                  <!--          <button id="config">Configuration</button> -->
+                  <!--          <button id="reset">Réinitialiser</button>   -->
+
+                  <!--          <button class="button" id="boutonfile"><img src="src/img/icons8-add-file-50.png"></button>  -->
+                  <br/><br/><br/><br/>
+                  <!-- PHS -->
+
+
+                  <button class="panel-title">INFORMATIONS CADASTRALES<i class="arrow"></i>
+                  </button>
+                  <!------------------------------------------------------------->
+
+                  <div class="panel-content" id="opendata_ems" style="display">
+                    <div class="nowrap show" id="ODLimitesCommunesDiv">
+                      <input id="ODLimitesCommunes" type="checkbox" />
+                      <label for="ODLimitesCommunes">LIMITES DE COMMUNES</label>
+                    </div>
+                    <div class="nowrap show" id="ODLimitesSectionsDiv">
+                      <input id="ODLimitesSections" type="checkbox" />
+                      <label for="ODLimitesSections">LIMITES DE SECTIONS</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreAchenheimDiv">
+                      <input id="ODCadastreAchenheim" type="checkbox" />
+                      <label for="ODCadastreAchenheim">ACHENHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreBischheimDiv">
+                      <input id="ODCadastreBischheim" type="checkbox" />
+                      <label for="ODCadastreBischheim">BISCHHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreBlaesheimDiv">
+                      <input id="ODCadastreBlaesheim" type="checkbox" />
+                      <label for="ODCadastreBlaesheim">BLAESHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreBreuschwickersheimDiv">
+                      <input id="ODCadastreBreuschwickersheim" type="checkbox" />
+                      <label for="ODCadastreBreuschwickersheim">BREUSCHWICKERSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreEckbolsheimDiv">
+                      <input id="ODCadastreEckbolsheim" type="checkbox" />
+                      <label for="ODCadastreEckbolsheim">ECKBOLSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreEckwersheimDiv">
+                      <input id="ODCadastreEckwersheim" type="checkbox" />
+                      <label for="ODCadastreEckwersheim">ECKWERSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreEntzheimDiv">
+                      <input id="ODCadastreEntzheim" type="checkbox" />
+                      <label for="ODCadastreEntzheim">ENTZHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreEschauDiv">
+                      <input id="ODCadastreEschau" type="checkbox" />
+                      <label for="ODCadastreEschau">ESCHAU</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreFegersheimDiv">
+                      <input id="ODCadastreFegersheim" type="checkbox" />
+                      <label for="ODCadastreFegersheim">FEGERSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreGeispolsheimDiv">
+                      <input id="ODCadastreGeispolsheim" type="checkbox" />
+                      <label for="ODCadastreGeispolsheim">GEISPOLSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreHangenbietenDiv">
+                      <input id="ODCadastreHangenbieten" type="checkbox" />
+                      <label for="ODCadastreHangenbieten">HANGENBIETEN</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreHoenheimDiv">
+                      <input id="ODCadastreHoenheim" type="checkbox" />
+                      <label for="ODCadastreHoenheim">HOENHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreHoltzheimDiv">
+                      <input id="ODCadastreHoltzheim" type="checkbox" />
+                      <label for="ODCadastreHoltzheim">HOLTZHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreIllkirchDiv">
+                      <input id="ODCadastreIllkirch" type="checkbox" />
+                      <label for="ODCadastreIllkirch">ILLKIRCH-GRAFFENSTADEN</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreKolbsheimDiv">
+                      <input id="ODCadastreKolbsheim" type="checkbox" />
+                      <label for="ODCadastreKolbsheim">KOLBSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreLampertheimDiv">
+                      <input id="ODCadastreLampertheim" type="checkbox" />
+                      <label for="ODCadastreLampertheim">LAMPERTHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreLingolsheimDiv">
+                      <input id="ODCadastreLingolsheim" type="checkbox" />
+                      <label for="ODCadastreLingolsheim">LINGOLSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreLipsheimDiv">
+                      <input id="ODCadastreLipsheim" type="checkbox" />
+                      <label for="ODCadastreLipsheim">LIPSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreMittelhausbergenDiv">
+                      <input id="ODCadastreMittelhausbergen" type="checkbox" />
+                      <label for="ODCadastreMittelhausbergen">MITTELHAUSBERGEN</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreMundolsheimDiv">
+                      <input id="ODCadastreMundolsheim" type="checkbox" />
+                      <label for="ODCadastreMundolsheim">MUNDOLSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreNiederhausbergenDiv">
+                      <input id="ODCadastreNiederhausbergen" type="checkbox" />
+                      <label for="ODCadastreNiederhausbergen">NIEDERHAUSBERGEN</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreOberhausbergenDiv">
+                      <input id="ODCadastreOberhausbergen" type="checkbox" />
+                      <label for="ODCadastreOberhausbergen">OBERHAUSBERGEN</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreOberschaeffolsheimDiv">
+                      <input id="ODCadastreOberschaeffolsheim" type="checkbox" />
+                      <label for="ODCadastreOberschaeffolsheim">OBERSCHAEFFOLSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreOsthoffenDiv">
+                      <input id="ODCadastreOsthoffen" type="checkbox" />
+                      <label for="ODCadastreOsthoffen">OSTHOFFEN</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreOstwaldDiv">
+                      <input id="ODCadastreOstwald" type="checkbox" />
+                      <label for="ODCadastreOstwald">OSTWALD</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastrePlobsheimDiv">
+                      <input id="ODCadastrePlobsheim" type="checkbox" />
+                      <label for="ODCadastrePlobsheim">PLOBSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreReichstettDiv">
+                      <input id="ODCadastreReichstett" type="checkbox" />
+                      <label for="ODCadastreReichstett">REICHSTETT</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreSchiltigheimDiv">
+                      <input id="ODCadastreSchiltigheim" type="checkbox" />
+                      <label for="ODCadastreSchiltigheim">SCHILTIGHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreSouffelweyersheimDiv">
+                      <input id="ODCadastreSouffelweyersheim" type="checkbox" />
+                      <label for="ODCadastreSouffelweyersheim">SOUFFELWEYERSHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgCentreDiv">
+                      <input id="ODCadastreStrasbourgCentre" type="checkbox" />
+                      <label for="ODCadastreStrasbourgCentre">STRASBOURG Centre</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgGareKleberDiv">
+                      <input id="ODCadastreStrasbourgGareKleber" type="checkbox" />
+                      <label for="ODCadastreStrasbourgGareKleber">STRASBOURG Gare-Kléber</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgEsplaBourseKrutDiv">
+                      <input id="ODCadastreStrasbourgEsplaBourseKrut" type="checkbox" />
+                      <label for="ODCadastreStrasbourgEsplaBourseKrut">STRASBOURG Esplanade-Bourse-Krutenau</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgNeudorfDiv">
+                      <input id="ODCadastreStrasbourgNeudorf" type="checkbox" />
+                      <label for="ODCadastreStrasbourgNeudorf">STRASBOURG Neudorf-Schluthfeld-Port du Rhin-Musau</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgMeinauDiv">
+                      <input id="ODCadastreStrasbourgMeinau" type="checkbox" />
+                      <label for="ODCadastreStrasbourgMeinau">STRASBOURG Meinau</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgNeuhofDiv">
+                      <input id="ODCadastreStrasbourgNeuhof" type="checkbox" />
+                      <label for="ODCadastreStrasbourgNeuhof">STRASBOURG Neuhof</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgKoenigsMVDiv">
+                      <input id="ODCadastreStrasbourgKoenigsMV" type="checkbox" />
+                      <label for="ODCadastreStrasbourgKoenigsMV">STRASBOURG Koenigshoffen-Montagne Verte</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgCroHautPotHohbergDiv">
+                      <input id="ODCadastreStrasbourgCroHautPotHohberg" type="checkbox" />
+                      <label for="ODCadastreStrasbourgCroHautPotHohberg">STRASBOURG Cronenbourg-Hautepierre-Poteries-Hohberg</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreStrasbourgRobertsauDiv">
+                      <input id="ODCadastreStrasbourgRobertsau" type="checkbox" />
+                      <label for="ODCadastreStrasbourgRobertsau">STRASBOURG Robertsau</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreVendenheimDiv">
+                      <input id="ODCadastreVendenheim" type="checkbox" />
+                      <label for="ODCadastreVendenheim">VENDENHEIM</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreLaWantzenauDiv">
+                      <input id="ODCadastreLaWantzenau" type="checkbox" />
+                      <label for="ODCadastreLaWantzenau">LA_WANTZENAU</label>
+                    </div>
+                    <div class="nowrap show" id="ODCadastreWolfisheimDiv">
+                      <input id="ODCadastreWolfisheim" type="checkbox" />
+                      <label for="ODCadastreWolfisheim">WOLFISHEIM</label>
+                    </div>
+                  </div>
+
+                  <!------------------------------------------------------------->
+                  <button class="panel-title">TRANSPORTS ET DEPLACEMENTS<i class="arrow"></i>
+                  </button>
+                  <!------------------------------------------------------------->
+
+                  <div class="panel-content" id="opendata_ems" style="display">
+                    <!-- création de la checkbox du stationnement payant opendata -->
+                    <div class="nowrap show" id="ODStationPayantDiv">
+                      <input id="ODStationPayant" type="checkbox" />
+                      <label for="ODStationPayant">Stationnement payant</label>
+                    </div>
+
+                    <div class="nowrap show" id="ODTrafficDiv">
+                      <input id="ODTraffic" type="checkbox" />
+                      <label for="ODTraffic">Traffic routier</label>
+                    </div>
+
+                  </div>
+
+                  <!------------------------------------------------------------->
+                  <button class="panel-title">DATA.STRASBOURG.EU<i class="arrow"></i>
+                  </button>
+                  <!------------------------------------------------------------->
+
+                  <div class="panel-content" id="opendata_ems" style="display">
+                    <!-- création de la checkbox du zonage PLUi opendata -->
+                    <div class="nowrap show" id="ODPLUiZonageDiv">
+                      <input id="ODPLUiZonage" type="checkbox" />
+                      <label for="PLUiZonage">PLU - Règlement graphique et écrit</label>
+                    </div>
+                    <!-- création de la checkbox des terrasses opendata -->
+                    <div class="nowrap show" id="ODTerrassesDiv">
+                      <input id="ODTerrasses" type="checkbox" />
+                      <label for="ODTerrasses">Terrasses autorisées en 2019</label>
+                    </div>
+
+                    <!-- création de la checkbox vitaboucle -->
+                    <!--<div class="nowrap show" id="ODVitaboucleDiv">
+                      <input id="ODVitaboucle" type="checkbox" checked/>
+                      <label for="ODVitaboucle">Boucles sportives Vitaboucle</label>
+                    </div>-->
+
+                    <div class="nowrap show" id="ODPatrimoineDiv">
+                      <input id="ODPatrimoine" type="checkbox" />
+                      <label for="ODPatrimoine">Patrimoine de mon quartier</label>
+                    </div>
+
+                    <div class="nowrap show" id="ODQualiteAirDiv">
+                      <input id="ODQualiteAir" type="checkbox" checked/>
+                      <label for="ODQualiteAir">Qualité de l'air</label>
+                    </div>
+                  </div>
+                  <!------------------------------------------------------------->
+                  <button class="panel-title">PARAMETRES
+                    <i class="arrow"></i>
+                  </button>
+                  <div class="panel-content" id="parametres">
+                    <div id="HSVtoolbar">
+                      <table><tbody>
+                        <tr>
+                          <td>Modifier l'affichage</td>
+                          <td><input type="checkbox" data-bind="checked: show"></td>
+                        </tr>
+                        <tr>
+                          <td>Contraste</td>
+                          <td><input type="range" min="-255.0" max="255.0" step="0.01" data-bind="value: contrast, valueUpdate: 'input'"></td>
+                        </tr>
+                        <tr>
+                          <td>Luminosité</td>
+                          <td><input type="range" min="-1.0" max="1.0" step="0.01" data-bind="value: brightness, valueUpdate: 'input'"></td>
+                        </tr>
+                      </tbody></table>
+                    </div>
+                  </div>
+                  <!-- PHS -->
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Boutons de la boîte à outils -->
+            <div class= "menuClic" id="mesures">
+              <button class="button" id="boutonmesures"><img src="src/img/icons8-length-filled-50.png"></button>
+              <div class="menuClic-content" id="mesures-content">
+
+                <div class="nowrap">
+                  <input name ="mesure" id="neutre" type="radio" checked/>
+                  <label for="neutre">Aucune mesure</label>
+                </div>
+
+                <div class="nowrap">
+                  <input name ="mesure" id="point" type="radio"/>
+                  <label for="point">Point (coordonnées)</label>
+                </div>
+
+                <div class="nowrap">
+                  <input name ="mesure" id="ligne" type="radio"/>
+                  <label for="ligne">Distance</label>
+                </div>
+
+                <div class="nowrap">
+                  <input name ="mesure" id="surface" type="radio"/>
+                  <label for="surface">Surface</label>
+                </div>
+
+              </div>
+            </div>
+
+            <div class= "menuClic" id="construction">
+              <button class="button" id="boutonconstruction"><img src="src/img/icons8-edit.png"></button>
+              <div class="menuClic-content" id="construction-content">
+
+                <a class="button" id="exportDessin"><img src="src/img/icons8-téléchargements.png"></a>
+                <span style="font-size:small;"> Exporter les dessins </span>
+
+                <div class="nowrap">
+                  <input name ="dessin" id="cneutre" type="radio" checked/>
+                  <label for="cneutre">Aucun dessin</label>
+                </div>
+
+                <div class="nowrap">
+                  <input name ="dessin" id="cpoint" type="radio"/>
+                  <label for="cpoint">Dessin point</label>
+                </div>
+
+                <div class="nowrap">
+                  <input name ="dessin" id="cligne" type="radio"/>
+                  <label for="cligne">Dessin ligne</label>
+                </div>
+
+                <div class="nowrap">
+                  <input name ="dessin" id="csurface" type="radio"/>
+                  <label for="csurface">Dessin surface</label>
+                </div>
+
+                <div class="nowrap">
+                  <input name ="dessin" id="volume" type="radio"/>
+                  <label for="volume">Dessin boîte</label>
+                </div>
+
+                <div class="nowrap">
+                  <button id="suppr">Supprimer les dessins</button>
+                </div>
+
+              </div>
+            </div>
+
+            <div class= "menuClic" id="coupe">
+              <button class="button" id="boutoncoupe"><img src="src/img/icons8-scissors-26.png"></button>
+              <div class="menuClic-content" id="coupe-content">
+
+                <div class="nowrap">
+                  <input id="plancoupe" type="checkbox"/>
+                  <label for="plancoupe">Plan de coupe horizontal</label>
+                </div>
+
+                <div class="nowrap">
+                  <input id="decoupe" type="checkbox"/>
+                  <label for="decoupe">Découpe dans le maillage</label>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="menuClic" id="time">
+              <button class="button" id="boutontime"><img src="src/img/icons8-partly-cloudy-day-filled-50.png"></button>
+              <div class="menuClic-content" id="time-content">
+                <div class="nowrap">
+                  <input id="shadows" type="checkbox"/>
+                  <label for="shadows">Afficher les ombres</label>
+                </div>
+                <p>Date: <input type="text" id="date"></p>
+              </div>
+            </div>
+
+            <div class="menuClic" id="camera">
+              <button class="button" id="boutoncamera"><img id="imgcamera" src="src/img/icons8-unsplash.png"></button>
+              <div class="menuClic-content" id="camera-content">
+                <table>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <button class="button" id="addcamera"><img src="src/img/icons8-add-camera.png"></button>
+                      <span style="font-size:small;"> Ajouter point de vue </span>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="achenheim">Achenheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="bischheim">Bischheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="blaesheim">Blaesheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="breuschwickersheim">Breuschwickersheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="eckbolsheim">Eckbolsheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="eckwersheim">Eckwersheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="entzheim">Entzheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="eschau">Eschau</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="fegersheim">Fegersheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="geispolsheim">Geispolsheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="hangenbieten">Hangenbieten</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="hoenheim">Hoenheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="holtzheim">Holtzheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="illkirch">Illkirch Graffenstaden</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="kolbsheim">Kolbsheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="lampertheim">Lampertheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="lawantzenau">La Wantzenau</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="lingolsheim">Lingolsheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="lipsheim">Lipsheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="mittelhausbergen">Mittelhausbergen</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="mundolsheim">Mundolsheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="niederhausbergen">Niederhausbergen</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="oberhausbergen">Oberhausbergen</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="oberschaeffolsheim">Oberschaeffolsheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="osthoffen">Osthoffen</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="ostwald">Ostwald</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="plobsheim">Plobsheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="reichstett">Reichstett</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="schiltigheim">Schiltigheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="souffelweyersheim">Souffelweyersheim</button>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="nowrap">
+                        <button id="strasbourg">Strasbourg</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="vendenheim">Vendenheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr bgcolor="#d3d3d3">
+                    <td>
+                      <div class="nowrap">
+                        <button id="wolfisheim">Wolfisheim</button>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+
+              </div>
+            </div>
+
+            <div class="menuClic" id="link">
+              <button class="button" id="boutonlink"><img src="src/img/icons8-lien.png"></button>
+            </div>
+
+            <div id="loadingIndicator" class="cover hidden">
+              <div id="loadingIcon" class="loadingIcon"></div>
+            </div>
+
+            <!-- Our app code. -->
+            <script src="lib/jQuery/jquery-3.3.1.min.js"></script>
+            <script src="lib/jQuery/jquery-ui.min.js"></script>
+            <script src="lib/proj4.js"></script>
+            <script src="src/globe.js"></script>
+            <script src="src/legend.js"></script>
+            <script src="src/geocoder.js"></script>
+            <script src="src/raf09.js"></script>
+            <script src="src/ui.js"></script>
+            <script src="src/dataStrasbourgEu.js"></script>
+            <script src="src/main.js"></script>
+
+
+          </body>
+          </html>

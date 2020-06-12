@@ -1,0 +1,458 @@
+@import url(../lib/Cesium/Build/Cesium/Widgets/widgets.css);
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: none;
+  font-family: sans-serif;
+  background: #000;
+}
+
+/* Style de la barre de menu */
+#menu {
+  position: absolute;
+  top: 0;
+  left: -440px;
+  width: 440px;
+  height: 100%;
+  background-color: rgba(9, 12, 16, 0.60);
+  padding: 5px 5px 0px 5px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  overflow-y: auto;
+  overflow-x: none;
+}
+
+#menu-content {
+  display: block;
+  width: 100%;
+  background-color: #B7C3D3;
+  font-family: Arial, Gadget, sans-serif;
+  font-size: 1.6em;
+  font-weight: bold;
+  padding: 1px;
+  border-radius: 5px 5px 0 0;
+  text-align: center;
+  color: black;
+}
+
+#menu.menu-open{
+  left: 0;
+}
+
+/* Style de la partie à droite du menu contenant toutes les légendes et formulaires */
+#left-pane{
+  position: absolute;
+  top: 00px;
+  left: 00px;
+  width: 275px;
+  color: white;
+  padding: 5px 5px 0 5px;
+  bottom: 120px;
+  overflow-y: auto;
+  overflow-x: none;
+}
+
+#left-pane.menu-open {
+  left: 440px;
+}
+
+#left-pane #toggle-menu {
+  display: inline-block;
+  margin-bottom: 25px;
+  background-color: rgba(57, 71, 75, 0.90);
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+
+#left-pane h2 {
+  font-size: 1.7em;
+  text-align: center;
+}
+
+/* style de l'annotation pour tracer les figures */
+.annotation {
+  position: absolute;
+  bottom: 50px;
+  right: 10px;
+  padding: 5px 5px 0 5px;
+  display: block;
+  background: rgba(42, 42, 42, 0.8);
+  border-radius: 5px;
+  border: 1px solid #444;
+  width: auto;
+  height: auto;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-size: small;
+  pointer-events: none;
+}
+
+
+/* Style de la partie Cesium*/
+#cesiumContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Annimation du menu */
+#menu, #left-pane {
+  transition: left 0.5s;
+}
+
+/* Style des panels contenus dans le menu */
+.panel{
+  display: block;
+  border: 1px solid #4E535A;
+  border-radius: 5px;
+  color: white;
+  margin-bottom: 5px;
+  width: 430px;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow-x: none;
+  overflow-y: auto;
+
+}
+
+.panel .panel-title{
+  display: block;
+  width: 100%;
+  background-color: #909499;
+  font-size: large;
+  padding: 5px;
+  border-radius: 5px 5px 0 0;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  overflow-x: none;
+
+}
+
+/* Style du titre lorsqu'on passe la souris dessus */
+.panel-title:hover {
+  color: #1a1a1a;
+}
+
+.active {
+  color: black;
+}
+
+.panel .panel-content{
+  width: 100%;
+  padding: 5px;
+  display: none;
+  overflow-x: none;
+}
+
+.panel .panel-content-open {
+  display: inline-block;
+  overflow-x: none;
+}
+
+.deroulant {
+  display: block;
+  width: 100%;
+  background-color: #636F79;
+  padding: 5px;
+  border-radius: 5px 5px 0 0;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  overflow-x: none;
+}
+
+#boutonfile {
+  display: block;
+  position: absolute;
+  left: 340px;
+  top: 100px;
+  cursor: pointer;
+}
+
+#config {
+  display: block;
+  position: absolute;
+  left: 10px;
+  background-color: #ECECEC;
+  color: black;
+  width: 25%;
+  cursor: pointer;
+}
+#reset {
+  display: block;
+  position: absolute;
+  left: 10px;
+  top: 150px;
+  background-color: #ECECEC;
+  color: black;
+  width: 25%;
+  cursor: pointer;
+}
+
+/* Style des légendes */
+.backdrop {
+  position: relative;
+  display: inline-block;
+  background: rgba(42, 42, 42, 0.7);
+  border-radius: 5px;
+  border: 1px solid #444;
+  width: 100%;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+  color: #fff;
+  line-height: 150%;
+  font-size: small;
+  overflow: auto;
+}
+
+.backdrop a:link, .backdrop a:visited, .backdrop a:hover {
+  color: #fff
+}
+
+
+/* Style de la legende */
+.legend .legend-color, .legend .legend-text{
+  display: inline-block;
+  height: 25px;
+  line-height: 25px;
+  width: 30%;
+  float: left;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.legend .legend-text{
+  padding-left: 5px;
+  text-align: center;
+}
+
+.legend .legend-element:first-child{
+  margin-top: 5px;
+  text-align: center;
+}
+
+.legend .legend-element:after{
+  content: '';
+  display: table;
+  clear: both;
+}
+
+.legend .legend-line {
+  display: block;
+  height: 3px;
+  line-height: 3px;
+  width: 30%;
+  float: left;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.tab {
+  display:inline-block;
+  width: 50px;
+}
+
+/* Style du loader = icône qui affiche le chargement de la page */
+.cover {
+  display: block;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.75);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.loadingIcon {
+  display: inherit;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -33px;
+  margin-left: -33px;
+  width: 66px;
+  height: 66px;
+  background: url(img/ajax-loader.gif) center no-repeat;
+}
+
+/* Style de la flèche */
+i {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  left: 400px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+
+/* Boite à outils */
+/* style des boutons de la boîte à outils*/
+.button {
+  background: #303336;
+  border: 1px solid #444;
+  color: #edffff;
+  fill: #edffff;
+  padding: 3px 5px;
+  margin: 2px 2px;
+  cursor: pointer;
+  border-radius: 14%;
+  z-index: 0;
+
+}
+
+/* changement de couleur au survol des boutons */
+.button:hover {
+  color: #fff;
+  fill: #fff;
+  background: #48b;
+  border-color: #aef;
+  /*box-shadow: 0 0 8px #fff;*/
+}
+
+.menuClic-content {
+  display: none;
+  position: absolute;
+  background-color: #EDEDED;
+  border: 1px solid #000;
+  border-radius: 3px;
+  z-index: 1;
+}
+
+/* position des boutons */
+#mesures {
+  position: absolute;
+  top: 5px;
+  left: 100px;
+}
+
+#construction {
+  position: absolute;
+  top: 5px;
+  left: 145px;
+}
+
+#coupe {
+  position: absolute;
+  top: 5px;
+  left: 190px;
+}
+
+#time {
+  position: absolute;
+  top: 5px;
+  left: 235px;
+}
+
+#camera {
+  position: absolute;
+  top: 5px;
+  left: 280px;
+}
+
+#link {
+  position: absolute;
+  top: 5px;
+  left: 325px;
+}
+
+/* les boutons bougent à l'ouverture du menu */
+#mesures.menu-open {
+  left:540px;
+  transition: left 0.5s;
+}
+#construction.menu-open {
+  left:580px;
+  transition: left 0.5s;
+}
+#coupe.menu-open {
+  left:620px;
+  transition: left 0.5s;
+}
+#time.menu-open {
+  left:660px;
+  transition: left 0.5s;
+}
+
+#camera.menu-open {
+  left:700px;
+  transition: left 0.5s;
+}
+
+#link.menu-open {
+  left:740px;
+  transition: left 0.5s;
+}
+
+.aide {
+  display: none;
+  background-color: #FFFFFF;
+  font-size: small;
+}
+
+.menuClic {
+  display: block;
+  background-color: #2B2F33;
+  border-radius: 3px;
+}
+
+/* Classes utilitaire */
+.nowrap {
+  white-space: nowrap;
+  list-style: none;
+  display: block;
+  padding: 12px 16px;
+  text-decoration: none;
+  overflow-x: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.hamburger-icon {
+  position: relative;
+  background: #303336;
+  border: 1px solid #444;
+  color: #edffff;
+  fill: #edffff;
+  padding: 5px 5px 5px calc(5px + 1.25em);
+  cursor: pointer;
+}
+
+.hamburger-icon:before {
+  content: "";
+  position: absolute;
+  top: calc(5px + 0.25em);
+  left: 5px;
+  width: 1em;
+  height: 0.125em;
+  border-top: 0.375em double #FFF;
+  border-bottom: 0.125em solid #FFF;
+}
+
+.hamburger-icon:hover {
+  color: #fff;
+  fill: #fff;
+  background: #48b;
+  border-color: #aef;
+}
+
+.show {
+  display:block;
+}
