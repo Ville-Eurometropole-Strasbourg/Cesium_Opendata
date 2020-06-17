@@ -322,7 +322,6 @@ i {
   fill: #fff;
   background: #48b;
   border-color: #aef;
-  /*box-shadow: 0 0 8px #fff;*/
 }
 
 .menuClic-content {
@@ -419,6 +418,7 @@ i {
   padding: 12px 16px;
   text-decoration: none;
   overflow-x: none;
+  position: relative;
 }
 
 .hidden {
@@ -455,4 +455,15 @@ i {
 
 .show {
   display:block;
+}
+
+.textRefresh {
+  display: none;
+  background-color: black;
+  color: #fff;
+  position: absolute;
+}
+
+#boutonrefresh:hover .textRefresh {
+  display: block;
 }

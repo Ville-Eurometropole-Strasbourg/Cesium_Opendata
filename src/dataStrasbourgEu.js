@@ -20,6 +20,7 @@ class Data {
     var enableODTraffic = false;
     var enableODPatrimoine = false;
     var enableODQualiteAir = false;
+    var enableODPiscine = false;
     var enableODLimitesCommunes = false;
     var enableODLimitesSections = false;
     var enableODCadastreBlaesheim = false;
@@ -83,6 +84,12 @@ class Data {
       break;
       case 'enableodpatrimoine':
       enableODPatrimoine = true;
+      break;
+      case 'enableodqualiteair':
+      enableODQualiteAir = true;
+      break;
+      case 'enableodpiscine':
+      enableODPiscine = true;
       break;
       case 'enableodlimitescommunes':
       enableODLimitesCommunes = true;
@@ -362,9 +369,13 @@ class Data {
     var colorsTerrassesClassif = {
       'STRASBOURG': '#D7146E'
     };
+    var colorsTerrassesLegend = {
+      'Terrasses_autorisées_2019': '#D7146E'
+    };
+    var lineTerrasse = [];
     if (enableODTerrasse2019) {
       document.getElementById("ODTerrasses").checked = true;
-      globe.showJson(true, 'ODTerrasses', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODTerrasses', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses', lineTerrasse , '#FFFFFF', 0, undefined, undefined, {
         classification: true,
         classificationField: 'ville',
         colors: colorsTerrassesClassif,
@@ -372,19 +383,12 @@ class Data {
       });
 
       globe.viewer.scene.requestRender();
-      var colorsTerrassesLegend = {
-        'Terrasses_autorisées_2019': '#D7146E'
-      };
+
       globe.legendManager.addLegend('Terrasses_autorisées_en_2019', 'ODTerrassesLegend', colorsTerrassesLegend, 'polygon');
     } //fin de si on affiche les terrasses à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODTerrasses").checked = false;
-    }
-
 
     document.querySelector('#ODTerrasses').addEventListener('change', (e) => {
-      globe.showJson(e.target.checked, 'ODTerrasses', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODTerrasses', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses', lineTerrasse , '#FFFFFF', 0, undefined, undefined, {
         classification: true,
         classificationField: 'ville',
         colors: colorsTerrassesClassif,
@@ -393,15 +397,11 @@ class Data {
       globe.viewer.scene.requestRender();
 
       if(e.target.checked){
-        var colorsTerrassesLegend = {
-          'Terrasses_autorisées_2019': '#D7146E'
-        };
         globe.legendManager.addLegend('Terrasses_autorisées_en_2019', 'ODTerrassesLegend', colorsTerrassesLegend, 'polygon');
-
       } else{
         globe.legendManager.removeLegend('ODTerrassesLegend');
-
       }
+
       globe.viewer.scene.requestRender();
 
     });
@@ -415,50 +415,41 @@ class Data {
       '1,7€/h': '#EBF975',
       '2,1€/h': '#F378B5'
     };
+    var colorsStationPayantLegend = {
+      '0.5€/h_ou_1€/3h': '#C7F79A',
+      '1,7€/h': '#EBF975',
+      '2,1€/h': '#F378B5'
+    };
+    var lineStation = [];
     if (enableODStationPayant) {
       document.getElementById("ODStationPayant").checked = true;
-      globe.showJson(true, 'ODStationPayant', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODStationPayant', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Stationnement', lineStation , '#FFFFFF', 0, undefined, undefined, {
         classification: true,
         classificationField: 'libelle',
         colors: colorsStationPayantClassif,
-        alpha: 0.3
+        alpha: 0.5
       });
 
       globe.viewer.scene.requestRender();
-      var colorsStationPayantLegend = {
-        '0.5€/h_ou_1€/3h': '#C7F79A',
-        '1,7€/h': '#EBF975',
-        '2,1€/h': '#F378B5'
-      };
+
       globe.legendManager.addLegend('Stationnement_payant', 'ODStationPayantLegend', colorsStationPayantLegend, 'polygon');
     } //fin de si on affiche stationnement payant à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODStationPayant").checked = false;
-    }
-
 
     document.querySelector('#ODStationPayant').addEventListener('change', (e) => {
-      globe.showJson(e.target.checked, 'ODStationPayant', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODStationPayant', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Stationnement', lineStation , '#FFFFFF', 0, undefined, undefined, {
         classification: true,
         classificationField: 'libelle',
         colors: colorsStationPayantClassif,
-        alpha: 0.3
+        alpha: 0.5
       });
       globe.viewer.scene.requestRender();
 
       if(e.target.checked){
-        var colorsStationPayantLegend = {
-          '0.5€/h_ou_1€/3h': '#C7F79A',
-          '1,7€/h': '#EBF975',
-          '2,1€/h': '#F378B5'
-        };
         globe.legendManager.addLegend('Stationnement_payant', 'ODStationPayantLegend', colorsStationPayantLegend, 'polygon');
-
       } else{
         globe.legendManager.removeLegend('ODStationPayantLegend');
-
       }
+
       globe.viewer.scene.requestRender();
 
     });
@@ -482,11 +473,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche stationnement payant à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODLimitesCommunes").checked = false;
-    }
-
 
     document.querySelector('#ODLimitesCommunes').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODLimitesCommunes', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=limites_de_communes&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&timezone=Europe/Berlin', 'Limites de communes', lineCommunes, '#FFFFFF', 3.0, '#D3D3D3', 0.2, {
@@ -519,11 +505,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODLimitesSections").checked = false;
-    }
-
 
     document.querySelector('#ODLimitesSections').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODLimitesSections', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=sections_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&timezone=Europe/Berlin', 'Limites de sections', lineSections, '#FF0000', 3.0, '#D3D3D3', 0.2, {
@@ -537,8 +518,37 @@ class Data {
     });
     // ---------------------------------------------------------------------------------------------------------------------------------------------
     //
+    //
+    //
+    // ---------------------------------------------------------------------------------------------------------------------------------------------
+    // Affichage de la couche du Parcellaire Achenheim OPENDATA //
+    var colorsCadastreAchenheimClassif = {
+      '001': '#AAAAAA'
+    };
+    var lineAchenheim = [];
+    if (enableODCadastreAchenheim) {
+      document.getElementById("ODCadastreAchenheim").checked = true;
 
+      globe.showPolygon(true, 'ODCadastreAchenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=001&timezone=Europe/Berlin', 'Parcellaire cadastral', lineAchenheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
+        classification: true,
+        classificationField: 'num_com',
+        colors: colorsCadastreAchenheimClassif,
+        alpha: 0.01
+      });
 
+      globe.viewer.scene.requestRender();
+    } //fin de si on affiche la couche à l'ouverture de cesium
+
+    document.querySelector('#ODCadastreAchenheim').addEventListener('change', (e) => {
+      globe.showPolygon(e.target.checked, 'ODCadastreAchenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=001&timezone=Europe/Berlin', 'Parcellaire cadastral', lineAchenheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
+        classification: true,
+        classificationField: 'num_com',
+        colors: colorsCadastreAchenheimClassif,
+        alpha: 0.01
+      });
+      globe.viewer.scene.requestRender();
+
+    });
 
     //
     // ----------------------------------------------------------------------------------------------
@@ -558,11 +568,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreBlaesheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreBlaesheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreBlaesheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=049&timezone=Europe/Berlin', 'Parcellaire cadastral', lineBlaesheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -574,77 +579,7 @@ class Data {
       globe.viewer.scene.requestRender();
 
     });
-    // ---------------------------------------------------------------------------------------------------------------------------------------------
-    //
-    // ----------------------------------------------------------------------------------------------
-    // Affichage de la couche du Parcellaire Geispolsheim OPENDATA //
-    var colorsCadastreGeispolsheimClassif = {
-      '152': '#AAAAAA'
-    };
-    var lineGeispo = [];
-    if (enableODCadastreGeispolsheim) {
-      document.getElementById("ODCadastreGeispolsheim").checked = true;
-      globe.showPolygon(true, 'ODCadastreGeispolsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=152&timezone=Europe/Berlin', 'Parcellaire cadastral', lineGeispo, '#F0E68C', 2.0, '#FF0000', 0.5, {
-        classification: true,
-        classificationField: 'num_com',
-        colors: colorsCadastreGeispolsheimClassif,
-        alpha: 0.01
-      });
 
-      globe.viewer.scene.requestRender();
-    } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreGeispolsheim").checked = false;
-    }
-
-
-    document.querySelector('#ODCadastreGeispolsheim').addEventListener('change', (e) => {
-      globe.showPolygon(e.target.checked, 'ODCadastreGeispolsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=152&timezone=Europe/Berlin', 'Parcellaire cadastral', lineGeispo, '#F0E68C', 2.0, '#FF0000', 0.5, {
-        classification: true,
-        classificationField: 'num_com',
-        colors: colorsCadastreGeispolsheimClassif,
-        alpha: 0.01
-      });
-      globe.viewer.scene.requestRender();
-
-    });
-    // ---------------------------------------------------------------------------------------------------------------------------------------------
-    //
-    // ----------------------------------------------------------------------------------------------
-    // Affichage de la couche du Parcellaire Achenheim OPENDATA //
-    var colorsCadastreAchenheimClassif = {
-      '001': '#AAAAAA'
-    };
-    var lineAchenheim = [];
-    if (enableODCadastreAchenheim) {
-      document.getElementById("ODCadastreAchenheim").checked = true;
-
-      globe.showPolygon(true, 'ODCadastreAchenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=001&timezone=Europe/Berlin', 'Parcellaire cadastral', lineAchenheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
-        classification: true,
-        classificationField: 'num_com',
-        colors: colorsCadastreAchenheimClassif,
-        alpha: 0.01
-      });
-
-      globe.viewer.scene.requestRender();
-    } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreAchenheim").checked = false;
-    }
-
-
-    document.querySelector('#ODCadastreAchenheim').addEventListener('change', (e) => {
-      globe.showPolygon(e.target.checked, 'ODCadastreAchenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=001&timezone=Europe/Berlin', 'Parcellaire cadastral', lineAchenheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
-        classification: true,
-        classificationField: 'num_com',
-        colors: colorsCadastreAchenheimClassif,
-        alpha: 0.01
-      });
-      globe.viewer.scene.requestRender();
-
-    });
     // ---------------------------------------------------------------------------------------------------------------------------------------------
     //
     // ----------------------------------------------------------------------------------------------
@@ -665,11 +600,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreBischheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreBischheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreBischheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=043&timezone=Europe/Berlin', 'Parcellaire cadastral', lineBisch, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -701,11 +631,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreBreuschwickersheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreBreuschwickersheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreBreuschwickersheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=065&timezone=Europe/Berlin', 'Parcellaire cadastral', lineBreusch, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -737,11 +662,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreEckbolsheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreEckbolsheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreEckbolsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=118&timezone=Europe/Berlin', 'Parcellaire cadastral', lineEckbo, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -773,11 +693,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreEckwersheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreEckwersheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreEckwersheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=119&timezone=Europe/Berlin', 'Parcellaire cadastral', lineEckwer, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -809,11 +724,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreEntzheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreEntzheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreEntzheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=124&timezone=Europe/Berlin', 'Parcellaire cadastral', lineEntzheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -845,11 +755,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreEschau").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreEschau').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreEschau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=131&timezone=Europe/Berlin', 'Parcellaire cadastral', lineEschau, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -881,17 +786,40 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreFegersheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreFegersheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreFegersheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=137&timezone=Europe/Berlin', 'Parcellaire cadastral', lineFeger, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreFegersheimClassif,
+        alpha: 0.01
+      });
+      globe.viewer.scene.requestRender();
+
+    });
+    // ----------------------------------------------------------------------------------------------
+    // Affichage de la couche du Parcellaire Geispolsheim OPENDATA //
+    var colorsCadastreGeispolsheimClassif = {
+      '152': '#AAAAAA'
+    };
+    var lineGeispo = [];
+    if (enableODCadastreGeispolsheim) {
+      document.getElementById("ODCadastreGeispolsheim").checked = true;
+      globe.showPolygon(true, 'ODCadastreGeispolsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=152&timezone=Europe/Berlin', 'Parcellaire cadastral', lineGeispo, '#F0E68C', 2.0, '#FF0000', 0.5, {
+        classification: true,
+        classificationField: 'num_com',
+        colors: colorsCadastreGeispolsheimClassif,
+        alpha: 0.01
+      });
+
+      globe.viewer.scene.requestRender();
+    } //fin de si on affiche la couche à l'ouverture de cesium
+
+    document.querySelector('#ODCadastreGeispolsheim').addEventListener('change', (e) => {
+      globe.showPolygon(e.target.checked, 'ODCadastreGeispolsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=152&timezone=Europe/Berlin', 'Parcellaire cadastral', lineGeispo, '#F0E68C', 2.0, '#FF0000', 0.5, {
+        classification: true,
+        classificationField: 'num_com',
+        colors: colorsCadastreGeispolsheimClassif,
         alpha: 0.01
       });
       globe.viewer.scene.requestRender();
@@ -917,11 +845,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreHangenbieten").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreHangenbieten').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreHangenbieten', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=182&timezone=Europe/Berlin', 'Parcellaire cadastral', lineHangen, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -953,11 +876,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreHoenheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreHoenheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreHoenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=204&timezone=Europe/Berlin', 'Parcellaire cadastral', lineHoenheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -989,11 +907,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreHoltzheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreHoltzheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreHoltzheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=212&timezone=Europe/Berlin', 'Parcellaire cadastral', lineHoltz, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1025,11 +938,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreIllkirch").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreIllkirch').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreIllkirch', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=218&timezone=Europe/Berlin', 'Parcellaire cadastral', lineIllkirch, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1061,11 +969,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreKolbsheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreKolbsheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreKolbsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=247&timezone=Europe/Berlin', 'Parcellaire cadastral', lineKolb, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1097,11 +1000,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreLampertheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreLampertheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreLampertheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=256&timezone=Europe/Berlin', 'Parcellaire cadastral', lineLamp, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1133,11 +1031,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreLingolsheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreLingolsheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreLingolsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=267&timezone=Europe/Berlin', 'Parcellaire cadastral', lineLingo, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1169,11 +1062,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreLipsheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreLipsheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreLipsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=268&timezone=Europe/Berlin', 'Parcellaire cadastral', lineLipsheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1205,11 +1093,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreMittelhausbergen").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreMittelhausbergen').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreMittelhausbergen', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=296&timezone=Europe/Berlin', 'Parcellaire cadastral', lineMittel, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1241,11 +1124,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreMundolsheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreMundolsheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreMundolsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=309&timezone=Europe/Berlin', 'Parcellaire cadastral', lineMundo, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1277,11 +1155,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreNiederhausbergen").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreNiederhausbergen').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreNiederhausbergen', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=326&timezone=Europe/Berlin', 'Parcellaire cadastral', lineNieder, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1291,7 +1164,6 @@ class Data {
         alpha: 0.01
       });
       globe.viewer.scene.requestRender();
-
 
     });
     // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -1314,11 +1186,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreOberhausbergen").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreOberhausbergen').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreOberhausbergen', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=343&timezone=Europe/Berlin', 'Parcellaire cadastral', lineOberhaus, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1328,7 +1195,6 @@ class Data {
         alpha: 0.01
       });
       globe.viewer.scene.requestRender();
-
 
     });
     // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -1351,11 +1217,6 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreOberschaeffolsheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreOberschaeffolsheim').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODCadastreOberschaeffolsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=350&timezone=Europe/Berlin', 'Parcellaire cadastral', lineOberscha, '#F0E68C', 2.0, '#FF0000', 0.5, {
@@ -1366,7 +1227,6 @@ class Data {
       });
       globe.viewer.scene.requestRender();
 
-
     });
     // ---------------------------------------------------------------------------------------------------------------------------------------------
     //
@@ -1375,10 +1235,11 @@ class Data {
     var colorsCadastreOsthoffenClassif = {
       '363': '#AAAAAA'
     };
+    var lineOsthoffen = [];
     if (enableODCadastreOsthoffen) {
       document.getElementById("ODCadastreOsthoffen").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreOsthoffen', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=363&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreOsthoffen', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=363&timezone=Europe/Berlin', 'Parcellaire cadastral', lineOsthoffen, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreOsthoffenClassif,
@@ -1387,22 +1248,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreOsthoffen").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreOsthoffen').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreOsthoffen', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=363&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreOsthoffen', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=363&timezone=Europe/Berlin', 'Parcellaire cadastral', lineOsthoffen, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreOsthoffenClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1413,10 +1266,11 @@ class Data {
     var colorsCadastreOstwaldClassif = {
       '365': '#AAAAAA'
     };
+    var lineOstwald = [];
     if (enableODCadastreOstwald) {
       document.getElementById("ODCadastreOstwald").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreOstwald', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=365&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreOstwald', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=365&timezone=Europe/Berlin', 'Parcellaire cadastral', lineOstwald, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreOstwaldClassif,
@@ -1425,22 +1279,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreOstwald").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreOstwald').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreOstwald', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=365&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreOstwald', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=365&timezone=Europe/Berlin', 'Parcellaire cadastral', lineOstwald, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreOstwaldClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1451,10 +1297,11 @@ class Data {
     var colorsCadastrePlobsheimClassif = {
       '378': '#AAAAAA'
     };
+    var linePlob = [];
     if (enableODCadastrePlobsheim) {
       document.getElementById("ODCadastrePlobsheim").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastrePlobsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=378&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastrePlobsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=378&timezone=Europe/Berlin', 'Parcellaire cadastral', linePlob, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastrePlobsheimClassif,
@@ -1470,15 +1317,12 @@ class Data {
 
 
     document.querySelector('#ODCadastrePlobsheim').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastrePlobsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=378&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastrePlobsheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=378&timezone=Europe/Berlin', 'Parcellaire cadastral', linePlob, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastrePlobsheimClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1489,10 +1333,11 @@ class Data {
     var colorsCadastreReichstettClassif = {
       '389': '#AAAAAA'
     };
+    var lineReich = [];
     if (enableODCadastreReichstett) {
       document.getElementById("ODCadastreReichstett").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreReichstett', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=389&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreReichstett', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=389&timezone=Europe/Berlin', 'Parcellaire cadastral', lineReich, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreReichstettClassif,
@@ -1508,15 +1353,12 @@ class Data {
 
 
     document.querySelector('#ODCadastreReichstett').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreReichstett', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=389&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreReichstett', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=389&timezone=Europe/Berlin', 'Parcellaire cadastral', lineReich, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreReichstettClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1527,10 +1369,11 @@ class Data {
     var colorsCadastreSchiltigheimClassif = {
       '447': '#AAAAAA'
     };
+    var lineSchilig = [];
     if (enableODCadastreSchiltigheim) {
       document.getElementById("ODCadastreSchiltigheim").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreSchiltigheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=447&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreSchiltigheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=447&timezone=Europe/Berlin', 'Parcellaire cadastral', lineSchilig, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreSchiltigheimClassif,
@@ -1539,22 +1382,15 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreSchiltigheim").checked = false;
-    }
 
 
     document.querySelector('#ODCadastreSchiltigheim').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreSchiltigheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=447&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreSchiltigheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=447&timezone=Europe/Berlin', 'Parcellaire cadastral', lineSchilig, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreSchiltigheimClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1565,10 +1401,11 @@ class Data {
     var colorsCadastreSouffelweyersheimClassif = {
       '471': '#AAAAAA'
     };
+    var lineSouffel = [];
     if (enableODCadastreSouffelweyersheim) {
       document.getElementById("ODCadastreSouffelweyersheim").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreSouffelweyersheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=471&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreSouffelweyersheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=471&timezone=Europe/Berlin', 'Parcellaire cadastral', lineSouffel, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreSouffelweyersheimClassif,
@@ -1577,22 +1414,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreSouffelweyersheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreSouffelweyersheim').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreSouffelweyersheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=471&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreSouffelweyersheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=471&timezone=Europe/Berlin', 'Parcellaire cadastral', lineSouffel, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreSouffelweyersheimClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1603,10 +1432,11 @@ class Data {
     var colorsCadastreStrasbourgCentreClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasCentre = [];
     if (enableODCadastreStrasbourgCentre) {
       document.getElementById("ODCadastreStrasbourgCentre").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgCentre', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Centre&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgCentre', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Centre&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasCentre, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgCentreClassif,
@@ -1615,22 +1445,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgCentre").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgCentre').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgCentre', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Centre&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgCentre', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Centre&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasCentre, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgCentreClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1641,10 +1463,11 @@ class Data {
     var colorsCadastreStrasbourgGareKleberClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasGare = [];
     if (enableODCadastreStrasbourgGareKleber) {
       document.getElementById("ODCadastreStrasbourgGareKleber").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgGareKleber', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Gare-Kléber&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgGareKleber', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Gare-Kléber&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasGare, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgGareKleberClassif,
@@ -1653,22 +1476,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgGareKleber").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgGareKleber').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgGareKleber', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Gare-Kléber&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgGareKleber', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Gare-Kléber&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasGare, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgGareKleberClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1680,10 +1495,11 @@ class Data {
     var colorsCadastreStrasbourgEsplaBourseKrutClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasEspla = [];
     if (enableODCadastreStrasbourgEsplaBourseKrut) {
       document.getElementById("ODCadastreStrasbourgEsplaBourseKrut").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgEsplaBourseKrut', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Esplanade-Bourse-Krutenau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgEsplaBourseKrut', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Esplanade-Bourse-Krutenau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasEspla, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgEsplaBourseKrutClassif,
@@ -1692,22 +1508,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgEsplaBourseKrut").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgEsplaBourseKrut').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgEsplaBourseKrut', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Esplanade-Bourse-Krutenau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgEsplaBourseKrut', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Esplanade-Bourse-Krutenau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasEspla, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgEsplaBourseKrutClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1720,10 +1528,11 @@ class Data {
     var colorsCadastreStrasbourgNeudorfClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasNeudorf = [];
     if (enableODCadastreStrasbourgNeudorf) {
       document.getElementById("ODCadastreStrasbourgNeudorf").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgNeudorf', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neudorf-Schluthfeld-Port du Rhin-Musau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgNeudorf', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neudorf-Schluthfeld-Port du Rhin-Musau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasNeudorf, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgNeudorfClassif,
@@ -1732,22 +1541,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgNeudorf").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgNeudorf').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgNeudorf', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neudorf-Schluthfeld-Port du Rhin-Musau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgNeudorf', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neudorf-Schluthfeld-Port du Rhin-Musau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasNeudorf, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgNeudorfClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1760,10 +1561,11 @@ class Data {
     var colorsCadastreStrasbourgMeinauClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasMeinau = [];
     if (enableODCadastreStrasbourgMeinau) {
       document.getElementById("ODCadastreStrasbourgMeinau").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgMeinau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Meinau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgMeinau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Meinau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasMeinau, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgMeinauClassif,
@@ -1772,22 +1574,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgMeinau").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgMeinau').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgMeinau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Meinau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgMeinau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Meinau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasMeinau, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgMeinauClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1798,10 +1592,11 @@ class Data {
     var colorsCadastreStrasbourgNeuhofClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasNeuhof = [];
     if (enableODCadastreStrasbourgNeuhof) {
       document.getElementById("ODCadastreStrasbourgNeuhof").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgNeuhof', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neuhof&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgNeuhof', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neuhof&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasNeuhof, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgNeuhofClassif,
@@ -1810,22 +1605,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgNeuhof").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgNeuhof').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgNeuhof', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neuhof&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgNeuhof', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neuhof&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasNeuhof, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgNeuhofClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1836,10 +1623,11 @@ class Data {
     var colorsCadastreStrasbourgKoenigsMVClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasKoenig = [];
     if (enableODCadastreStrasbourgKoenigsMV) {
       document.getElementById("ODCadastreStrasbourgKoenigsMV").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgKoenigsMV', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Koenigshoffen-Montagne Verte&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgKoenigsMV', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Koenigshoffen-Montagne Verte&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasKoenig, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgKoenigsMVClassif,
@@ -1848,22 +1636,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgKoenigsMV").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgKoenigsMV').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgKoenigsMV', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Koenigshoffen-Montagne Verte&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgKoenigsMV', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Koenigshoffen-Montagne Verte&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasKoenig, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgKoenigsMVClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1876,10 +1656,11 @@ class Data {
     var colorsCadastreStrasbourgCroHautPotHohbergClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasCro = [];
     if (enableODCadastreStrasbourgCroHautPotHohberg) {
       document.getElementById("ODCadastreStrasbourgCroHautPotHohberg").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgCroHautPotHohberg', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Cronenbourg-Hautepierre-Poteries-Hohberg&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgCroHautPotHohberg', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Cronenbourg-Hautepierre-Poteries-Hohberg&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasCro, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgCroHautPotHohbergClassif,
@@ -1888,22 +1669,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgCroHautPotHohberg").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgCroHautPotHohberg').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgCroHautPotHohberg', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Cronenbourg-Hautepierre-Poteries-Hohberg&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgCroHautPotHohberg', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Cronenbourg-Hautepierre-Poteries-Hohberg&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasCro, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgCroHautPotHohbergClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1916,10 +1689,11 @@ class Data {
     var colorsCadastreStrasbourgRobertsauClassif = {
       '482': '#AAAAAA'
     };
+    var lineStrasRobertsau = [];
     if (enableODCadastreStrasbourgRobertsau) {
       document.getElementById("ODCadastreStrasbourgRobertsau").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreStrasbourgRobertsau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Robertsau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreStrasbourgRobertsau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Robertsau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasRobertsau, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgRobertsauClassif,
@@ -1928,22 +1702,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreStrasbourgRobertsau").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreStrasbourgRobertsau').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreStrasbourgRobertsau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Robertsau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreStrasbourgRobertsau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Robertsau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin', 'Parcellaire cadastral', lineStrasRobertsau, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreStrasbourgRobertsauClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1956,10 +1722,11 @@ class Data {
     var colorsCadastreVendenheimClassif = {
       '506': '#AAAAAA'
     };
+    var lineVendenheim = [];
     if (enableODCadastreVendenheim) {
       document.getElementById("ODCadastreVendenheim").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreVendenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=506&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreVendenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=506&timezone=Europe/Berlin', 'Parcellaire cadastral', lineVendenheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreVendenheimClassif,
@@ -1968,22 +1735,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreVendenheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreVendenheim').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreVendenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=506&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreVendenheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=506&timezone=Europe/Berlin', 'Parcellaire cadastral', lineVendenheim, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreVendenheimClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -1994,10 +1753,11 @@ class Data {
     var colorsCadastreLaWantzenauClassif = {
       '519': '#AAAAAA'
     };
+    var lineWantz = [];
     if (enableODCadastreLaWantzenau) {
       document.getElementById("ODCadastreLaWantzenau").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreLaWantzenau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=519&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreLaWantzenau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=519&timezone=Europe/Berlin', 'Parcellaire cadastral', lineWantz, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreLaWantzenauClassif,
@@ -2006,22 +1766,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreLaWantzenau").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreLaWantzenau').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreLaWantzenau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=519&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreLaWantzenau', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=519&timezone=Europe/Berlin', 'Parcellaire cadastral', lineWantz, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreLaWantzenauClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -2032,10 +1784,11 @@ class Data {
     var colorsCadastreWolfisheimClassif = {
       '551': '#AAAAAA'
     };
+    var lineWolfi = [];
     if (enableODCadastreWolfisheim) {
       document.getElementById("ODCadastreWolfisheim").checked = true;
 
-      globe.showJsonCadastre(true, 'ODCadastreWolfisheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=551&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(true, 'ODCadastreWolfisheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=551&timezone=Europe/Berlin', 'Parcellaire cadastral', lineWolfi, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreWolfisheimClassif,
@@ -2044,22 +1797,14 @@ class Data {
 
       globe.viewer.scene.requestRender();
     } //fin de si on affiche la couche à l'ouverture de cesium
-    else {
-      // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-      document.getElementById("ODCadastreWolfisheim").checked = false;
-    }
-
 
     document.querySelector('#ODCadastreWolfisheim').addEventListener('change', (e) => {
-      globe.showJsonCadastre(e.target.checked, 'ODCadastreWolfisheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=551&timezone=Europe/Berlin', undefined, undefined , undefined, undefined, undefined, {
+      globe.showPolygon(e.target.checked, 'ODCadastreWolfisheim', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=551&timezone=Europe/Berlin', 'Parcellaire cadastral', lineWolfi, '#F0E68C', 2.0, '#FF0000', 0.5, {
         classification: true,
         classificationField: 'num_com',
         colors: colorsCadastreWolfisheimClassif,
         alpha: 0.01
       });
-      globe.viewer.scene.requestRender();
-
-
       globe.viewer.scene.requestRender();
 
     });
@@ -2147,11 +1892,6 @@ if (enableODTraffic) {
 
   globe.legendManager.addLegend('Traffic_routier_Eurométropole', 'ODTrafficLegend', colorsTrafficLegend, 'line');
 }
-else {
-  // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-  document.getElementById("ODTraffic").checked = false;
-}
-
 
 document.querySelector('#ODTraffic').addEventListener('change', (e) => {
   var choice = 'traffic';
@@ -2171,35 +1911,43 @@ document.querySelector('#ODTraffic').addEventListener('change', (e) => {
 
 });
 
+document.querySelector('#boutonrefresh').addEventListener('click', function() {
+  var colorsTraffic = {
+    '1': '#00a82a',
+    '2': '#0881d1',
+    '3': '#fc0000'
+  };
+  var choice = 'traffic';
+  globe.updatePolyline('https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODTraffic', choice, {
+    classification: true,
+    classificationField: 'etat',
+    colors: colorsTraffic,
+    alpha: 0.7
+  });
+});
+
 // --------------------------------------------------------------------------------------------------------------
 
 // Affichage de la couche patrimoine de mon quartier OPENDATA //
-var billboard = [];
-var line = [];
-var colorsPatrimoine = {
-  'Patrimoine bâti': '#fcba03'
-};
+var billboardPatrimoine = [];
+var linePatrimoine = [];
+
 var colorsPatrimoineLegend = {
-  'Point_intérêt    ': '#fcba03'
+  'Point    ': '#fcba03'
 };
 
 if (enableODPatrimoine) {
   document.getElementById("ODPatrimoine").checked = true;
 
-  globe.showPoint(true, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboard, 'patrimoine', line, '#cf1204', {});
+  globe.showPoint(true, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
 
   globe.viewer.scene.requestRender();
 
   globe.legendManager.addLegend('Patrimoine_quartier', 'ODPatrimoineLegend', colorsPatrimoineLegend, 'point', "<img src='src/img/billboard/marker_red.png'>");
 }
-else {
-  // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-  document.getElementById("ODPatrimoine").checked = false;
-}
-
 
 document.querySelector('#ODPatrimoine').addEventListener('change', (e) => {
-  globe.showPoint(e.target.checked, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboard, 'patrimoine', line, '#cf1204', {});
+  globe.showPoint(e.target.checked, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
 
   globe.viewer.scene.requestRender();
 
@@ -2214,7 +1962,7 @@ document.querySelector('#ODPatrimoine').addEventListener('change', (e) => {
 // --------------------------------------------------------------------------------------------------------------
 
 // Affichage de la couche qualité de l'air de l'eurométropole OPENDATA //
-var line = [];
+var lineAir = [];
 var colorsQualiteAir = {
   '1': '#3b8019',
   '2': '#47991f',
@@ -2229,16 +1977,16 @@ var colorsQualiteAir = {
 
 };
 var colorsQualiteAirLegend = {
-  '1': '#3b8019',
-  '2': '#47991f',
-  '3': '#589917',
-  '4': '#9EE01A',
-  '5': '#e8e823',
-  '6': '#e3a112',
-  '7': '#f07a13',
-  '8': '#f04a13',
-  '9': '#c91a0a',
-  '10': '#850b0b'
+  '1_Très_Bon': '#3b8019',
+  '2_Très_Bon': '#47991f',
+  '3_Bon': '#589917',
+  '4_Bon': '#9EE01A',
+  '5_Moyen': '#e8e823',
+  '6_Médiocre': '#e3a112',
+  '7_Médiocre': '#f07a13',
+  '8_Mauvais': '#f04a13',
+  '9_Mauvais': '#c91a0a',
+  '10_Très_Mauvais': '#850b0b'
 
 };
 
@@ -2247,7 +1995,7 @@ var start = Cesium.JulianDate.addDays(today, -7, new Cesium.JulianDate());
 
 if (enableODQualiteAir) {
   document.getElementById("ODQualiteAir").checked = true;
-  globe.showTimeJson(true, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', line, 'qualiteAir', start, today, {
+  globe.showTimeJson(true, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAir, 'qualiteAir', start, today, {
     classification: true,
     classificationField: 'valeur',
     colors: colorsQualiteAir,
@@ -2258,14 +2006,9 @@ if (enableODQualiteAir) {
 
   globe.legendManager.addLegend('Qualite_Air', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
 }
-else {
-  // on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-  document.getElementById("ODQualiteAir").checked = false;
-}
-
 
 document.querySelector('#ODQualiteAir').addEventListener('change', (e) => {
-  globe.showTimeJson(e.target.checked, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', line, 'qualiteAir', start, today, {
+  globe.showTimeJson(e.target.checked, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAir, 'qualiteAir', start, today, {
     classification: true,
     classificationField: 'valeur',
     colors: colorsQualiteAir,
@@ -2281,5 +2024,40 @@ document.querySelector('#ODQualiteAir').addEventListener('change', (e) => {
   }
 
 });
+
+
+// --------------------------------------------------------------------------------------------------------------
+
+// Affichage de la couche fréquentation des piscines de l'eurométropole OPENDATA //
+var linePiscine = [];
+var billboardPiscine = [];
+
+var colorsPiscineLegend = {
+  'Piscine        ': '#fcba03'
+};
+
+if (enableODPiscine) {
+  document.getElementById("ODPiscine").checked = true;
+
+  globe.showPoint(true, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_blue.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
+
+  globe.viewer.scene.requestRender();
+
+  globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/marker_blue.png'>");
+}
+
+document.querySelector('#ODPiscine').addEventListener('change', (e) => {
+  globe.showPoint(e.target.checked, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_blue.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
+
+  globe.viewer.scene.requestRender();
+
+  if(e.target.checked){
+    globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/marker_blue.png'>");
+  } else{
+    globe.legendManager.removeLegend('ODPiscineLegend');
+  }
+
+});
+
 }
 }
