@@ -20,6 +20,7 @@ class Data {
     var enableODTraffic = false;
     var enableODPatrimoine = false;
     var enableODQualiteAir = false;
+    var enableODQualiteAirStras = false;
     var enableODPiscine = false;
     var enableODLimitesCommunes = false;
     var enableODLimitesSections = false;
@@ -87,6 +88,9 @@ class Data {
       break;
       case 'enableodqualiteair':
       enableODQualiteAir = true;
+      break;
+      case 'enableodqualiteairstras':
+      enableODQualiteAirStras = true;
       break;
       case 'enableodpiscine':
       enableODPiscine = true;
@@ -1867,20 +1871,20 @@ globe.legendManager.removeLegend('ODVitaboucleLegend');
 
 // Affichage de la couche traffic routier OPENDATA //
 var colorsTraffic = {
-  '1': '#00a82a',
-  '2': '#0881d1',
+  '1': '#15780c',
+  '2': '#de8b1f',
   '3': '#fc0000'
 };
 var colorsTrafficLegend = {
-  'Fluide': '#22a314',
-  'Dense': '#1471a3',
+  'Fluide': '#15780c',
+  'Dense': '#de8b1f',
   'Saturé': '#e80707'
 };
+var choice = 'traffic';
 
 if (enableODTraffic) {
   document.getElementById("ODTraffic").checked = true;
 
-  var choice = 'traffic';
   globe.showPolyline(true, 'ODTraffic', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', choice, {
     classification: true,
     classificationField: 'etat',
@@ -1894,7 +1898,7 @@ if (enableODTraffic) {
 }
 
 document.querySelector('#ODTraffic').addEventListener('change', (e) => {
-  var choice = 'traffic';
+
   globe.showPolyline(e.target.checked, 'ODTraffic', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', choice, {
     classification: true,
     classificationField: 'etat',
@@ -1911,13 +1915,13 @@ document.querySelector('#ODTraffic').addEventListener('change', (e) => {
 
 });
 
-document.querySelector('#boutonrefresh').addEventListener('click', function() {
+document.querySelector('#refreshTraffic').addEventListener('click', function() {
   var colorsTraffic = {
     '1': '#00a82a',
     '2': '#0881d1',
     '3': '#fc0000'
   };
-  var choice = 'traffic';
+
   globe.updatePolyline('https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODTraffic', choice, {
     classification: true,
     classificationField: 'etat',
@@ -2004,7 +2008,7 @@ if (enableODQualiteAir) {
 
   globe.viewer.scene.requestRender();
 
-  globe.legendManager.addLegend('Qualite_Air', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
+  globe.legendManager.addLegend('Qualite_Air_Eurométropole', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
 }
 
 document.querySelector('#ODQualiteAir').addEventListener('change', (e) => {
@@ -2018,13 +2022,53 @@ document.querySelector('#ODQualiteAir').addEventListener('change', (e) => {
   globe.viewer.scene.requestRender();
 
   if(e.target.checked){
-    globe.legendManager.addLegend('Qualite_Air', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
+    globe.legendManager.addLegend('Qualite_Air_Eurométropole', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
   } else{
     globe.legendManager.removeLegend('ODQualiteAirLegend');
   }
 
 });
 
+// --------------------------------------------------------------------------------------------------------------
+/*
+// Affichage de la couche qualité de l'air à Strasbourg OPENDATA //
+var lineAirStras = [];
+
+var today = Cesium.JulianDate.now();
+var start = Cesium.JulianDate.addDays(today, -7, new Cesium.JulianDate());
+
+if (enableODQualiteAirStras) {
+  document.getElementById("ODQualiteAirStras").checked = true;
+  globe.showTimeJson(true, 'ODQualiteAirStras', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=indices-de-qualite-de-lair-a-strasbourg&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAirStras, 'qualiteAir', start, today, {
+    classification: true,
+    classificationField: 'valeur',
+    colors: colorsQualiteAir,
+    alpha: 0.7
+  });
+
+  globe.viewer.scene.requestRender();
+
+  globe.legendManager.addLegend('Qualite_Air_Strasbourg', 'ODQualiteAirStrasLegend', colorsQualiteAirLegend, 'polygon');
+}
+
+document.querySelector('#ODQualiteAirStras').addEventListener('change', (e) => {
+  globe.showTimeJson(e.target.checked, 'ODQualiteAirStras', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=indices-de-qualite-de-lair-a-strasbourg&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAirStras, 'qualiteAir', start, today, {
+    classification: true,
+    classificationField: 'valeur',
+    colors: colorsQualiteAir,
+    alpha: 0.7
+  });
+
+  globe.viewer.scene.requestRender();
+
+  if(e.target.checked){
+    globe.legendManager.addLegend('Qualite_Air_Strasbourg', 'ODQualiteAirStrasLegend', colorsQualiteAirLegend, 'polygon');
+  } else{
+    globe.legendManager.removeLegend('ODQualiteAirStrasLegend');
+  }
+
+});
+*/
 
 // --------------------------------------------------------------------------------------------------------------
 
@@ -2059,5 +2103,12 @@ document.querySelector('#ODPiscine').addEventListener('change', (e) => {
 
 });
 
-}
-}
+document.querySelector('#refreshPiscine').addEventListener('click', function() {
+  globe.updatePoint('https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODPiscine', 'src/img/billboard/marker_blue.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {
+
+  });
+});
+
+
+} // fin de la fonction couchesOD
+} // fin de la classe Data

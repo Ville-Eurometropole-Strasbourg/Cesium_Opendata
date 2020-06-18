@@ -121,7 +121,7 @@ class Globe {
       let pitch = params.pitch;
       let roll = params.roll;
 
-      // si l'URL ne contient pas de paramètres, on zoome sur la cathédrale
+      // si l'URL ne contient pas de paramètres
       if(X === undefined || Y === undefined || Z === undefined || heading === undefined || pitch === undefined || roll === undefined) {
         let position = new Cesium.Cartesian3(4227894, 573584, 4758748);
         this.viewer.camera.setView({
@@ -252,9 +252,15 @@ class Globe {
       let pitch = globe.viewer.camera.pitch;
       let roll = globe.viewer.camera.roll;
 
-      // Avant de construire un lien qui contient les paramètres
       // le premier paramètre doit débuter avec un "?" et les autres paramètres doivent être séparés par un "&"
-      document.getElementById('nomlink').value = window.location.href+'?X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
+
+      // On teste si le lien contient le paramètre open
+      if (window.location.search.indexOf('open') > -1) {
+        document.getElementById('nomlink').value = window.location.href +'&X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
+      } else {
+        document.getElementById('nomlink').value = window.location.href +'?X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
+      }
+
     }
 
     /*
@@ -1887,6 +1893,9 @@ class Globe {
             entity.polygon.arcType = Cesium.ArcType.GEODESIC;
           }
 
+          if(choice === 'qualiteAir') {
+            this.createTableauQualiteAir(entity)
+          }
           // on trace les contours des entités
           line.push(this.drawLine(entity.polygon.hierarchy._value.positions, 3, '#FFFFFF', 1, true));
         }
@@ -2203,7 +2212,7 @@ class Globe {
   */
   createTableauTraffic(entity){
     //Renseignement des éléments de la boite d'information
-    entity.name = 'Traffic routier'
+    entity.name = 'Traffic routier SIRAC'
     entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
     entity.description += '<tr><td>etat</td><td>' + String(entity.properties['etat']) + '</td></tr>';
     entity.description += '<tr><td>nom</td><td>' + String(entity.properties['nom']) + '</td></tr>';
@@ -2252,6 +2261,26 @@ class Globe {
 
   }
 
+  /**
+  *
+  * Afficher le tableau d'attributs avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauQualiteAir(entity){
+    //Renseignement des éléments de la boite d'information
+    entity.name = 'Qualité air communes Eurométropole'
+    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    entity.description += '<tr><td>Date d\'échéance (AAAA/MM/JJ)</td><td>' + String(entity.properties['date_echeance']) + '</td></tr>';
+    entity.description += '<tr><td>Qualificatif</td><td>' + String(entity.properties['qualificatif']) + '</td></tr>';
+    entity.description += '<tr><td>Valeur</td><td>' + String(entity.properties['valeur']) + '</td></tr>';
+    entity.description += '<tr><td>Commune</td><td>' + String(entity.properties['lib_zone']) + '</td></tr>';
+    entity.description += '<tr><td>Code zone</td><td>' + String(entity.properties['code_zone']) + '</td></tr>';
+    entity.description +='</tbody></table><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+
+  }
+
   //---------------------------------------------------------------------------------------------------
 
   /**
@@ -2292,79 +2321,142 @@ class Globe {
       xmlhttp.responseType = 'json';
       xmlhttp.send();
 
+      xmlhttp.onreadystatechange = function () {
+        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 
-      // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
-      // l'entité billboard ne conserve pas les attributs
-      xmlhttp.onload = function() {
+          for(let i = 0; i < 8; i++) {
+            let entity = entities[i];
+            // on récupère les coordonnées des points importés
+            var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
+            var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
+            var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
 
-        for(let i = 0; i < entities.length; i++) {
-          let entity = entities[i];
+            var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
+            let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
+            let longitude = cartographic.longitude;
+            let latitude = cartographic.latitude;
+            // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
+            let height = Number(225 + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
+            var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
 
-          // on récupère les coordonnées des points importés
-          var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
-          var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
-          var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
+            // on ajoute une entité billboard à chaque point, 225m plus haut
+            // l'entité billboard ne conserve pas les attributs
+            billboard.push(globe.createBillboard(coordHauteur, image, false));
+            //billboard.shift();
+            // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
 
-          var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
-          let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
-          let longitude = cartographic.longitude;
-          let latitude = cartographic.latitude;
-          // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
-          let height = Number(225 + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
+            //on trace une ligne partant du sol jusqu'à la base du billboard
+            var coordLigne = [position, coordHauteur];
+            line.push(globe.drawLine(coordLigne, 2, couleur, 1, false));
+            globe.viewer.scene.requestRender();
 
-          var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
+            // coordonnées légèrement décalées pour la lisibilité du texte
+            let heightLabel = Number(250 + cartographic.height);
+            var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
 
-          // on ajoute une entité billboard à chaque point, 225m plus haut
-          billboard.push(globe.createBillboard(coordHauteur, image, false));
-          // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
 
-          //on trace une ligne partant du sol jusqu'à la base du billboard
-          var coordLigne = [position, coordHauteur];
-          line.push(globe.drawLine(coordLigne, 2, couleur, 1, false));
+            // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasite)
+            var acces = String(entity.properties['access']);
+            acces = acces.replace('{"fr_FR": "', '');
+            acces = acces.replace(/\\n/g,'');
+            acces = acces.replace(/\\t/g,'');
+            acces = acces.replace(/\\/g,'');
+            acces = acces.replace('"}','');
+            var service = String(entity.properties['serviceandactivities']);
+            service = service.replace('{"fr_FR": "', '');
+            service = service.replace(/\\n/g,'');
+            service = service.replace(/\\t/g,'');
+            service = service.replace('"}','');
+            var caracteristique = String(entity.properties['characteristics']);
+            caracteristique = caracteristique.replace('{"fr_FR": "', '');
+            caracteristique = caracteristique.replace(/\\n/g,'');
+            caracteristique = caracteristique.replace(/\\t/g,'');
+            caracteristique = caracteristique.replace(/\\/g,'');
+            caracteristique = caracteristique.replace('"}','');
+            var exception = String(entity.properties['exceptionalschedule']);
+            exception = exception.replace('{"fr_FR": "', '');
+            exception = exception.replace(/\\n/g,'');
+            exception = exception.replace(/\\/g,'');
+            exception = exception.replace('"}','');
+            var description = String(entity.properties['description']);
+            description = description.replace('{"fr_FR": "', '');
+            description = description.replace(/\\n/g,'');
+            description = description.replace(/\\t/g,'');
+            description = description.replace('"}','');
+            description = description.replace('{}','');
 
-          // on lie les attributs des points au nouvelles entités billboard
-
-          //Renseignement des éléments de la boite d'information
-          billboard[i].name = String(entity.properties['name']);
-          billboard[i].description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-          if (Cesium.defined(entity.properties['imageurl'])) {
-            billboard[i].description += '<img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
-          }
-          billboard[i].description += '<p>' + String(entity.properties['description']) + '</p>';
-          billboard[i].description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
-          billboard[i].description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';
-          billboard[i].description += '<tr><td>Téléphone </td><td>' + String(entity.properties['phone']) + '</td></tr>';
-          billboard[i].description += '<tr><td>Accès </td><td>' + String(entity.properties['access']) + '</td></tr>';
-          billboard[i].description += '<tr><td>Lien vers le site de la piscine</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
-
-          var attributPiscine = xmlhttp.response;
-          for(let j = 0; j < attributPiscine.length; j++) {
-            if(entity.name == attributPiscine[j].fields.name) {
-              billboard[i].description += '<tr><td>Statut</td><td>' + String(attributPiscine[j].fields.realtimestatus) + '</td></tr>';
-              billboard[i].description += '<tr><td>Occupation </td><td>' + String(attributPiscine[j].fields.occupation) + '</td></tr>';
-              billboard[i].description += '<tr><td>Heure de mise à jour </td><td>' + String(attributPiscine[j].fields.updatedate) + '</td></tr>';
-              /*dataSource.entities.add({
-                position : coordHauteur,
-                label : {
-                  text : attributPiscine[j].fields.realtimestatus,
-                  font : '24px Helvetica',
-                  verticalOrigin: Cesium.VerticalOrigin.TOP
-                }
-              });*/
+            // on lie les attributs des points au nouvelles entités billboard
+            //Renseignement des éléments de la boite d'information
+            billboard[i].name = String(entity.properties['name']);
+            billboard[i].description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+            if (Cesium.defined(entity.properties['imageurl'])) {
+              billboard[i].description += '<img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
             }
 
-          }
+            billboard[i].description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
+            billboard[i].description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';
+            billboard[i].description += '<tr><td>Téléphone </td><td>' + String(entity.properties['phone']) + '</td></tr>';
+            billboard[i].description += '<tr><td>Adresse </td><td>' + String(entity.properties['address']) + '</td></tr>';
+            billboard[i].description += '<tr><td>Accès </td><td>' + acces + '</td></tr>';
+            billboard[i].description += '<tr><td>Lien vers le site de la piscine</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
 
-          billboard[i].description +='</tbody></table><br/>';
+            var attributPiscine = xmlhttp.response;
+            for(let j = 0; j < attributPiscine.length; j++) {
+              if(entity.name == attributPiscine[j].fields.name) {
+                billboard[i].description += '<tr><td>Statut</td><td>' + String(attributPiscine[j].fields.realtimestatus) + '</td></tr>';
+                billboard[i].description += '<tr><td>Occupation </td><td>' + String(attributPiscine[j].fields.occupation) + '</td></tr>';
+                billboard[i].description += '<tr><td>Heure de mise à jour </td><td>' + String(attributPiscine[j].fields.updatedate) + '</td></tr>';
 
-          if (Cesium.defined(entity.properties['serviceandactivities'])) {
-            billboard[i].description += '<p>' + String(entity.properties['serviceandactivities']) + '</p>';
-          }
-          if (Cesium.defined(entity.properties['characteristics'])) {
-            billboard[i].description += '<p>' + String(entity.properties['characteristics']) + '</p>';
-          }
-          if (Cesium.defined(entity.properties['additionalinformation'])) {
-            billboard[i].description += '<p>' + String(entity.properties['additionalinformation']) + '</p>';
+                if(Cesium.defined(attributPiscine[j].fields.occupation)) {
+                  var occupation = attributPiscine[j].fields.occupation;
+                } else {
+                  var occupation = '';
+                }
+
+                var statut = dataSource.entities.add({
+                  position : coordLabel,
+                  label : {
+                    text : attributPiscine[j].fields.realtimestatus + '   ' + occupation,
+                    font : '24px Helvetica',
+                    outlineColor: Cesium.Color.WHITE,
+                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                    horizontalOrigin: Cesium.HorizontalOrigin.LEFT
+                  }
+                });
+
+                if(attributPiscine[j].fields.realtimestatus === 'GREEN') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
+                } else if(attributPiscine[j].fields.realtimestatus === 'ORANGE') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
+                } else if(attributPiscine[j].fields.realtimestatus === 'RED') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
+                } else if(attributPiscine[j].fields.realtimestatus === 'BLACK') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
+                } else if(attributPiscine[j].fields.realtimestatus === 'CLOSED') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
+                }
+              }
+
+
+            }
+            if (Cesium.defined(entity.properties['serviceandactivities'])) {
+              billboard[i].description += '<tr><td>Services et activités </td><td>' + service + '</td></tr>';
+            }
+            if (Cesium.defined(entity.properties['characteristics'])) {
+              billboard[i].description += '<tr><td>Caractéristiques </td><td>' + caracteristique + '</td></tr>';
+            }
+            if (Cesium.defined(entity.properties['exceptionalschedule'])) {
+              billboard[i].description += '<tr><td>Mesures exceptionnelles </td><td>' + exception + '</td></tr>';
+            }
+
+            billboard[i].description += '<tr><td>Informations supplémentaires </td><td>' +'<a href="https://www.strasbourg.eu/tarifs-piscines" target="_blank">Consultez les tarifs des piscines de l\'Eurométropole de Strasbourg.</a></td></tr>';
+            billboard[i].description +='</tbody></table><br/>';
+            billboard[i].description += '<p>' + description + '</p>';
+            billboard[i].description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Information sur les données</a><br/><br/>';
+
+
+
+
           }
 
         }
@@ -2376,6 +2468,16 @@ class Globe {
 
   }
 
+  updatePoint(link, name, image, billboard, choice, line, couleur, options) {
+    if(this.dataSources[name] !== undefined){
+      this.viewer.dataSources.remove(this.dataSources[name]);
+      this.viewer.scene.requestRender();
+
+      globe.loadPiscine(link, name, image, billboard, choice, line, couleur, options);
+      this.viewer.scene.requestRender();
+    }
+
+  }
 
 
 
