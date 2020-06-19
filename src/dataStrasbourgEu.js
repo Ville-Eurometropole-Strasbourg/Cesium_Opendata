@@ -228,7 +228,10 @@ class Data {
 
     }
 
-
+    //-------------------------------------------------------------------------------------------------------------------------
+    //
+    //
+    //
     // Affichage du PLU - Règlement graphique et écrit(Plan de zonage) OPENDATA //
     var colorsPLUiZonageClassif = {
       'A1': '#FFDC00',
@@ -1995,7 +1998,7 @@ var colorsQualiteAirLegend = {
 };
 
 var today = Cesium.JulianDate.now();
-var start = Cesium.JulianDate.addDays(today, -7, new Cesium.JulianDate());
+var start = Cesium.JulianDate.addDays(today, -8, new Cesium.JulianDate());
 
 if (enableODQualiteAir) {
   document.getElementById("ODQualiteAir").checked = true;
@@ -2029,46 +2032,15 @@ document.querySelector('#ODQualiteAir').addEventListener('change', (e) => {
 
 });
 
-// --------------------------------------------------------------------------------------------------------------
-/*
-// Affichage de la couche qualité de l'air à Strasbourg OPENDATA //
-var lineAirStras = [];
-
-var today = Cesium.JulianDate.now();
-var start = Cesium.JulianDate.addDays(today, -7, new Cesium.JulianDate());
-
-if (enableODQualiteAirStras) {
-  document.getElementById("ODQualiteAirStras").checked = true;
-  globe.showTimeJson(true, 'ODQualiteAirStras', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=indices-de-qualite-de-lair-a-strasbourg&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAirStras, 'qualiteAir', start, today, {
-    classification: true,
-    classificationField: 'valeur',
-    colors: colorsQualiteAir,
-    alpha: 0.7
-  });
-
-  globe.viewer.scene.requestRender();
-
-  globe.legendManager.addLegend('Qualite_Air_Strasbourg', 'ODQualiteAirStrasLegend', colorsQualiteAirLegend, 'polygon');
-}
-
-document.querySelector('#ODQualiteAirStras').addEventListener('change', (e) => {
-  globe.showTimeJson(e.target.checked, 'ODQualiteAirStras', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=indices-de-qualite-de-lair-a-strasbourg&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAirStras, 'qualiteAir', start, today, {
-    classification: true,
-    classificationField: 'valeur',
-    colors: colorsQualiteAir,
-    alpha: 0.7
-  });
-
-  globe.viewer.scene.requestRender();
-
-  if(e.target.checked){
-    globe.legendManager.addLegend('Qualite_Air_Strasbourg', 'ODQualiteAirStrasLegend', colorsQualiteAirLegend, 'polygon');
-  } else{
-    globe.legendManager.removeLegend('ODQualiteAirStrasLegend');
-  }
+document.querySelector('#timeAir').addEventListener('click', function() {
+  globe.viewer.clock.startTime = start;
+  globe.viewer.clock.stopTime = today;
+  globe.viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; // loop when we hit the end time
+  globe.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+  globe.viewer.clock.multiplier = 50000; // how much time to advance each tick
+  globe.viewer.clock.shouldAnimate = true; // Animation on by default
 
 });
-*/
 
 // --------------------------------------------------------------------------------------------------------------
 
@@ -2083,20 +2055,20 @@ var colorsPiscineLegend = {
 if (enableODPiscine) {
   document.getElementById("ODPiscine").checked = true;
 
-  globe.showPoint(true, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_blue.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
+  globe.showPoint(true, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
 
   globe.viewer.scene.requestRender();
 
-  globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/marker_blue.png'>");
+  globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/pool.png'>");
 }
 
 document.querySelector('#ODPiscine').addEventListener('change', (e) => {
-  globe.showPoint(e.target.checked, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_blue.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
+  globe.showPoint(e.target.checked, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
 
   globe.viewer.scene.requestRender();
 
   if(e.target.checked){
-    globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/marker_blue.png'>");
+    globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/pool.png'>");
   } else{
     globe.legendManager.removeLegend('ODPiscineLegend');
   }
@@ -2104,7 +2076,7 @@ document.querySelector('#ODPiscine').addEventListener('change', (e) => {
 });
 
 document.querySelector('#refreshPiscine').addEventListener('click', function() {
-  globe.updatePoint('https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODPiscine', 'src/img/billboard/marker_blue.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {
+  globe.updatePoint('https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODPiscine', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {
 
   });
 });

@@ -1706,7 +1706,7 @@ class Globe {
   * @param  {Object} options facultatif - Les options pour le chargement
   * @return  {GeoJsonDataSource} le json une fois que tout est chargé
   */
-  loadPoint(link, linkPiscine, name, image, billboard, choice, line, couleur, options = {}){
+  loadPoint(link, name, image, billboard, choice, line, couleur, options = {}){
     let promisse = Cesium.GeoJsonDataSource.load(link, {
       markerSize: 0 //pour que l'épingle n'apparaisse pas
     });
@@ -1725,6 +1725,7 @@ class Globe {
       // l'entité billboard ne conserve pas les attributs
       for(let i = 0; i < entities.length; i++) {
         let entity = entities[i];
+
         // on récupère les coordonnées des points importés
         var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
         var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
@@ -1735,12 +1736,14 @@ class Globe {
         let longitude = cartographic.longitude;
         let latitude = cartographic.latitude;
         // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
-        let height = Number(225 + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
+
+        let randomHeight = Math.floor(Math.random() * 20) + 220;
+        let height = Number(randomHeight + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
 
         var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
 
         // on ajoute une entité billboard à chaque point, 225m plus haut
-        billboard.push(this.createBillboard(coordHauteur, image, true));
+        billboard.push(this.createBillboard(coordHauteur, image, false));
         // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
 
         //on trace une ligne partant du sol jusqu'à la base du billboard
@@ -1780,7 +1783,6 @@ class Globe {
         } else {
           globe.loadPoint(link, name, image, billboard, choice, line, couleur, options);
         }
-
 
       } else{
         this.dataSources[name].show = true;
@@ -1924,7 +1926,7 @@ class Globe {
   */
   showTimeJson(show, name, link, line, choice, start, end, options = {}){
     var today = Cesium.JulianDate.now();
-    var hier = Cesium.JulianDate.addDays(today, -1, new Cesium.JulianDate());
+    var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
 
     if(show){
       if(this.dataSources[name] === undefined){
@@ -1943,7 +1945,8 @@ class Globe {
     } else{
       if(this.dataSources[name] !== undefined){
         // on rezoome la timeline sur aujourd'hui
-        globe.viewer.timeline.zoomTo(hier, today);
+        globe.viewer.clock.shouldAnimate = false;
+        globe.viewer.timeline.zoomTo(today, demain);
 
         this.dataSources[name].show = false;
         for(var i = 0; i < line.length; i++){
@@ -2342,7 +2345,6 @@ class Globe {
             // on ajoute une entité billboard à chaque point, 225m plus haut
             // l'entité billboard ne conserve pas les attributs
             billboard.push(globe.createBillboard(coordHauteur, image, false));
-            //billboard.shift();
             // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
 
             //on trace une ligne partant du sol jusqu'à la base du billboard
@@ -2351,9 +2353,8 @@ class Globe {
             globe.viewer.scene.requestRender();
 
             // coordonnées légèrement décalées pour la lisibilité du texte
-            let heightLabel = Number(250 + cartographic.height);
+            let heightLabel = Number(210 + cartographic.height);
             var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
-
 
             // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasite)
             var acces = String(entity.properties['access']);
@@ -2410,21 +2411,24 @@ class Globe {
                 if(Cesium.defined(attributPiscine[j].fields.occupation)) {
                   var occupation = attributPiscine[j].fields.occupation;
                 } else {
-                  var occupation = '';
+                  var occupation = 'CLOSED';
                 }
 
                 var statut = dataSource.entities.add({
                   position : coordLabel,
                   label : {
-                    text : attributPiscine[j].fields.realtimestatus + '   ' + occupation,
+                    text : occupation,
                     font : '24px Helvetica',
                     outlineColor: Cesium.Color.WHITE,
                     verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    horizontalOrigin: Cesium.HorizontalOrigin.LEFT
+                    horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+                    outlineWidth : 2,
+                    style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+                    scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0)
                   }
                 });
 
-                if(attributPiscine[j].fields.realtimestatus === 'GREEN') {
+                /*if(attributPiscine[j].fields.realtimestatus === 'GREEN') {
                   statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
                 } else if(attributPiscine[j].fields.realtimestatus === 'ORANGE') {
                   statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
@@ -2434,11 +2438,11 @@ class Globe {
                   statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
                 } else if(attributPiscine[j].fields.realtimestatus === 'CLOSED') {
                   statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
-                }
+                }*/
+
               }
-
-
             }
+
             if (Cesium.defined(entity.properties['serviceandactivities'])) {
               billboard[i].description += '<tr><td>Services et activités </td><td>' + service + '</td></tr>';
             }
@@ -2454,9 +2458,6 @@ class Globe {
             billboard[i].description += '<p>' + description + '</p>';
             billboard[i].description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Information sur les données</a><br/><br/>';
 
-
-
-
           }
 
         }
@@ -2464,7 +2465,6 @@ class Globe {
 
     });
     return promisse;
-    console.log('termine');
 
   }
 
