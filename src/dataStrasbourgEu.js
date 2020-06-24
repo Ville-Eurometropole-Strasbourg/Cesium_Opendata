@@ -4,6 +4,7 @@
 //
 // ----------------------------------------------------------------------------------------------
 class Data {
+
   constructor(globe){
     this.globe = globe;
     this.terrain = terrain; // format entités
@@ -14,6 +15,7 @@ class Data {
   }
 
   couchesOD(){
+
     var enableODTerrasses2019 = false;
     var enableODTerrasses2020 = false;
     var enableODStationPayant = false;
@@ -70,6 +72,7 @@ class Data {
     var params = globe.getAllUrlParams(window.location.href);
     var lectureURL = params[Object.keys(params)[0]];
 
+    // on retranscrit le paramètre open en variable
     switch(lectureURL){
       case 'enableodpluizonage':
       enableODPLUiZonage = true;
@@ -228,285 +231,13 @@ class Data {
 
     }
 
+
     //-------------------------------------------------------------------------------------------------------------------------
     //
+    // ONGLET INFORMATIONS CADASTRALES
     //
-    //
-    // Affichage du PLU - Règlement graphique et écrit(Plan de zonage) OPENDATA //
-    var colorsPLUiZonageClassif = {
-      'A1': '#FFDC00',
-      'A2': '#FFDC00',
-      'A3': '#FFDC00',
-      'A4': '#FFDC00',
-      'A5': '#FFDC00',
-      'A6': '#FFDC00',
-      'A7': '#FFDC00',
-      'A8': '#FFDC00',
-      'IAUA1': '#FF6500',
-      'IAUA2': '#FF6500',
-      'IAUB': '#FF6500',
-      'IAUB1': '#FF6500',
-      'IAUE1' : '#F105FF',
-      'IAUE2' : '#F105FF',
-      'IAUXb1' : '#1F97E1',
-      'IAUXb2' : '#1F97E1',
-      'IAUXd' : '#1F97E1',
-      'IAUXe' : '#1F97E1',
-      'IAUZ' : '#1F97E1',
-      'IIAU' : '#F1B39B',
-      'IIAUE' : '#7400FB',
-      'IIAUX' : '#21FFEE',
-      'N1' : '#00B610',
-      'N2' : '#00B610',
-      'N3' : '#00B610',
-      'N3z1' : '#00B610',
-      'N4' : '#00B610',
-      'N5' : '#00B610',
-      'N6' : '#00B610',
-      'N7' : '#00B610',
-      'N8' : '#00B610',
-      'PSMV' : '#F3001D',
-      'UAA1' : '#F3001D',
-      'UAA2' : '#F3001D',
-      'UAA3' : '#F3001D',
-      'UAB1' : '#F3001D',
-      'UAB2' : '#F3001D',
-      'UB1' : '#F3001D',
-      'UB2' : '#F3001D',
-      'UB2a' : '#F3001D',
-      'UB3' : '#F3001D',
-      'UB4' : '#F3001D',
-      'UB5' : '#F3001D',
-      'UCA1' : '#F3001D',
-      'UCA2' : '#F3001D',
-      'UCA3' : '#F3001D',
-      'UCA4' : '#F3001D',
-      'UCA5' : '#F3001D',
-      'UCA6' : '#F3001D',
-      'UCB1' : '#F3001D',
-      'UCB2' : '#F3001D',
-      'UD1' : '#F3001D',
-      'UD2' : '#F3001D',
-      'UD2a' : '#F3001D',
-      'UDz1' : '#F3001D',
-      'UDz2' : '#F3001D',
-      'UDz3' : '#F3001D',
-      'UDz4' : '#F3001D',
-      'UDz5' : '#F3001D',
-      'UE1': '#98104E',
-      'UE2': '#98104E',
-      'UE3': '#98104E',
-      'UF': '#001B92',
-      'UG': '#001B92',
-      'UXa1': '#001B92',
-      'UXa2': '#001B92',
-      'UXb1': '#001B92',
-      'UXb2': '#001B92',
-      'UXb3': '#001B92',
-      'UXb4': '#001B92',
-      'UXb5': '#001B92',
-      'UXc': '#001B92',
-      'UXcz1': '#001B92',
-      'UXcz2': '#001B92',
-      'UXcz3': '#001B92',
-      'UXd1': '#001B92',
-      'UXd2': '#001B92',
-      'UXd3a': '#001B92',
-      'UXd3b': '#001B92',
-      'UXd4': '#001B92',
-      'UXe1': '#001B92',
-      'UXe2': '#001B92',
-      'UXf': '#001B92',
-      'UXg': '#001B92',
-      'UYa': '#001B92',
-      'UYb': '#001B92',
-      'UZ1': '#001B92',
-      'UZ2': '#001B92'
+    //-------------------------------------------------------------------------------------------------------------------------
 
-    };
-    var colorsPLUiZonageLegend = {
-      'A': '#FFDC00',
-      'IAUA,IAUB': '#FF6500',
-      'IAUE' : '#F105FF',
-      'IAUX,IAUZ' : '#1F97E1',
-      'IIAU' : '#F1B39B',
-      'IIAUE' : '#7400FB',
-      'IIAUX' : '#21FFEE',
-      'N' : '#00B610',
-      'UAA,UAB,UB,UCA,UCB,UD,PSMV' : '#F3001D',
-      'UE' : '#98104E',
-      'UF,UG,UX,UY,UZ' : '#001B92'
-    };
-    var linePLU = [];
-    if (enableODPLUiZonage) {
-      document.getElementById("ODPLUiZonage").checked = true;
-      globe.showPolygon(true, 'ODPLUiZonage', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_zone_urba&format=geojson', 'PLUi Plan de Zonage', linePLU, '#FFFFFF', 1.0,'#708090', 0.5, {
-        classification: true,
-        classificationField: 'type',
-        colors: colorsPLUiZonageClassif,
-        alpha: 0.3
-      });
-
-      globe.viewer.scene.requestRender();
-
-      globe.legendManager.addLegend('PLUi_Plan_de_zonage', 'ODPLUiZonageLegend', colorsPLUiZonageLegend, 'polygon');
-    }
-
-    document.querySelector('#ODPLUiZonage').addEventListener('change', (e) => {
-      globe.showPolygon(e.target.checked, 'ODPLUiZonage', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_zone_urba&format=geojson', 'PLUi Plan de Zonage', linePLU, '#FFFFFF', 1.0, '#708090', 0.5, {
-        classification: true,
-        classificationField: 'type',
-        colors: colorsPLUiZonageClassif,
-        alpha: 0.3
-      });
-      globe.viewer.scene.requestRender();
-
-      if(e.target.checked){
-        globe.legendManager.addLegend('PLUi_Plan_de_zonage', 'ODPLUiZonageLegend', colorsPLUiZonageLegend, 'polygon');
-      } else{
-        globe.legendManager.removeLegend('ODPLUiZonageLegend');
-      }
-      globe.viewer.scene.requestRender();
-
-    });
-    // ---------------------------------------------------------------------------------------------------------------------------------------------
-    //
-    // ----------------------------------------------------------------------------------------------
-    // Affichage de la couche des terrasses 2019 OPENDATA //
-    var colorsTerrassesClassif = {
-      'STRASBOURG': '#D7146E'
-    };
-    var colorsTerrassesLegend = {
-      'Terrasses_autorisées_2019': '#D7146E'
-    };
-    var lineTerrasse = [];
-    if (enableODTerrasses2019) {
-      document.getElementById("ODTerrasses").checked = true;
-      globe.showPolygon(true, 'ODTerrasses', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses 2019', lineTerrasse , '#FFFFFF', 0, undefined, undefined, {
-        classification: true,
-        classificationField: 'ville',
-        colors: colorsTerrassesClassif,
-        alpha: 0.7
-      });
-
-      globe.viewer.scene.requestRender();
-
-      globe.legendManager.addLegend('Terrasses_autorisées_en_2019', 'ODTerrassesLegend', colorsTerrassesLegend, 'polygon');
-    } //fin de si on affiche les terrasses à l'ouverture de cesium
-
-    document.querySelector('#ODTerrasses').addEventListener('change', (e) => {
-      globe.showPolygon(e.target.checked, 'ODTerrasses', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses 2019', lineTerrasse , '#FFFFFF', 0, undefined, undefined, {
-        classification: true,
-        classificationField: 'ville',
-        colors: colorsTerrassesClassif,
-        alpha: 0.7
-      });
-      globe.viewer.scene.requestRender();
-
-      if(e.target.checked){
-        globe.legendManager.addLegend('Terrasses_autorisées_en_2019', 'ODTerrassesLegend', colorsTerrassesLegend, 'polygon');
-      } else{
-        globe.legendManager.removeLegend('ODTerrassesLegend');
-      }
-
-      globe.viewer.scene.requestRender();
-
-    });
-    // ---------------------------------------------------------------------------------------------------------------------------------------------
-    //
-    // ----------------------------------------------------------------------------------------------
-    // Affichage de la couche des terrasses 2019 OPENDATA //
-    var colorsTerrasses2020Classif = {
-      'STRASBOURG': '#076b2c'
-    };
-    var colorsTerrasses2020Legend = {
-      'Terrasses_autorisées_2020': '#076b2c'
-    };
-    var lineTerrasse2020 = [];
-    if (enableODTerrasses2020) {
-      document.getElementById("ODTerrasses2020").checked = true;
-      globe.showPolygon(true, 'ODTerrasses2020', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2020&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses 2020', lineTerrasse2020 , '#FFFFFF', 0, undefined, undefined, {
-        classification: true,
-        classificationField: 'ville',
-        colors: colorsTerrasses2020Classif,
-        alpha: 0.7
-      });
-
-      globe.viewer.scene.requestRender();
-
-      globe.legendManager.addLegend('Terrasses_autorisées_en_2020', 'ODTerrasses2020Legend', colorsTerrasses2020Legend, 'polygon');
-    } //fin de si on affiche les terrasses à l'ouverture de cesium
-
-    document.querySelector('#ODTerrasses2020').addEventListener('change', (e) => {
-      globe.showPolygon(e.target.checked, 'ODTerrasses2020', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2020&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses 2020', lineTerrasse2020 , '#FFFFFF', 0, undefined, undefined, {
-        classification: true,
-        classificationField: 'ville',
-        colors: colorsTerrasses2020Classif,
-        alpha: 0.7
-      });
-      globe.viewer.scene.requestRender();
-
-      if(e.target.checked){
-        globe.legendManager.addLegend('Terrasses_autorisées_en_2020', 'ODTerrassesLegend2020', colorsTerrasses2020Legend, 'polygon');
-      } else{
-        globe.legendManager.removeLegend('ODTerrassesLegend2020');
-      }
-
-      globe.viewer.scene.requestRender();
-
-    });
-    // ---------------------------------------------------------------------------------------------------------------------------------------------
-    //
-
-    // ----------------------------------------------------------------------------------------------
-    // Affichage de la couche du stationnement payant OPENDATA //
-    var colorsStationPayantClassif = {
-      '0.5€/h ou 1€/3h': '#C7F79A',
-      '1,7€/h': '#EBF975',
-      '2,1€/h': '#F378B5'
-    };
-    var colorsStationPayantLegend = {
-      '0.5€/h_ou_1€/3h': '#C7F79A',
-      '1,7€/h': '#EBF975',
-      '2,1€/h': '#F378B5'
-    };
-    var lineStation = [];
-    if (enableODStationPayant) {
-      document.getElementById("ODStationPayant").checked = true;
-      globe.showPolygon(true, 'ODStationPayant', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Stationnement payant', lineStation , '#FFFFFF', 0, undefined, undefined, {
-        classification: true,
-        classificationField: 'libelle',
-        colors: colorsStationPayantClassif,
-        alpha: 0.5
-      });
-
-      globe.viewer.scene.requestRender();
-
-      globe.legendManager.addLegend('Stationnement_payant', 'ODStationPayantLegend', colorsStationPayantLegend, 'polygon');
-    } //fin de si on affiche stationnement payant à l'ouverture de cesium
-
-    document.querySelector('#ODStationPayant').addEventListener('change', (e) => {
-      globe.showPolygon(e.target.checked, 'ODStationPayant', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Stationnement payant', lineStation , '#FFFFFF', 0, undefined, undefined, {
-        classification: true,
-        classificationField: 'libelle',
-        colors: colorsStationPayantClassif,
-        alpha: 0.5
-      });
-      globe.viewer.scene.requestRender();
-
-      if(e.target.checked){
-        globe.legendManager.addLegend('Stationnement_payant', 'ODStationPayantLegend', colorsStationPayantLegend, 'polygon');
-      } else{
-        globe.legendManager.removeLegend('ODStationPayantLegend');
-      }
-
-      globe.viewer.scene.requestRender();
-
-    });
-    // ---------------------------------------------------------------------------------------------------------------------------------------------
-
-    //
-    // ----------------------------------------------------------------------------------------------
     // Affichage de la couche des limites de communes OPENDATA //
     var colorsLimitesCommunesClassif = {
       '67': '#AAAAAA'
@@ -522,7 +253,7 @@ class Data {
       });
 
       globe.viewer.scene.requestRender();
-    } //fin de si on affiche stationnement payant à l'ouverture de cesium
+    }
 
     document.querySelector('#ODLimitesCommunes').addEventListener('change', (e) => {
       globe.showPolygon(e.target.checked, 'ODLimitesCommunes', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=limites_de_communes&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&timezone=Europe/Berlin', 'Limites de communes', lineCommunes, '#FFFFFF', 3.0, '#D3D3D3', 0.2, {
@@ -534,10 +265,7 @@ class Data {
       globe.viewer.scene.requestRender();
 
     });
-    // ---------------------------------------------------------------------------------------------------------------------------------------------
-    //
 
-    //
     // ----------------------------------------------------------------------------------------------
     // Affichage de la couche des limites de sections OPENDATA //
     var colorsLimitesSectionsClassif = {
@@ -1858,282 +1586,501 @@ class Data {
       globe.viewer.scene.requestRender();
 
     });
-    // ---------------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------
     //
+    // ONGLET TRANSPORT ET DEPLACEMENTS
+    //
+    //-------------------------------------------------------------------------------------------------------------------------
+
+
+    // Affichage de la couche du stationnement payant OPENDATA //
+    var colorsStationPayantClassif = {
+      '0.5€/h ou 1€/3h': '#C7F79A',
+      '1,7€/h': '#EBF975',
+      '2,1€/h': '#F378B5'
+    };
+    var colorsStationPayantLegend = {
+      '0.5€/h_ou_1€/3h': '#C7F79A',
+      '1,7€/h': '#EBF975',
+      '2,1€/h': '#F378B5'
+    };
+    var lineStation = [];
+    if (enableODStationPayant) {
+      document.getElementById("ODStationPayant").checked = true;
+      globe.showPolygon(true, 'ODStationPayant', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Stationnement payant', lineStation , '#FFFFFF', 0, '#708090', 0.5, {
+        classification: true,
+        classificationField: 'libelle',
+        colors: colorsStationPayantClassif,
+        alpha: 0.5
+      });
+
+      globe.viewer.scene.requestRender();
+
+      globe.legendManager.addLegend('Stationnement_payant', 'ODStationPayantLegend', colorsStationPayantLegend, 'polygon');
+    } //fin de si on affiche stationnement payant à l'ouverture de cesium
+
+    document.querySelector('#ODStationPayant').addEventListener('change', (e) => {
+      globe.showPolygon(e.target.checked, 'ODStationPayant', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Stationnement payant', lineStation , '#FFFFFF', 0, '#708090', 0.5, {
+        classification: true,
+        classificationField: 'libelle',
+        colors: colorsStationPayantClassif,
+        alpha: 0.5
+      });
+      globe.viewer.scene.requestRender();
+
+      if(e.target.checked){
+        globe.legendManager.addLegend('Stationnement_payant', 'ODStationPayantLegend', colorsStationPayantLegend, 'polygon');
+      } else{
+        globe.legendManager.removeLegend('ODStationPayantLegend');
+      }
+
+      globe.viewer.scene.requestRender();
+
+    });
+
+    // ----------------------------------------------------------------------------------------------------------------
+    // Affichage de la couche traffic routier OPENDATA //
+    var colorsTraffic = {
+      '1': '#15780c',
+      '2': '#de8b1f',
+      '3': '#fc0000'
+    };
+    var colorsTrafficLegend = {
+      'Fluide': '#15780c',
+      'Dense': '#de8b1f',
+      'Saturé': '#e80707'
+    };
+    var choice = 'Traffic routier SIRAC';
+
+    if (enableODTraffic) {
+      document.getElementById("ODTraffic").checked = true;
+
+      globe.showPolyline(true, 'ODTraffic', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', choice, {
+        classification: true,
+        classificationField: 'etat',
+        colors: colorsTraffic,
+        alpha: 0.7
+      });
+
+      globe.viewer.scene.requestRender();
+
+      globe.legendManager.addLegend('Traffic_routier_Eurométropole', 'ODTrafficLegend', colorsTrafficLegend, 'line');
+    }
+
+    document.querySelector('#ODTraffic').addEventListener('change', (e) => {
+
+      globe.showPolyline(e.target.checked, 'ODTraffic', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', choice, {
+        classification: true,
+        classificationField: 'etat',
+        colors: colorsTraffic,
+        alpha: 0.7
+      });
+      globe.viewer.scene.requestRender();
+
+      if(e.target.checked){
+        globe.legendManager.addLegend('Traffic_routier_Eurométropole', 'ODTrafficLegend', colorsTrafficLegend, 'line');
+      } else{
+        globe.legendManager.removeLegend('ODTrafficLegend');
+      }
+
+    });
+
+    // le bouton pour rafraichir la donnée
+    document.querySelector('#refreshTraffic').addEventListener('click', function() {
+      // on redéfinit les couleurs pour ne pas perdre la classification
+      var colorsTraffic = {
+        '1': '#15780c',
+        '2': '#de8b1f',
+        '3': '#fc0000'
+      };
+      globe.updatePolyline('https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODTraffic', choice, {
+        classification: true,
+        classificationField: 'etat',
+        colors: colorsTraffic,
+        alpha: 0.7
+      });
+    });
+
+    //-------------------------------------------------------------------------------------------------------------------------
+    //
+    // ONGLET DATA.STRASBOURG.EU
+    //
+    //-------------------------------------------------------------------------------------------------------------------------
+    // Affichage du PLU - Règlement graphique et écrit(Plan de zonage) OPENDATA //
+    var colorsPLUiZonageClassif = {
+      'A1': '#FFDC00',
+      'A2': '#FFDC00',
+      'A3': '#FFDC00',
+      'A4': '#FFDC00',
+      'A5': '#FFDC00',
+      'A6': '#FFDC00',
+      'A7': '#FFDC00',
+      'A8': '#FFDC00',
+      'IAUA1': '#FF6500',
+      'IAUA2': '#FF6500',
+      'IAUB': '#FF6500',
+      'IAUB1': '#FF6500',
+      'IAUE1' : '#F105FF',
+      'IAUE2' : '#F105FF',
+      'IAUXb1' : '#1F97E1',
+      'IAUXb2' : '#1F97E1',
+      'IAUXd' : '#1F97E1',
+      'IAUXe' : '#1F97E1',
+      'IAUZ' : '#1F97E1',
+      'IIAU' : '#F1B39B',
+      'IIAUE' : '#7400FB',
+      'IIAUX' : '#21FFEE',
+      'N1' : '#00B610',
+      'N2' : '#00B610',
+      'N3' : '#00B610',
+      'N3z1' : '#00B610',
+      'N4' : '#00B610',
+      'N5' : '#00B610',
+      'N6' : '#00B610',
+      'N7' : '#00B610',
+      'N8' : '#00B610',
+      'PSMV' : '#F3001D',
+      'UAA1' : '#F3001D',
+      'UAA2' : '#F3001D',
+      'UAA3' : '#F3001D',
+      'UAB1' : '#F3001D',
+      'UAB2' : '#F3001D',
+      'UB1' : '#F3001D',
+      'UB2' : '#F3001D',
+      'UB2a' : '#F3001D',
+      'UB3' : '#F3001D',
+      'UB4' : '#F3001D',
+      'UB5' : '#F3001D',
+      'UCA1' : '#F3001D',
+      'UCA2' : '#F3001D',
+      'UCA3' : '#F3001D',
+      'UCA4' : '#F3001D',
+      'UCA5' : '#F3001D',
+      'UCA6' : '#F3001D',
+      'UCB1' : '#F3001D',
+      'UCB2' : '#F3001D',
+      'UD1' : '#F3001D',
+      'UD2' : '#F3001D',
+      'UD2a' : '#F3001D',
+      'UDz1' : '#F3001D',
+      'UDz2' : '#F3001D',
+      'UDz3' : '#F3001D',
+      'UDz4' : '#F3001D',
+      'UDz5' : '#F3001D',
+      'UE1': '#98104E',
+      'UE2': '#98104E',
+      'UE3': '#98104E',
+      'UF': '#001B92',
+      'UG': '#001B92',
+      'UXa1': '#001B92',
+      'UXa2': '#001B92',
+      'UXb1': '#001B92',
+      'UXb2': '#001B92',
+      'UXb3': '#001B92',
+      'UXb4': '#001B92',
+      'UXb5': '#001B92',
+      'UXc': '#001B92',
+      'UXcz1': '#001B92',
+      'UXcz2': '#001B92',
+      'UXcz3': '#001B92',
+      'UXd1': '#001B92',
+      'UXd2': '#001B92',
+      'UXd3a': '#001B92',
+      'UXd3b': '#001B92',
+      'UXd4': '#001B92',
+      'UXe1': '#001B92',
+      'UXe2': '#001B92',
+      'UXf': '#001B92',
+      'UXg': '#001B92',
+      'UYa': '#001B92',
+      'UYb': '#001B92',
+      'UZ1': '#001B92',
+      'UZ2': '#001B92'
+
+    };
+    var colorsPLUiZonageLegend = {
+      'A': '#FFDC00',
+      'IAUA,IAUB': '#FF6500',
+      'IAUE' : '#F105FF',
+      'IAUX,IAUZ' : '#1F97E1',
+      'IIAU' : '#F1B39B',
+      'IIAUE' : '#7400FB',
+      'IIAUX' : '#21FFEE',
+      'N' : '#00B610',
+      'UAA,UAB,UB,UCA,UCB,UD,PSMV' : '#F3001D',
+      'UE' : '#98104E',
+      'UF,UG,UX,UY,UZ' : '#001B92'
+    };
+    var linePLU = [];
+    if (enableODPLUiZonage) {
+      document.getElementById("ODPLUiZonage").checked = true;
+      globe.showPolygon(true, 'ODPLUiZonage', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_zone_urba&format=geojson', 'PLUi Plan de Zonage', linePLU, '#FFFFFF', 1.0,'#708090', 0.5, {
+        classification: true,
+        classificationField: 'type',
+        colors: colorsPLUiZonageClassif,
+        alpha: 0.3
+      });
+
+      globe.viewer.scene.requestRender();
+
+      globe.legendManager.addLegend('PLUi_Plan_de_zonage', 'ODPLUiZonageLegend', colorsPLUiZonageLegend, 'polygon');
+    }
+
+    document.querySelector('#ODPLUiZonage').addEventListener('change', (e) => {
+      globe.showPolygon(e.target.checked, 'ODPLUiZonage', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_zone_urba&format=geojson', 'PLUi Plan de Zonage', linePLU, '#FFFFFF', 1.0, '#708090', 0.5, {
+        classification: true,
+        classificationField: 'type',
+        colors: colorsPLUiZonageClassif,
+        alpha: 0.3
+      });
+      globe.viewer.scene.requestRender();
+
+      if(e.target.checked){
+        globe.legendManager.addLegend('PLUi_Plan_de_zonage', 'ODPLUiZonageLegend', colorsPLUiZonageLegend, 'polygon');
+      } else{
+        globe.legendManager.removeLegend('ODPLUiZonageLegend');
+      }
+      globe.viewer.scene.requestRender();
+
+    });
+
+    // --------------------------------------------------------------------------------------------------------------
+    // Affichage de la couche des terrasses 2019 OPENDATA //
+    var colorsTerrassesClassif = {
+      'STRASBOURG': '#D7146E'
+    };
+    var colorsTerrassesLegend = {
+      'Terrasses_autorisées_2019': '#D7146E'
+    };
+    var lineTerrasse = [];
+    if (enableODTerrasses2019) {
+      document.getElementById("ODTerrasses").checked = true;
+      globe.showPolygon(true, 'ODTerrasses', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses 2019', lineTerrasse , '#FFFFFF', 0, '#708090', 0.5, {
+        classification: true,
+        classificationField: 'ville',
+        colors: colorsTerrassesClassif,
+        alpha: 0.7
+      });
+
+      globe.viewer.scene.requestRender();
+
+      globe.legendManager.addLegend('Terrasses_autorisées_en_2019', 'ODTerrassesLegend', colorsTerrassesLegend, 'polygon');
+    } //fin de si on affiche les terrasses à l'ouverture de cesium
+
+    document.querySelector('#ODTerrasses').addEventListener('change', (e) => {
+      globe.showPolygon(e.target.checked, 'ODTerrasses', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses 2019', lineTerrasse , '#FFFFFF', 0, '#708090', 0.5, {
+        classification: true,
+        classificationField: 'ville',
+        colors: colorsTerrassesClassif,
+        alpha: 0.7
+      });
+      globe.viewer.scene.requestRender();
+
+      if(e.target.checked){
+        globe.legendManager.addLegend('Terrasses_autorisées_en_2019', 'ODTerrassesLegend', colorsTerrassesLegend, 'polygon');
+      } else{
+        globe.legendManager.removeLegend('ODTerrassesLegend');
+      }
+
+      globe.viewer.scene.requestRender();
+
+    });
 
     // ----------------------------------------------------------------------------------------------
-    // Affichage de la couche boucles sportives vitaboucle OPENDATA //
-    /*var colorsVitaboucle = {
-    '1': '#22a314',
-    '2': '#f2700c',
-    '3': '#e80707'
-  };
-  if (enableODVitaboucle) {
-  globe.showPolyline(true, 'ODVitaboucle', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=boucles_sportives_vitaboucle&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', {
-  classification: true,
-  classificationField: 'difficulte',
-  colors: colorsVitaboucle,
-  alpha: 0.7
-});
+    // Affichage de la couche des terrasses 2020 OPENDATA //
+    var colorsTerrasses2020Classif = {
+      'STRASBOURG': '#076b2c'
+    };
+    var colorsTerrasses2020Legend = {
+      'Terrasses_autorisées_2020': '#076b2c'
+    };
+    var lineTerrasse2020 = [];
+    if (enableODTerrasses2020) {
+      document.getElementById("ODTerrasses2020").checked = true;
+      globe.showPolygon(true, 'ODTerrasses2020', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2020&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses 2020', lineTerrasse2020 , '#FFFFFF', 0, '#708090', 0.5, {
+        classification: true,
+        classificationField: 'ville',
+        colors: colorsTerrasses2020Classif,
+        alpha: 0.7
+      });
 
-globe.viewer.scene.requestRender();
-var colorsVitaboucleLegend = {
-'Facile': '#22a314',
-'Moyen': '#f2700c',
-'Difficile': '#e80707'
-};
-globe.legendManager.addLegend('Parcours_Sportifs_Vitaboucle', 'ODVitaboucleLegend', colorsVitaboucleLegend, 'line');
-}
-else {
-// on dechecked la checkbox si la couche n'est pas affichée à l'ouverture de Cesium
-document.getElementById("ODVitaboucle").checked = false;
-}
+      globe.viewer.scene.requestRender();
 
+      globe.legendManager.addLegend('Terrasses_autorisées_en_2020', 'ODTerrasses2020Legend', colorsTerrasses2020Legend, 'polygon');
+    } //fin de si on affiche les terrasses à l'ouverture de cesium
 
-document.querySelector('#ODVitaboucle').addEventListener('change', (e) => {
-globe.showPolyline(e.target.checked, 'ODVitaboucle', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=boucles_sportives_vitaboucle&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', {
-classification: true,
-classificationField: 'difficulte',
-colors: colorsVitaboucle,
-alpha: 0.7
-});
-globe.viewer.scene.requestRender();
+    document.querySelector('#ODTerrasses2020').addEventListener('change', (e) => {
+      globe.showPolygon(e.target.checked, 'ODTerrasses2020', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2020&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'Terrasses 2020', lineTerrasse2020 , '#FFFFFF', 0, '#708090', 0.5, {
+        classification: true,
+        classificationField: 'ville',
+        colors: colorsTerrasses2020Classif,
+        alpha: 0.7
+      });
+      globe.viewer.scene.requestRender();
 
-if(e.target.checked){
-var colorsVitaboucleLegend = {
-'Facile': '#22a314',
-'Moyen': '#f2700c',
-'Difficile': '#e80707'
-};
-globe.legendManager.addLegend('Parcours_Sportifs_Vitaboucle', 'ODVitaboucleLegend', colorsVitaboucleLegend, 'line');
+      if(e.target.checked){
+        globe.legendManager.addLegend('Terrasses_autorisées_en_2020', 'ODTerrassesLegend2020', colorsTerrasses2020Legend, 'polygon');
+      } else{
+        globe.legendManager.removeLegend('ODTerrassesLegend2020');
+      }
 
-} else{
-globe.legendManager.removeLegend('ODVitaboucleLegend');
+      globe.viewer.scene.requestRender();
 
-}
-
-});*/
-// --------------------------------------------------------------------------------------------------------------
-
-// Affichage de la couche traffic routier OPENDATA //
-var colorsTraffic = {
-  '1': '#15780c',
-  '2': '#de8b1f',
-  '3': '#fc0000'
-};
-var colorsTrafficLegend = {
-  'Fluide': '#15780c',
-  'Dense': '#de8b1f',
-  'Saturé': '#e80707'
-};
-var choice = 'Traffic routier SIRAC';
-
-if (enableODTraffic) {
-  document.getElementById("ODTraffic").checked = true;
-
-  globe.showPolyline(true, 'ODTraffic', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', choice, {
-    classification: true,
-    classificationField: 'etat',
-    colors: colorsTraffic,
-    alpha: 0.7
-  });
-
-  globe.viewer.scene.requestRender();
-
-  globe.legendManager.addLegend('Traffic_routier_Eurométropole', 'ODTrafficLegend', colorsTrafficLegend, 'line');
-}
-
-document.querySelector('#ODTraffic').addEventListener('change', (e) => {
-
-  globe.showPolyline(e.target.checked, 'ODTraffic', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', choice, {
-    classification: true,
-    classificationField: 'etat',
-    colors: colorsTraffic,
-    alpha: 0.7
-  });
-  globe.viewer.scene.requestRender();
-
-  if(e.target.checked){
-    globe.legendManager.addLegend('Traffic_routier_Eurométropole', 'ODTrafficLegend', colorsTrafficLegend, 'line');
-  } else{
-    globe.legendManager.removeLegend('ODTrafficLegend');
-  }
-
-});
-
-document.querySelector('#refreshTraffic').addEventListener('click', function() {
-  var colorsTraffic = {
-    '1': '#15780c',
-    '2': '#de8b1f',
-    '3': '#fc0000'
-  };
-  globe.updatePolyline('https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODTraffic', choice, {
-    classification: true,
-    classificationField: 'etat',
-    colors: colorsTraffic,
-    alpha: 0.7
-  });
-});
-
-// --------------------------------------------------------------------------------------------------------------
-
-// Affichage de la couche patrimoine de mon quartier OPENDATA //
-var billboardPatrimoine = [];
-var linePatrimoine = [];
-
-var colorsPatrimoineLegend = {
-  'Patrimoine    ': '#fcba03'
-};
-
-if (enableODPatrimoine) {
-  document.getElementById("ODPatrimoine").checked = true;
-
-  globe.showPoint(true, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
-
-  globe.viewer.scene.requestRender();
-
-  globe.legendManager.addLegend('Patrimoine_quartier', 'ODPatrimoineLegend', colorsPatrimoineLegend, 'point', "<img src='src/img/billboard/marker_red.png'>");
-}
-
-document.querySelector('#ODPatrimoine').addEventListener('change', (e) => {
-  globe.showPoint(e.target.checked, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
-
-  globe.viewer.scene.requestRender();
-
-  if(e.target.checked){
-    globe.legendManager.addLegend('Patrimoine_quartier', 'ODPatrimoineLegend', colorsPatrimoineLegend, 'point', "<img src='src/img/billboard/marker_red.png'>");
-  } else{
-    globe.legendManager.removeLegend('ODPatrimoineLegend');
-  }
-
-});
-
-// --------------------------------------------------------------------------------------------------------------
-
-// Affichage de la couche qualité de l'air de l'eurométropole OPENDATA //
-var lineAir = [];
-var colorsQualiteAir = {
-  '1': '#3b8019',
-  '2': '#47991f',
-  '3': '#589917',
-  '4': '#9EE01A',
-  '5': '#e8e823',
-  '6': '#e3a112',
-  '7': '#f07a13',
-  '8': '#f04a13',
-  '9': '#c91a0a',
-  '10': '#850b0b'
-
-};
-var colorsQualiteAirLegend = {
-  '1_Très_Bon': '#3b8019',
-  '2_Très_Bon': '#47991f',
-  '3_Bon': '#589917',
-  '4_Bon': '#9EE01A',
-  '5_Moyen': '#e8e823',
-  '6_Médiocre': '#e3a112',
-  '7_Médiocre': '#f07a13',
-  '8_Mauvais': '#f04a13',
-  '9_Mauvais': '#c91a0a',
-  '10_Très_Mauvais': '#850b0b'
-
-};
-
-var today = Cesium.JulianDate.now();
-var hier = Cesium.JulianDate.addDays(today, -1, new Cesium.JulianDate());
-var start = Cesium.JulianDate.addDays(today, -8, new Cesium.JulianDate());
-
-if (enableODQualiteAir) {
-  // l'animation se lance par défaut si la couche est chargée directement dans l'url
-  globe.viewer.clock.startTime = start;
-  globe.viewer.clock.stopTime = today;
-  globe.viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; // loop when we hit the end time
-  globe.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER;
-  globe.viewer.clock.multiplier = 50000; // how much time to advance each tick
-  globe.viewer.clock.shouldAnimate = true; // Animation on by default
-
-  document.getElementById("ODQualiteAir").checked = true;
-  
-  globe.showTimeJson(true, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAir, 'Qualité air communes Eurométropole', start, hier, {
-    classification: true,
-    classificationField: 'valeur',
-    colors: colorsQualiteAir,
-    alpha: 0.7
-  });
-
-  globe.viewer.scene.requestRender();
-
-  globe.legendManager.addLegend('Qualite_Air_Eurométropole', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
-}
-
-document.querySelector('#ODQualiteAir').addEventListener('change', (e) => {
-  globe.showTimeJson(e.target.checked, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAir, 'Qualité air communes Eurométropole', start, hier, {
-    classification: true,
-    classificationField: 'valeur',
-    colors: colorsQualiteAir,
-    alpha: 0.7
-  });
-
-  globe.viewer.scene.requestRender();
-
-  if(e.target.checked){
-    globe.legendManager.addLegend('Qualite_Air_Eurométropole', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
-  } else{
-    globe.legendManager.removeLegend('ODQualiteAirLegend');
-  }
-
-});
-
-// on lance l'animation en cliquant sur l'horloge
-document.querySelector('#timeAir').addEventListener('click', function() {
-  globe.viewer.clock.startTime = start;
-  globe.viewer.clock.stopTime = today;
-  globe.viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; // loop when we hit the end time
-  globe.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER;
-  globe.viewer.clock.multiplier = 50000; // how much time to advance each tick
-  globe.viewer.clock.shouldAnimate = true; // Animation on by default
-
-});
-
-// --------------------------------------------------------------------------------------------------------------
-
-// Affichage de la couche fréquentation des piscines de l'eurométropole OPENDATA //
-var linePiscine = [];
-var billboardPiscine = [];
-
-var colorsPiscineLegend = {
-  'Piscine        ': '#fcba03'
-};
-
-if (enableODPiscine) {
-  document.getElementById("ODPiscine").checked = true;
-
-  globe.showPoint(true, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
-
-  globe.viewer.scene.requestRender();
-
-  globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/pool_legend.png'>");
-}
-
-document.querySelector('#ODPiscine').addEventListener('change', (e) => {
-  globe.showPoint(e.target.checked, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
-
-  globe.viewer.scene.requestRender();
-
-  if(e.target.checked){
-    globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/pool_legend.png'>");
-  } else{
-    globe.legendManager.removeLegend('ODPiscineLegend');
-  }
-
-});
-
-document.querySelector('#refreshPiscine').addEventListener('click', function() {
-  globe.updatePoint('https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODPiscine', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {
-
-  });
-});
+    });
 
 
-} // fin de la fonction couchesOD
+
+    // --------------------------------------------------------------------------------------------------------------
+    // Affichage de la couche patrimoine de mon quartier OPENDATA //
+    var billboardPatrimoine = [];
+    var linePatrimoine = [];
+
+    var colorsPatrimoineLegend = {
+      'Patrimoine    ': '#fcba03'
+    };
+
+    if (enableODPatrimoine) {
+      document.getElementById("ODPatrimoine").checked = true;
+
+      globe.showPoint(true, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
+
+      globe.viewer.scene.requestRender();
+
+      globe.legendManager.addLegend('Patrimoine_quartier', 'ODPatrimoineLegend', colorsPatrimoineLegend, 'point', "<img src='src/img/billboard/marker_red.png'>");
+    }
+
+    document.querySelector('#ODPatrimoine').addEventListener('change', (e) => {
+      globe.showPoint(e.target.checked, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
+
+      globe.viewer.scene.requestRender();
+
+      if(e.target.checked){
+        globe.legendManager.addLegend('Patrimoine_quartier', 'ODPatrimoineLegend', colorsPatrimoineLegend, 'point', "<img src='src/img/billboard/marker_red.png'>");
+      } else{
+        globe.legendManager.removeLegend('ODPatrimoineLegend');
+      }
+
+    });
+
+    // --------------------------------------------------------------------------------------------------------------
+
+    // Affichage de la couche qualité de l'air de l'eurométropole OPENDATA //
+    var lineAir = [];
+    var colorsQualiteAir = {
+      '1': '#3b8019',
+      '2': '#47991f',
+      '3': '#589917',
+      '4': '#9EE01A',
+      '5': '#e8e823',
+      '6': '#e3a112',
+      '7': '#f07a13',
+      '8': '#f04a13',
+      '9': '#c91a0a',
+      '10': '#850b0b'
+
+    };
+    var colorsQualiteAirLegend = {
+      '1_Très_Bon': '#3b8019',
+      '2_Très_Bon': '#47991f',
+      '3_Bon': '#589917',
+      '4_Bon': '#9EE01A',
+      '5_Moyen': '#e8e823',
+      '6_Médiocre': '#e3a112',
+      '7_Médiocre': '#f07a13',
+      '8_Mauvais': '#f04a13',
+      '9_Mauvais': '#c91a0a',
+      '10_Très_Mauvais': '#850b0b'
+
+    };
+
+    var today = Cesium.JulianDate.now();
+    var hier = Cesium.JulianDate.addDays(today, -1, new Cesium.JulianDate());
+    var start = Cesium.JulianDate.addDays(today, -8, new Cesium.JulianDate());
+
+    if (enableODQualiteAir) {
+      document.getElementById("ODQualiteAir").checked = true;
+
+      globe.showTimeJson(true, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAir, 'Qualité air communes Eurométropole', start, hier, {
+        classification: true,
+        classificationField: 'valeur',
+        colors: colorsQualiteAir,
+        alpha: 0.7
+      });
+
+      globe.viewer.scene.requestRender();
+
+      globe.legendManager.addLegend('Qualite_Air_Eurométropole', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
+    }
+
+    document.querySelector('#ODQualiteAir').addEventListener('change', (e) => {
+      globe.showTimeJson(e.target.checked, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAir, 'Qualité air communes Eurométropole', start, hier, {
+        classification: true,
+        classificationField: 'valeur',
+        colors: colorsQualiteAir,
+        alpha: 0.7
+      });
+
+      globe.viewer.scene.requestRender();
+
+      if(e.target.checked){
+        globe.legendManager.addLegend('Qualite_Air_Eurométropole', 'ODQualiteAirLegend', colorsQualiteAirLegend, 'polygon');
+      } else{
+        globe.legendManager.removeLegend('ODQualiteAirLegend');
+      }
+
+    });
+
+    // on lance l'animation en cliquant sur l'horloge
+    document.querySelector('#timeAir').addEventListener('click', function() {
+      globe.viewer.clock.startTime = start;
+      globe.viewer.clock.stopTime = today;
+      globe.viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; // loop when we hit the end time
+      globe.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+      globe.viewer.clock.multiplier = 50000; // how much time to advance each tick
+      globe.viewer.clock.shouldAnimate = true; // Animation on by default
+
+    });
+
+    // --------------------------------------------------------------------------------------------------------------
+
+    // Affichage de la couche fréquentation des piscines de l'eurométropole OPENDATA //
+    var linePiscine = [];
+    var billboardPiscine = [];
+    var colorsPiscineLegend = {
+      'Piscine        ': '#fcba03'
+    };
+
+    if (enableODPiscine) {
+      document.getElementById("ODPiscine").checked = true;
+
+      globe.showPoint(true, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
+
+      globe.viewer.scene.requestRender();
+
+      globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/pool_legend.png'>");
+    }
+
+    document.querySelector('#ODPiscine').addEventListener('change', (e) => {
+      globe.showPoint(e.target.checked, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
+
+      globe.viewer.scene.requestRender();
+
+      if(e.target.checked){
+        globe.legendManager.addLegend('Fréquentation_piscine', 'ODPiscineLegend', colorsPiscineLegend, 'point', "<img src='src/img/billboard/pool_legend.png'>");
+      } else{
+        globe.legendManager.removeLegend('ODPiscineLegend');
+      }
+
+    });
+
+    // le bouton pour rafraichir la donnée
+    document.querySelector('#refreshPiscine').addEventListener('click', function() {
+      globe.updatePoint('https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODPiscine', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {
+
+      });
+    });
+
+
+  } // fin de la fonction couchesOD
 } // fin de la classe Data

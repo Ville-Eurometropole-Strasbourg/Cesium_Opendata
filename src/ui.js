@@ -75,7 +75,9 @@ class Menu {
       affich : true,
       trou : false
     };
-	this.HSVinit();
+
+    // la fonction pour gérer les paramètres d'affichage du photomaillage
+	  this.HSVinit();
   }
   /*
   * Fin du constructeur
@@ -154,85 +156,15 @@ class Menu {
     this.outilClic("#boutontime", "#time-content");
     this.outilClic("#boutoncamera", "#camera-content");
 
-    /*
-    * Ajout de couches
-
-    document.querySelector("#boutonfile").addEventListener('click', (e) => {
-      // Ouvrir le formulaire correspondant
-      this.fileList.classList.toggle('hidden');
-      // Garder l'identifiant en mémoire pour éviter de le retaper à chaque fois
-      if(localStorage.getItem("identifiant") != undefined) {
-        document.getElementById("idEMS").value = localStorage.getItem("identifiant");
-      }
-    });
-
-    // Appel des fonctions qui lisent les dossiers du serveur web
-    this.getJson();
-    this.get3DTiles();
-    this.getDrawing();
-*/
-
-    /*
-    *bouton de configuration (affiche checkbox concernées) & réinitialisation (supprime toutes les checkbox)
-    */
-/*
-
-    document.querySelector("#config").addEventListener('click', (e) => {
-      this.configList.classList.toggle('hidden');
-    });
-    document.querySelector("#reset").addEventListener('click', (e) => {
-      hideElements();
-      //fermer tous les onglets thématiques
-      document.querySelector('#plu').style.display = "none";
-      document.querySelector('#ecologie').style.display = "none";
-      document.querySelector('#reglementaire').style.display = "none";
-      document.querySelector('#divers').style.display = "none";
-    });
-    document.querySelector("#configDefaut").addEventListener('click', (e) => {
-      showElements();
-      this.configList.classList.add('hidden');
-      // ouvrir les onglets thématiques qui contiennent des données
-      document.querySelector('#plu').style.display = "block";
-      document.querySelector('#ecologie').style.display = "block";
-      document.querySelector('#reglementaire').style.display = "block";
-      document.querySelector('#divers').style.display = "block";
-    });
-    document.querySelector("#configPLU").addEventListener('click', (e) => {
-      initPLU();
-      this.configList.classList.add('hidden');
-      document.querySelector('#plu').style.display = "block";
-      document.querySelector('#reglementaire').style.display = "block";
-    });
-    document.querySelector("#configEco").addEventListener('click', (e) => {
-      initEco();
-      this.configList.classList.add('hidden');
-      document.querySelector('#plu').style.display = "block";
-      document.querySelector('#ecologie').style.display = "block";
-      document.querySelector('#divers').style.display = "block";
-    });
-	document.querySelector("#configSIRENE").addEventListener('click', (e) => {
-      initSIRENE();
-      this.configList.classList.add('hidden');
-      document.querySelector('#ecologie').style.display = "block";
-      document.querySelector('#divers').style.display = "block";
-    });
-*/
     // afficher les 2 photomaillages
     document.querySelector('#photoMaillage').addEventListener('change', (e) => {
-      globe.show3DTiles(e.target.checked, 'photoMaillage', 'https://3d.strasbourg.eu/CESIUM/DATA/PM3D_2018/3DTiles/EMS_CESIUM.json');
+      globe.show3DTiles(e.target.checked, 'photoMaillage', 'https://3d.strasbourg.eu/CESIUM/DATA/PM3D_2018/3DTiles/EMS_CESIUM.json', 1);
     });
     document.querySelector('#photoMaillage2017').addEventListener('change', (e) => {
-      globe.show3DTiles(e.target.checked, 'photoMaillage2017', 'https://3d.strasbourg.eu/CESIUM/DATA/PM3D_PSMV_OPTIM/PSMV_CESIUM.json');
+      globe.show3DTiles(e.target.checked, 'photoMaillage2017', 'https://3d.strasbourg.eu/CESIUM/DATA/PM3D_PSMV_OPTIM/PSMV_CESIUM.json', 2);
     });
 
-	 /*
-	// afficher les couches opendata
-	document.querySelector("#ODTerrassesDiv").addEventListener('click', (e) => {
-      initODTerrasses();
-     });
 
-
-*/
     /*
     *
     * Boite à outils
@@ -628,7 +560,9 @@ class Menu {
     });
 
     /*
+    *
     * Decoupes
+    *
     */
     // Evenement pour l'ajout du plan
     document.querySelector("#envoyercoupe").addEventListener('click', (e) => {
@@ -689,30 +623,35 @@ class Menu {
       globe.viewer.scene.requestRender();
     });
 
+
     /*
+    *
     * Ombres
+    *
     */
     document.querySelector('#shadows').addEventListener('change', function(e){
       globe.shadow(e.target.checked);
     });
     // Créé le calendrier
     this.datepicker.on('change', () => {
-      this.onDateChanged(this.datepicker.val());
 
       // on remet la date au bon format
       var annee = this.datepicker.val().substring(6,10);
       var mois = this.datepicker.val().substring(3,5);
       var jour = this.datepicker.val().substring(0,2);
-      var date = (annee + '-' + mois + '-' + jour).toString();
-      var dateOmbre = Cesium.JulianDate.fromIso8601(date);
+
+      let startTime = Cesium.JulianDate.fromIso8601(annee + '-' + mois + '-' + jour + 'T00:00:00Z');
+      let stopTime = Cesium.JulianDate.fromIso8601(annee + '-' + mois + '-' + jour + 'T23:59:59Z');
 
       // on centre l'horloge sur la date choisie
-      globe.viewer.clock.startTime = dateOmbre;
-      globe.viewer.timeline.zoomTo(dateOmbre, Cesium.JulianDate.addDays(dateOmbre, 1, new Cesium.JulianDate()));
+      globe.viewer.clock.startTime = startTime;
+      globe.viewer.timeline.zoomTo(startTime, stopTime);
     });
 
     /*
+    *
     *  Ajout de points de vue de caméra
+    *
     */
     document.querySelector("#ajoutercamera").addEventListener('click', function() {
       var nom = $('#nomcamera').val();
@@ -868,8 +807,11 @@ class Menu {
       globe.fly(position, 1.49, -0.70, 0);
     });
 
+
     /*
+    *
     * Création du lien de partage
+    *
     */
     document.querySelector("#addlink").addEventListener('click', function() {
       globe.createLink();
@@ -877,6 +819,25 @@ class Menu {
 
     document.querySelector('#boutonlink').addEventListener('click', (e) => {
       this.linkList.classList.toggle('hidden');
+    });
+
+    /*
+    *
+    * Evenements sur les quatre points cardinaux à droite
+    *
+    */
+
+    document.querySelector('#nord').addEventListener('click', function() {
+      globe.fly(globe.viewer.camera.position, Cesium.Math.toRadians(0.0), globe.viewer.camera.pitch, 0);
+    });
+    document.querySelector('#ouest').addEventListener('click', function() {
+      globe.fly(globe.viewer.camera.position, Cesium.Math.toRadians(-90), globe.viewer.camera.pitch, 0);
+    });
+    document.querySelector('#est').addEventListener('click', function() {
+      globe.fly(globe.viewer.camera.position, Cesium.Math.toRadians(90), globe.viewer.camera.pitch, 0);
+    });
+    document.querySelector('#sud').addEventListener('click', function() {
+      globe.fly(globe.viewer.camera.position, Cesium.Math.toRadians(180), globe.viewer.camera.pitch, 0);
     });
 
   }
@@ -898,23 +859,24 @@ class Menu {
     this.dataSources[name] = value;
   }
 
+
   /**
-  * Mise a jour de la timeline lorsque l'utilisateur choisit une date dans le calendrier
+  * Modification du contraste et saturation de l'affichage
   *
-  * @param  {Object} value La valeur de la date rentrée dans le calendrier
   */
-  onDateChanged(value){
-    let date = value.split('/');
+  HSVinit(){
 
-    let day = date[0];
-    let month = date[1];
-    let year = date[2];
-
-    let startTime = Cesium.JulianDate.fromIso8601(year + '-' + month + '-' + day + 'T00:00:00Z');
-    let stopTime = Cesium.JulianDate.fromIso8601(year + '-' + month + '-' + day + 'T23:59:59Z');
-
-    this.globe.viewer.timeline.zoomTo(startTime, stopTime); // Définit la portion visible de la timeline
+    Cesium.knockout.track(globe.viewModel);
+    var toolbar = document.getElementById('HSVtoolbar');
+    Cesium.knockout.applyBindings(globe.viewModel, toolbar);
+    for (var name in globe.viewModel) {
+      if (globe.viewModel.hasOwnProperty(name)) {
+        Cesium.knockout.getObservable(globe.viewModel, name).subscribe(globe.updatePostProcess);
+      }
+    }
+    globe.updatePostProcess();
   }
+
 
   /**
   * Ajout de couches interactif
@@ -1247,23 +1209,6 @@ class Menu {
       xmlhttp.send();
     });
   }
-  /**
-  * Modification du contraste et saturation de l'affichage
-  *
-  */
-  HSVinit(){
-
-    Cesium.knockout.track(globe.viewModel);
-    var toolbar = document.getElementById('HSVtoolbar');
-    Cesium.knockout.applyBindings(globe.viewModel, toolbar);
-    for (var name in globe.viewModel) {
-      if (globe.viewModel.hasOwnProperty(name)) {
-        Cesium.knockout.getObservable(globe.viewModel, name).subscribe(globe.updatePostProcess);
-      }
-    }
-    globe.updatePostProcess();
-  }
-
 
   /*
   * Fin de la classe Menu

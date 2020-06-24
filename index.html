@@ -275,11 +275,11 @@
               </div>
 
               <!-- Flèche nord -->
-              <div id=north-arrow>
+              <!--<div id=north-arrow>
                 <div class="nord">
                   <img src="src/img/icons8-nord.png">
                 </div>
-              </div>
+              </div>-->
 
 
               <!-- Menu latéral déroulant -->
@@ -305,11 +305,11 @@
                   <!-- PHS -->
 
 
-                  <button class="panel-title">INFORMATIONS CADASTRALES<i class="arrow"></i>
-                  </button>
                   <!------------------------------------------------------------->
+                  <button class="panel-title">INFORMATIONS CADASTRALES    <i class="arrow"></i>
+                  </button>
 
-                  <div class="panel-content" id="opendata_ems" style="display">
+                  <div class="panel-content">
                     <div class="nowrap show" id="ODLimitesCommunesDiv">
                       <input id="ODLimitesCommunes" type="checkbox" />
                       <label for="ODLimitesCommunes">LIMITES DE COMMUNES</label>
@@ -528,11 +528,11 @@
                   </div>
 
                   <!------------------------------------------------------------->
-                  <button class="panel-title">TRANSPORTS ET DEPLACEMENTS<i class="arrow"></i>
+                  <button class="panel-title">TRANSPORTS ET DEPLACEMENTS    <i class="arrow"></i>
                   </button>
                   <!------------------------------------------------------------->
 
-                  <div class="panel-content" id="opendata_ems" style="display">
+                  <div class="panel-content">
                     <!-- création de la checkbox du stationnement payant opendata -->
                     <div class="nowrap show" id="ODStationPayantDiv">
                       <input id="ODStationPayant" type="checkbox" />
@@ -550,11 +550,11 @@
                   </div>
 
                   <!------------------------------------------------------------->
-                  <button class="panel-title">DATA.STRASBOURG.EU<i class="arrow"></i>
+                  <button class="panel-title">DATA.STRASBOURG.EU    <i class="arrow"></i>
                   </button>
                   <!------------------------------------------------------------->
 
-                  <div class="panel-content" id="opendata_ems" style="display">
+                  <div class="panel-content">
                     <!-- création de la checkbox du zonage PLUi opendata -->
                     <div class="nowrap show" id="ODPLUiZonageDiv">
                       <input id="ODPLUiZonage" type="checkbox" />
@@ -573,12 +573,6 @@
                       <label for="ODTerrasses2020">Terrasses autorisées en 2020</label>
                       <a href="https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2020/information/" target="_blank"><button class="button"><img src="src/img/icons8-info.png"></button></a>
                     </div>
-
-                    <!-- création de la checkbox vitaboucle -->
-                    <!--<div class="nowrap show" id="ODVitaboucleDiv">
-                      <input id="ODVitaboucle" type="checkbox" checked/>
-                      <label for="ODVitaboucle">Boucles sportives Vitaboucle</label>
-                    </div>-->
 
                     <div class="nowrap show" id="ODPatrimoineDiv">
                       <input id="ODPatrimoine" type="checkbox" />
@@ -602,9 +596,7 @@
                     </div>
                   </div>
                   <!------------------------------------------------------------->
-                  <button class="panel-title">PARAMETRES
-                    <i class="arrow"></i>
-                  </button>
+                  <button class="panel-title">PARAMETRES    <i class="arrow"></i></button>
                   <div class="panel-content" id="parametres">
                     <div id="HSVtoolbar">
                       <table><tbody>
@@ -940,6 +932,19 @@
 
             <div class="menuClic" id="link">
               <button class="button" id="boutonlink"><img src="src/img/icons8-lien.png"></button>
+            </div>
+
+            <div class="menuClic" id="nordDiv">
+              <button class="button" id="nord"><img src="src/img/icons8-nord.png"></button>
+            </div>
+            <div class="menuClic" id="estDiv">
+              <button class="button" id="est"><img src="src/img/icons8-est.png"></button>
+            </div>
+            <div class="menuClic" id="sudDiv">
+              <button class="button" id="sud"><img src="src/img/icons8-sud.png"></button>
+            </div>
+            <div class="menuClic" id="ouestDiv">
+              <button class="button" id="ouest"><img src="src/img/icons8-ouest.png"></button>
             </div>
 
             <div id="loadingIndicator" class="cover hidden">

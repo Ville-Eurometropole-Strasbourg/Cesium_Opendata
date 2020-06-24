@@ -18,7 +18,7 @@ let globe = new Globe('cesiumContainer', new Geocoder("https://adict.strasbourg.
 
 // Charger le photomailage 2018 ; appelle la fonction créée dans la classe globe
 // On le charge d'abord au format tileset
-let tileset = globe.loadPhotomaillage('https://3d.strasbourg.eu/CESIUM/DATA/PM3D_2018/3DTiles/EMS_CESIUM.json');
+let tileset = globe.loadPhotomaillage('https://3d.strasbourg.eu/CESIUM/DATA/PM3D_2018/3DTiles/EMS_CESIUM.json', 1);
 // Avant de l'ajouter au projet sous forme d'entités
 var terrain = globe.addPhotomaillage(tileset);
 

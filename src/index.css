@@ -1,5 +1,6 @@
 @import url(../lib/Cesium/Build/Cesium/Widgets/widgets.css);
 
+/* style général */
 * {
   box-sizing: border-box;
 }
@@ -15,7 +16,11 @@ html, body {
   background: #000;
 }
 
-/* Style de la barre de menu */
+/*
+ *
+ * Style de la barre de menu
+ *
+ */
 #menu {
   position: absolute;
   top: 0;
@@ -30,6 +35,7 @@ html, body {
   overflow-x: none;
 }
 
+/* style du panel où on écrit 'MENU' */
 #menu-content {
   display: block;
   width: 100%;
@@ -42,13 +48,17 @@ html, body {
   text-align: center;
   color: black;
 }
-
+/* le menu bouge à l'ouverture */
 #menu.menu-open{
   left: 0;
 }
 
-/* Style de la partie à droite du menu contenant toutes les légendes et formulaires */
-#left-pane{
+/*
+ *
+ * Style de la partie à droite du menu contenant toutes les légendes, formulaires et le bouton menu
+ *
+ */
+ #left-pane{
   position: absolute;
   top: 00px;
   left: 00px;
@@ -60,10 +70,12 @@ html, body {
   overflow-x: none;
 }
 
+/* position quand le menu est ouvert */
 #left-pane.menu-open {
   left: 440px;
 }
 
+/* afficher le hamburger icon du bouton pour ouvrir le menu */
 #left-pane #toggle-menu {
   display: inline-block;
   margin-bottom: 25px;
@@ -72,30 +84,11 @@ html, body {
   border-radius: 5px;
 }
 
+/* les titres des légendes et formulaires */
 #left-pane h2 {
   font-size: 1.7em;
   text-align: center;
 }
-
-/* style de l'annotation pour tracer les figures */
-.annotation {
-  position: absolute;
-  bottom: 50px;
-  right: 10px;
-  padding: 5px 5px 0 5px;
-  display: block;
-  background: rgba(42, 42, 42, 0.8);
-  border-radius: 5px;
-  border: 1px solid #444;
-  width: auto;
-  height: auto;
-  padding: 5px 10px;
-  margin-bottom: 10px;
-  color: #fff;
-  font-size: small;
-  pointer-events: none;
-}
-
 
 /* Style de la partie Cesium*/
 #cesiumContainer {
@@ -111,7 +104,13 @@ html, body {
   transition: left 0.5s;
 }
 
-/* Style des panels contenus dans le menu */
+/*
+ *
+ * Style des panels contenus dans le menu
+ *
+ */
+
+ /* le panel = la div qui regroupe tout à l'intérieur du menu */
 .panel{
   display: block;
   border: 1px solid #4E535A;
@@ -128,6 +127,7 @@ html, body {
 
 }
 
+/* chaque sous partie du menu (ex: paramètres), seulement un bouton (pas de div) */
 .panel .panel-title{
   display: block;
   width: 100%;
@@ -151,6 +151,7 @@ html, body {
   color: black;
 }
 
+/* la div à l'intérieur de chaque panel-title */
 .panel .panel-content{
   width: 100%;
   padding: 5px;
@@ -158,11 +159,13 @@ html, body {
   overflow-x: none;
 }
 
+/* afficher le contenu des panel-content quand on clique dessus */
 .panel .panel-content-open {
   display: inline-block;
   overflow-x: none;
 }
 
+/* les sous menus déroulants (style PPRI) */
 .deroulant {
   display: block;
   width: 100%;
@@ -175,6 +178,7 @@ html, body {
   overflow-x: none;
 }
 
+/* boutons config et ajout de fichier interactif */
 #boutonfile {
   display: block;
   position: absolute;
@@ -182,7 +186,6 @@ html, body {
   top: 100px;
   cursor: pointer;
 }
-
 #config {
   display: block;
   position: absolute;
@@ -203,7 +206,11 @@ html, body {
   cursor: pointer;
 }
 
-/* Style des légendes */
+/*
+ *
+ * Style des légendes
+ *
+ */
 .backdrop {
   position: relative;
   display: inline-block;
@@ -269,7 +276,11 @@ html, body {
   width: 50px;
 }
 
-/* Style du loader = icône qui affiche le chargement de la page */
+/*
+ *
+ * Style du loader = icône qui affiche le chargement de la page
+ *
+ */
 .cover {
   display: block;
   position: absolute;
@@ -292,7 +303,7 @@ html, body {
   background: url(img/ajax-loader.gif) center no-repeat;
 }
 
-/* Style de la flèche */
+/* Style de la flèche pour dérouler le menu*/
 i {
   border: solid black;
   border-width: 0 3px 3px 0;
@@ -304,8 +315,12 @@ i {
 }
 
 
-/* Boite à outils */
-/* style des boutons de la boîte à outils*/
+/*
+ *
+ * Boite à outils
+ *
+ */
+/* style des boutons*/
 .button {
   background: #303336;
   border: 1px solid #444;
@@ -327,6 +342,7 @@ i {
   border-color: #aef;
 }
 
+/* style du contenu des boutons de la boite à outils */
 .menuClic-content {
   display: none;
   position: absolute;
@@ -342,31 +358,26 @@ i {
   top: 5px;
   left: 100px;
 }
-
 #construction {
   position: absolute;
   top: 5px;
   left: 145px;
 }
-
 #coupe {
   position: absolute;
   top: 5px;
   left: 190px;
 }
-
 #time {
   position: absolute;
   top: 5px;
   left: 235px;
 }
-
 #camera {
   position: absolute;
   top: 5px;
   left: 280px;
 }
-
 #link {
   position: absolute;
   top: 5px;
@@ -390,12 +401,10 @@ i {
   left:660px;
   transition: left 0.5s;
 }
-
 #camera.menu-open {
   left:700px;
   transition: left 0.5s;
 }
-
 #link.menu-open {
   left:740px;
   transition: left 0.5s;
@@ -407,13 +416,70 @@ i {
   font-size: small;
 }
 
+/* ouverture du contenu en dessous des boutons de la boîte à outils */
 .menuClic {
   display: block;
   background-color: #2B2F33;
   border-radius: 3px;
 }
 
-/* Classes utilitaire */
+/*
+ *
+ * Partie en bas à droite de l'écran
+ *
+ */
+
+/* Les quatre points cardinaux pour orienter la vue */
+#nordDiv {
+  position: absolute;
+  right: 6px;
+  bottom: 145px;
+  z-index: 0;
+}
+#estDiv {
+  position: absolute;
+  right: 6px;
+  bottom: 110px;
+  z-index: 0;
+}
+#sudDiv {
+  position: absolute;
+  right: 6px;
+  bottom: 75px;
+  z-index: 0;
+}
+#ouestDiv {
+  position: absolute;
+  right: 6px;
+  bottom: 40px;
+  z-index: 0;
+}
+
+/* style de l'annotation pour tracer les figures */
+.annotation {
+  position: absolute;
+  bottom: 50px;
+  right: 10px;
+  padding: 5px 5px 0 5px;
+  display: block;
+  background: rgba(42, 42, 42, 0.8);
+  border-radius: 5px;
+  border: 1px solid #444;
+  width: auto;
+  height: auto;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-size: small;
+  pointer-events: none;
+}
+
+/*
+ *
+ * Classes utilitaire
+ *
+ */
+ /* style des checkbox à l'intérieur des panel du menu et du contenu des boutons de la boite à outils */
 .nowrap {
   white-space: nowrap;
   list-style: none;
@@ -424,10 +490,12 @@ i {
   position: relative;
 }
 
+/* tous les élements cachés au départ */
 .hidden {
   display: none;
 }
 
+/* le bouton d'ouverture du menu */
 .hamburger-icon {
   position: relative;
   background: #303336;
@@ -438,6 +506,7 @@ i {
   cursor: pointer;
 }
 
+/* le bouton se déplace à l'ouverture du menu */
 .hamburger-icon:before {
   content: "";
   position: absolute;
@@ -456,12 +525,7 @@ i {
   border-color: #aef;
 }
 
+/* les éléments qu'on rend visible */
 .show {
   display:block;
-}
-
-.nord {
-  position: absolute;
-  right: 20px;
-  top: 100px;
 }

@@ -101,6 +101,9 @@ class Globe {
       };
 
     }
+    /*
+    * Fin du constructor
+    */
 
     /*
     *
@@ -276,11 +279,11 @@ class Globe {
     * @param  {Object} options facultatif - Les options pour le chargement
     * @return  {tileset} tileset Le 3DTileset
     */
-    loadPhotomaillage(link, options = {}){
+    loadPhotomaillage(link, maxError, options = {}){
       // Chargement du photo maillage au format 3D tiles
       let tileset = new Cesium.Cesium3DTileset({
         url : link, // URL vers le ficher JSON "racine"
-        maximumScreenSpaceError : 1,
+        maximumScreenSpaceError : maxError,
         maximumNumberOfLoadedTiles : 1000, // Nombre maximum de dalles chargées simultanément
         lightColor : new Cesium.Cartesian3(3,2.8,2.4),
         imageBasedLightingFactor : new Cesium.Cartesian2(2,2),
@@ -291,31 +294,6 @@ class Globe {
       });
       return tileset;
     }
-
-
-    /**
-    * Permet de charger et d'enregister le tileset au format 3DTiles
-    *
-    * @param  {String} link Le lien vers le fichier
-    * @param  {Object} options facultatif - Les options pour le chargement
-    * @return  {tileset} tileset Le 3DTileset
-    */
-    loadPhotomaillagePSMV(link, options = {}){
-      // Chargement du photo maillage au format 3D tiles
-      let tileset = new Cesium.Cesium3DTileset({
-        url : link, // URL vers le ficher JSON "racine"
-        maximumScreenSpaceError : 2,
-        maximumNumberOfLoadedTiles : 1000, // Nombre maximum de dalles chargées simultanément
-        lightColor : new Cesium.Cartesian3(3,2.8,2.4),
-        imageBasedLightingFactor : new Cesium.Cartesian2(2,2),
-        luminanceAtZenith : 0.5,
-        immediatelyLoadDesiredLevelOfDetail : false,
-        foveatedConeSize : 0.5,
-        skipLevelOfDetail: true
-      });
-      return tileset;
-    }
-
 
     /**
     * ajoute le tileset sous forme d'entités  et garde une structure asynchrone
@@ -414,31 +392,16 @@ class Globe {
     * @param  {String} name Le nom qu'on donne au json
     * @param  {Object} options facultatif - Les options pour le chargement
     */
-    show3DTiles(show, name, link, options = {}){
+    show3DTiles(show, name, link, maxError, options = {}){
       if(show){
         if(this.dataSources[name] === undefined){
           globe.showLoader();
 
-
-          if (name === 'photoMaillage') {
-            //console.log(name);
-            globe.addPhotomaillage(globe.loadPhotomaillage(link, options)).then((data) => {
-              this.dataSources[name] = data;
-              globe.hideLoader();
-            });
-          } else if (name === 'photoMaillage2017') {
-            //console.log(name);
-            globe.addPhotomaillage(globe.loadPhotomaillagePSMV(link, options)).then((data) => {
-              this.dataSources[name] = data;
-              globe.hideLoader();
-            });
-          } else {
-            //console.log(name);
-            globe.addPhotomaillage(globe.load3DTiles(link, options)).then((data) => {
-              this.dataSources[name] = data;
-              globe.hideLoader();
-            });
-          }
+          //console.log(name);
+          globe.addPhotomaillage(globe.loadPhotomaillage(link, maxError, options)).then((data) => {
+            this.dataSources[name] = data;
+            globe.hideLoader();
+          });
 
         } else{
           this.dataSources[name].show = true;
@@ -1425,7 +1388,6 @@ class Globe {
               color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
               colors[entity.properties[options.classificationField]] = color;
             }
-            entity.name = choice;
 
             if(choice === 'Limites de sections') {
               let longitudeNom = entity._properties.geo_point_2d._value[1];
@@ -1487,6 +1449,7 @@ class Globe {
             entity.polygon.material = color;
             entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
             entity.polygon.arcType = Cesium.ArcType.GEODESIC;
+            entity.name = choice;
           }
 
         }
@@ -1534,12 +1497,7 @@ class Globe {
           }
           // If a feature was previously highlighted, undo the highlight
           if (Cesium.defined(highlighted.feature)) {
-            if(choice === 'PLUi Plan de Zonage' || choice === 'Terrasses' || choice === 'Stationnement') {
-              highlighted.feature.id.polygon.material = highlighted.originalMaterial;
-            }
-            else {
-              highlighted.feature.id.polygon.material = Cesium.Color.GREY.withAlpha(0.001);
-            }
+            highlighted.feature.id.polygon.material = highlighted.originalMaterial;
             highlighted.feature = undefined;
             globe.viewer.scene.requestRender();
           }
@@ -1966,6 +1924,231 @@ class Globe {
     }
   }
 
+  /**
+  * permet de charger le fichier des piscines + la fréquentation en temps réel
+  * (pas de géométrie sur la couche de la fréquentation)
+  * utilise la fonction showPolygon pour afficher
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
+  * @param  {Array} billboard Le tableau d'entités où stocker les billboards
+  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format
+  * @param  {Array} line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
+  * @param  {String} couleur La couleur de la ligne au format '#FFFFFF'
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  loadPiscine(link, name, image, billboard, choice, line, couleur, options = {}){
+    let promisse = Cesium.GeoJsonDataSource.load(link, {
+      markerSize: 0 //pour que l'épingle n'apparaisse pas
+    });
+    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
+    this.viewer.scene.logarithmicDepthBuffer = false; // idem
+    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+    promisse.then((dataSource) => {
+      // Ajoute le json dans la liste des dataSource
+      this.viewer.dataSources.add(dataSource);
+      this.dataSources[name] = dataSource;
+      this.hideLoader();
+
+      let entities = dataSource.entities.values;
+
+      // on récupère le fichier json de la fréquentation en temps réel
+      var piscineURL = 'https://data.strasbourg.eu/api/records/1.0/download?dataset=frequentation-en-temps-reel-des-piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json';
+      var xmlhttp = new XMLHttpRequest();
+      this.xmlhttp = this;
+      xmlhttp.open('GET', piscineURL);
+      xmlhttp.responseType = 'json';
+      xmlhttp.send();
+
+      // une fois que le fichier est bien chargé
+      xmlhttp.onreadystatechange = function () {
+        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+
+          for(let i = 0; i < 8; i++) {
+            let entity = entities[i];
+            // on récupère les coordonnées des points importés
+            var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
+            var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
+            var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
+
+            var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
+            let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
+            let longitude = cartographic.longitude;
+            let latitude = cartographic.latitude;
+            // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
+            let height = Number(225 + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
+            var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
+
+            // on ajoute une entité billboard à chaque point, 225m plus haut
+            // l'entité billboard ne conserve pas les attributs
+            billboard.push(globe.createBillboard(coordHauteur, image, false));
+            // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
+
+            //on trace une ligne partant du sol jusqu'à la base du billboard
+            var coordLigne = [position, coordHauteur];
+            line.push(globe.drawLine(coordLigne, 2, couleur, 1, false));
+            globe.viewer.scene.requestRender();
+
+            // coordonnées 15m en dessous pour la lisibilité du texte
+            let heightLabel = Number(210 + cartographic.height);
+            var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
+
+            // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasite)
+            var acces = String(entity.properties['access']);
+            acces = acces.replace('{"fr_FR": "', '');
+            acces = acces.replace(/\\n/g,'');
+            acces = acces.replace(/\\t/g,'');
+            acces = acces.replace(/\\/g,'');
+            acces = acces.replace('"}','');
+            var service = String(entity.properties['serviceandactivities']);
+            service = service.replace('{"fr_FR": "', '');
+            service = service.replace(/\\n/g,'');
+            service = service.replace(/\\t/g,'');
+            service = service.replace('"}','');
+            var caracteristique = String(entity.properties['characteristics']);
+            caracteristique = caracteristique.replace('{"fr_FR": "', '');
+            caracteristique = caracteristique.replace(/\\n/g,'');
+            caracteristique = caracteristique.replace(/\\t/g,'');
+            caracteristique = caracteristique.replace(/\\/g,'');
+            caracteristique = caracteristique.replace('"}','');
+            var exception = String(entity.properties['exceptionalschedule']);
+            exception = exception.replace('{"fr_FR": "', '');
+            exception = exception.replace(/\\n/g,'');
+            exception = exception.replace(/\\/g,'');
+            exception = exception.replace('"}','');
+            var description = String(entity.properties['description']);
+            description = description.replace('{"fr_FR": "', '');
+            // pour que les liens dans la description fonctionnent
+            description = description.replace(/href=\\"/g, 'href=https://www.strasbourg.eu');
+            description = description.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
+            description = description.replace(/<a/g,'<a target=_blank');
+            description = description.replace(/style=\\"width: 300px;/g,'style=\\"align: center; width: 99%;');
+            description = description.replace(/\\n/g,'');
+            description = description.replace(/\\t/g,'');
+            description = description.replace('"}','');
+            description = description.replace('{}','');
+
+            // on lie les attributs des points au nouvelles entités billboard
+            //Renseignement des éléments de la boite d'information
+            billboard[i].name = String(entity.properties['name']);
+            billboard[i].description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+            if (Cesium.defined(entity.properties['imageurl'])) {
+              billboard[i].description += '<img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
+            }
+
+            billboard[i].description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
+            billboard[i].description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';
+            billboard[i].description += '<tr><td>Téléphone </td><td>' + String(entity.properties['phone']) + '</td></tr>';
+            billboard[i].description += '<tr><td>Adresse </td><td>' + String(entity.properties['address']) + '</td></tr>';
+            billboard[i].description += '<tr><td>Accès </td><td>' + acces + '</td></tr>';
+            billboard[i].description += '<tr><td>Lien vers le site de la piscine</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
+
+            // on récupère le json chargé
+            var attributPiscine = xmlhttp.response;
+            for(let j = 0; j < attributPiscine.length; j++) {
+              if(entity.name == attributPiscine[j].fields.name) {
+                billboard[i].description += '<tr><td>Statut</td><td>' + String(attributPiscine[j].fields.realtimestatus) + '</td></tr>';
+                billboard[i].description += '<tr><td>Occupation </td><td>' + String(attributPiscine[j].fields.occupation) + '</td></tr>';
+                billboard[i].description += '<tr><td>Heure de mise à jour </td><td>' + String(attributPiscine[j].fields.updatedate) + '</td></tr>';
+
+                // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit closed
+                if(Cesium.defined(attributPiscine[j].fields.occupation)) {
+                  var occupation = (attributPiscine[j].fields.occupation).toString();
+                } else {
+                  var occupation = 'CLOSED';
+                }
+
+                // on ajoute le label
+                var statut = dataSource.entities.add({
+                  position : coordLabel,
+                  label : {
+                    text : occupation,
+                    font : '24px Helvetica',
+                    outlineColor: Cesium.Color.fromCssColorString('#666a70'),
+                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                    horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+                    style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+                    scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+                    showBackground: true,
+                    backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
+                  }
+                });
+
+                // classification du label en différentes couleurs en fonction de la fréquentation
+                if(attributPiscine[j].fields.realtimestatus === 'GREEN') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
+                } else if(attributPiscine[j].fields.realtimestatus === 'ORANGE') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
+                } else if(attributPiscine[j].fields.realtimestatus === 'RED') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
+                } else if(attributPiscine[j].fields.realtimestatus === 'BLACK') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
+                } else if(attributPiscine[j].fields.realtimestatus === 'CLOSED') {
+                  statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
+                }
+
+              }
+            }
+
+            // le reste du tableau d'attributs
+            if (Cesium.defined(entity.properties['serviceandactivities'])) {
+              billboard[i].description += '<tr><td>Services et activités </td><td>' + service + '</td></tr>';
+            }
+            if (Cesium.defined(entity.properties['characteristics'])) {
+              billboard[i].description += '<tr><td>Caractéristiques </td><td>' + caracteristique + '</td></tr>';
+            }
+            if (Cesium.defined(entity.properties['exceptionalschedule'])) {
+              billboard[i].description += '<tr><td>Mesures exceptionnelles </td><td>' + exception + '</td></tr>';
+            }
+
+            billboard[i].description += '<tr><td>Informations supplémentaires </td><td>' +'<a href="https://www.strasbourg.eu/tarifs-piscines" target="_blank">Consultez les tarifs des piscines de l\'Eurométropole de Strasbourg.</a></td></tr>';
+            billboard[i].description +='</tbody></table><br/>';
+            billboard[i].description += '<p>' + description + '</p>';
+            billboard[i].description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Information sur les données</a><br/><br/>';
+
+          }
+
+        }
+      }
+
+    });
+    return promisse;
+
+  }
+
+  /**
+  *
+  * Afficher ou masquer la source de données "name" en fonction de la valeur de "show"
+  * Si elle n'a pas enore été affiché, la fonction va télécharger les données avec le lien "link" passé en parametre
+  * Enlève/Affiche les entités billboard
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} image Le lien vers l'image à utiliser pour le billboard
+  * @param  {Array} billbard Le tableau d'entités où stocker les billboard
+  * @param  {String} choice spécifique à la donnée, permet de charger de classifier
+  * @param  {Array} line Le tableau d'entités où stocker la ligne qu'on trace jusqu'au sol
+  * @param  {String} couleur la couleur de la ligne
+  * @param  {Object} options facultatif - Les options pour le chargement
+  */
+  updatePoint(link, name, image, billboard, choice, line, couleur, options) {
+    if(this.dataSources[name] !== undefined){
+      this.viewer.dataSources.remove(this.dataSources[name]);
+      this.viewer.scene.requestRender();
+      if(choice == 'piscine') {
+        globe.loadPiscine(link, name, image, billboard, choice, line, couleur, options);
+      } else {
+        globe.loadPoint(link, name, image, billboard, choice, line, couleur, options);
+      }
+
+      this.viewer.scene.requestRender();
+    }
+
+  }
+
   //---------------------------------------------------------------------------------------------------
   // les fonctions createTableau(entity) permettent de charger les tableaux d'attributs spécifiques à chaque couche de donnée
   //---------------------------------------------------------------------------------------------------
@@ -2017,7 +2200,6 @@ class Globe {
       entity.description += '<a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/pdf_commune/' + String(entity.properties['commune']) + '.pdf" target="_blank">Lien vers la présentation de la commune</a><br/><br/>';
     }
     entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
-
   }
 
   /**
@@ -2058,7 +2240,6 @@ class Globe {
     entity.description += '<tr><td>Licence </td><td>' + String(entity.properties['licence']) + '</td></tr>';
     entity.description +='</tbody></table>';
   }
-
 
   /**
   *
@@ -2183,7 +2364,6 @@ class Globe {
     entity.description +='</tbody></table>';
   }
 
-
   /**
   *
   * Afficher le tableau d'attributs avec le bon format
@@ -2211,9 +2391,7 @@ class Globe {
     billboard.description +='</tbody></table><br/>';
 
     billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
-
   }
-
 
   /**
   *
@@ -2235,7 +2413,6 @@ class Globe {
     entity.description += '<tr><td>debit</td><td>' + String(entity.properties['debit']) + '</td></tr>';
     entity.description +='</tbody></table><br/>';
     entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
-
   }
 
   /**
@@ -2268,8 +2445,6 @@ class Globe {
     if (Cesium.defined(entity.properties['additionalinformation'])) {
       billboard.description += '<p>' + String(entity.properties['additionalinformation']) + '</p>';
     }
-
-
   }
 
   /**
@@ -2289,218 +2464,12 @@ class Globe {
     entity.description += '<tr><td>Code zone</td><td>' + String(entity.properties['code_zone']) + '</td></tr>';
     entity.description +='</tbody></table><br/>';
     entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
-
   }
 
   //---------------------------------------------------------------------------------------------------
 
-  /**
-  * permet de charger le fichier des piscines + la fréquentation en temps réel
-  * (pas de géométrie sur la couche de la fréquentation)
-  *
-  * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
-  * @param  {String} link Le lien vers le fichier
-  * @param  {String} name Le nom qu'on donne au json
-  * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
-  * @param  {Array} billboard Le tableau d'entités où stocker les billboards
-  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format
-  * @param  {Array} line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
-  * @param  {String} couleur La couleur de la ligne au format '#FFFFFF'
-  * @param  {Object} options facultatif - Les options pour le chargement
-  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
-  */
-  loadPiscine(link, name, image, billboard, choice, line, couleur, options = {}){
-    let promisse = Cesium.GeoJsonDataSource.load(link, {
-      markerSize: 0 //pour que l'épingle n'apparaisse pas
-    });
-    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
-    this.viewer.scene.logarithmicDepthBuffer = false; // idem
-    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
 
-
-    promisse.then((dataSource) => {
-      // Ajoute le json dans la liste des dataSource
-      this.viewer.dataSources.add(dataSource);
-      this.dataSources[name] = dataSource;
-      this.hideLoader();
-
-      let entities = dataSource.entities.values;
-
-      // on récupère le fichier json de la fréquentation en temps réel
-      var piscineURL = 'https://data.strasbourg.eu/api/records/1.0/download?dataset=frequentation-en-temps-reel-des-piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json';
-      var xmlhttp = new XMLHttpRequest();
-      this.xmlhttp = this;
-      xmlhttp.open('GET', piscineURL);
-      xmlhttp.responseType = 'json';
-      xmlhttp.send();
-
-      // une fois que le fichier est bien chargé
-      xmlhttp.onreadystatechange = function () {
-        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-
-          for(let i = 0; i < 8; i++) {
-            let entity = entities[i];
-            // on récupère les coordonnées des points importés
-            var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
-            var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
-            var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
-
-            var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
-            let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
-            let longitude = cartographic.longitude;
-            let latitude = cartographic.latitude;
-            // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
-            let height = Number(225 + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
-            var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
-
-            // on ajoute une entité billboard à chaque point, 225m plus haut
-            // l'entité billboard ne conserve pas les attributs
-            billboard.push(globe.createBillboard(coordHauteur, image, false));
-            // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
-
-            //on trace une ligne partant du sol jusqu'à la base du billboard
-            var coordLigne = [position, coordHauteur];
-            line.push(globe.drawLine(coordLigne, 2, couleur, 1, false));
-            globe.viewer.scene.requestRender();
-
-            // coordonnées 15m en dessous pour la lisibilité du texte
-            let heightLabel = Number(210 + cartographic.height);
-            var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
-
-            // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasite)
-            var acces = String(entity.properties['access']);
-            acces = acces.replace('{"fr_FR": "', '');
-            acces = acces.replace(/\\n/g,'');
-            acces = acces.replace(/\\t/g,'');
-            acces = acces.replace(/\\/g,'');
-            acces = acces.replace('"}','');
-            var service = String(entity.properties['serviceandactivities']);
-            service = service.replace('{"fr_FR": "', '');
-            service = service.replace(/\\n/g,'');
-            service = service.replace(/\\t/g,'');
-            service = service.replace('"}','');
-            var caracteristique = String(entity.properties['characteristics']);
-            caracteristique = caracteristique.replace('{"fr_FR": "', '');
-            caracteristique = caracteristique.replace(/\\n/g,'');
-            caracteristique = caracteristique.replace(/\\t/g,'');
-            caracteristique = caracteristique.replace(/\\/g,'');
-            caracteristique = caracteristique.replace('"}','');
-            var exception = String(entity.properties['exceptionalschedule']);
-            exception = exception.replace('{"fr_FR": "', '');
-            exception = exception.replace(/\\n/g,'');
-            exception = exception.replace(/\\/g,'');
-            exception = exception.replace('"}','');
-            var description = String(entity.properties['description']);
-            description = description.replace('{"fr_FR": "', '');
-            description = description.replace(/href=\\"/g, 'href=https://www.strasbourg.eu');
-            description = description.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
-            description = description.replace(/<a/g,'<a target=_blank');
-            description = description.replace(/style=\\"width: 300px;/g,'style=\\"align: center; width: 99%;');
-            description = description.replace(/\\n/g,'');
-            description = description.replace(/\\t/g,'');
-            description = description.replace('"}','');
-            description = description.replace('{}','');
-
-            // on lie les attributs des points au nouvelles entités billboard
-            //Renseignement des éléments de la boite d'information
-            billboard[i].name = String(entity.properties['name']);
-            billboard[i].description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-            if (Cesium.defined(entity.properties['imageurl'])) {
-              billboard[i].description += '<img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
-            }
-
-            billboard[i].description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
-            billboard[i].description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';
-            billboard[i].description += '<tr><td>Téléphone </td><td>' + String(entity.properties['phone']) + '</td></tr>';
-            billboard[i].description += '<tr><td>Adresse </td><td>' + String(entity.properties['address']) + '</td></tr>';
-            billboard[i].description += '<tr><td>Accès </td><td>' + acces + '</td></tr>';
-            billboard[i].description += '<tr><td>Lien vers le site de la piscine</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
-
-            // on récupère le json chargé
-            var attributPiscine = xmlhttp.response;
-            for(let j = 0; j < attributPiscine.length; j++) {
-              if(entity.name == attributPiscine[j].fields.name) {
-                billboard[i].description += '<tr><td>Statut</td><td>' + String(attributPiscine[j].fields.realtimestatus) + '</td></tr>';
-                billboard[i].description += '<tr><td>Occupation </td><td>' + String(attributPiscine[j].fields.occupation) + '</td></tr>';
-                billboard[i].description += '<tr><td>Heure de mise à jour </td><td>' + String(attributPiscine[j].fields.updatedate) + '</td></tr>';
-
-                // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit fermé
-                if(Cesium.defined(attributPiscine[j].fields.occupation)) {
-                  var occupation = (attributPiscine[j].fields.occupation).toString();
-                } else {
-                  var occupation = 'CLOSED';
-                }
-
-                // on ajoute le label
-                var statut = dataSource.entities.add({
-                  position : coordLabel,
-                  label : {
-                    text : occupation,
-                    font : '24px Helvetica',
-                    outlineColor: Cesium.Color.fromCssColorString('#666a70'),
-                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
-                    style : Cesium.LabelStyle.FILL_AND_OUTLINE,
-                    scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
-                    showBackground: true,
-                    backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
-                  }
-                });
-
-                // classification du label en différente couleur en fonction de la fréquentation
-                if(attributPiscine[j].fields.realtimestatus === 'GREEN') {
-                  statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
-                } else if(attributPiscine[j].fields.realtimestatus === 'ORANGE') {
-                  statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
-                } else if(attributPiscine[j].fields.realtimestatus === 'RED') {
-                  statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
-                } else if(attributPiscine[j].fields.realtimestatus === 'BLACK') {
-                  statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
-                } else if(attributPiscine[j].fields.realtimestatus === 'CLOSED') {
-                  statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
-                }
-
-              }
-            }
-
-            // le reste du tableau d'attributs
-            if (Cesium.defined(entity.properties['serviceandactivities'])) {
-              billboard[i].description += '<tr><td>Services et activités </td><td>' + service + '</td></tr>';
-            }
-            if (Cesium.defined(entity.properties['characteristics'])) {
-              billboard[i].description += '<tr><td>Caractéristiques </td><td>' + caracteristique + '</td></tr>';
-            }
-            if (Cesium.defined(entity.properties['exceptionalschedule'])) {
-              billboard[i].description += '<tr><td>Mesures exceptionnelles </td><td>' + exception + '</td></tr>';
-            }
-
-            billboard[i].description += '<tr><td>Informations supplémentaires </td><td>' +'<a href="https://www.strasbourg.eu/tarifs-piscines" target="_blank">Consultez les tarifs des piscines de l\'Eurométropole de Strasbourg.</a></td></tr>';
-            billboard[i].description +='</tbody></table><br/>';
-            billboard[i].description += '<p>' + description + '</p>';
-            billboard[i].description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Information sur les données</a><br/><br/>';
-
-          }
-
-        }
-      }
-
-    });
-    return promisse;
-
-  }
-
-  updatePoint(link, name, image, billboard, choice, line, couleur, options) {
-    if(this.dataSources[name] !== undefined){
-      this.viewer.dataSources.remove(this.dataSources[name]);
-      this.viewer.scene.requestRender();
-
-      globe.loadPiscine(link, name, image, billboard, choice, line, couleur, options);
-      this.viewer.scene.requestRender();
-    }
-
-  }
-
-  flecheNord() {
+  /*flecheNord() {
     var camera = globe.viewer.camera.positionWC;
 
     let heading = globe.viewer.camera.heading;
@@ -2522,8 +2491,8 @@ class Globe {
       }
     });
 
-  }
+  }*/
 
 
 
-}
+} // fin de la classe Globe
