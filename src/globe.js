@@ -286,7 +286,8 @@ class Globe {
         imageBasedLightingFactor : new Cesium.Cartesian2(2,2),
         luminanceAtZenith : 0.5,
         immediatelyLoadDesiredLevelOfDetail : false,
-        foveatedConeSize : 0.5
+        foveatedConeSize : 0.5,
+        skipLevelOfDetail: true
       });
       return tileset;
     }
@@ -309,7 +310,8 @@ class Globe {
         imageBasedLightingFactor : new Cesium.Cartesian2(2,2),
         luminanceAtZenith : 0.5,
         immediatelyLoadDesiredLevelOfDetail : false,
-        foveatedConeSize : 0.5
+        foveatedConeSize : 0.5,
+        skipLevelOfDetail: true
       });
       return tileset;
     }
@@ -478,6 +480,7 @@ class Globe {
         });
       } else {
         this.supprSouris();
+        globe.viewer.scene.requestRender();
       }
     }
 
@@ -500,7 +503,6 @@ class Globe {
           let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7); // en degrés décimaux
           let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7);
           let height = cartographic.height.toFixed(3);
-          console.log(height);
           var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
           globe.coordX.innerHTML = coords[0].toFixed(2);
           globe.coordY.innerHTML = coords[1].toFixed(2);
@@ -707,7 +709,8 @@ class Globe {
         billboard : {
           image : url,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          sizeInMeters: size
+          sizeInMeters: size,
+          scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0)
         }
       });
       return symbol;
@@ -796,7 +799,6 @@ class Globe {
     drawPolygon(positionData, couleur, transparence) {
       var shape = this.viewer.entities.add({
         polygon: {
-          id: 'polygon',
           hierarchy: positionData,
           material : Cesium.Color.fromCssColorString(couleur).withAlpha(transparence)
         }
@@ -870,6 +872,9 @@ class Globe {
             activeShapePoints.push(earthPosition);
             activeShapePoints.push(earthPosition);
             var dynamicPositions = new Cesium.CallbackProperty(function () {
+              if (choice === 'polygon' || choice === 'volume') {
+                return new Cesium.PolygonHierarchy(activeShapePoints);
+              }
               return activeShapePoints;
             }, false);
             largeur = parseFloat(largeur);
@@ -1045,6 +1050,7 @@ class Globe {
         }
         this.viewer.scene.requestRender();
       });
+      this.viewer.scene.requestRender();
     }
 
     /**
@@ -1419,6 +1425,7 @@ class Globe {
               color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
               colors[entity.properties[options.classificationField]] = color;
             }
+            entity.name = choice;
 
             if(choice === 'Limites de sections') {
               let longitudeNom = entity._properties.geo_point_2d._value[1];
@@ -1589,7 +1596,7 @@ class Globe {
   *
   * @param  {String} link Le lien vers le fichier
   * @param  {String} name Le nom qu'on donne au json
-  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format
+  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format et de donner un nom aux entités
   * @param  {Object} options facultatif - Les options pour le chargement
   * @return  {GeoJsonDataSource} le json une fois que tout est chargé
   */
@@ -1642,9 +1649,7 @@ class Globe {
             entity.polyline.arcType = Cesium.ArcType.GEODESIC;
           }
 
-          if(choice == 'traffic') {
-            this.createTableauTraffic(entity)
-          }
+          entity.name = choice;
         }
 
         globe.viewer.scene.requestRender();
@@ -1851,7 +1856,7 @@ class Globe {
           let entity = entities[i];
 
           // on récupère la date dans les attributs et on enlève un jour
-          if(choice === 'qualiteAir') {
+          if(choice === 'Qualité air communes Eurométropole') {
             var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date_echeance._value);
             var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
             var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
@@ -1895,9 +1900,7 @@ class Globe {
             entity.polygon.arcType = Cesium.ArcType.GEODESIC;
           }
 
-          if(choice === 'qualiteAir') {
-            this.createTableauQualiteAir(entity)
-          }
+          entity.name = choice;
           // on trace les contours des entités
           line.push(this.drawLine(entity.polygon.hierarchy._value.positions, 3, '#FFFFFF', 1, true));
         }
@@ -1944,8 +1947,14 @@ class Globe {
       }
     } else{
       if(this.dataSources[name] !== undefined){
-        // on rezoome la timeline sur aujourd'hui
+        // on rezoome la timeline sur aujourd'hui et on reset les paramètres de l'horloge
+        var today = Cesium.JulianDate.now();
+        var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
         globe.viewer.clock.shouldAnimate = false;
+        globe.viewer.clock.currentTime = today;
+        globe.viewer.clock.startTime = Cesium.JulianDate.addDays(today, -10, new Cesium.JulianDate());
+        globe.viewer.clock.stopTime = Cesium.JulianDate.addDays(today, 10, new Cesium.JulianDate());
+        globe.viewer.clock.multiplier = 1.0;
         globe.viewer.timeline.zoomTo(today, demain);
 
         this.dataSources[name].show = false;
@@ -2007,9 +2016,8 @@ class Globe {
     if (Cesium.defined(entity.properties['commune'])) {
       entity.description += '<a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/pdf_commune/' + String(entity.properties['commune']) + '.pdf" target="_blank">Lien vers la présentation de la commune</a><br/><br/>';
     }
-    if (Cesium.defined(entity.properties['commune'])) {
-      entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
-    }
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+
   }
 
   /**
@@ -2287,7 +2295,8 @@ class Globe {
   //---------------------------------------------------------------------------------------------------
 
   /**
-  * permet de charger des fichiers geojson ponctuels
+  * permet de charger le fichier des piscines + la fréquentation en temps réel
+  * (pas de géométrie sur la couche de la fréquentation)
   *
   * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
   * @param  {String} link Le lien vers le fichier
@@ -2317,6 +2326,7 @@ class Globe {
 
       let entities = dataSource.entities.values;
 
+      // on récupère le fichier json de la fréquentation en temps réel
       var piscineURL = 'https://data.strasbourg.eu/api/records/1.0/download?dataset=frequentation-en-temps-reel-des-piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json';
       var xmlhttp = new XMLHttpRequest();
       this.xmlhttp = this;
@@ -2324,6 +2334,7 @@ class Globe {
       xmlhttp.responseType = 'json';
       xmlhttp.send();
 
+      // une fois que le fichier est bien chargé
       xmlhttp.onreadystatechange = function () {
         if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 
@@ -2352,7 +2363,7 @@ class Globe {
             line.push(globe.drawLine(coordLigne, 2, couleur, 1, false));
             globe.viewer.scene.requestRender();
 
-            // coordonnées légèrement décalées pour la lisibilité du texte
+            // coordonnées 15m en dessous pour la lisibilité du texte
             let heightLabel = Number(210 + cartographic.height);
             var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
 
@@ -2381,6 +2392,10 @@ class Globe {
             exception = exception.replace('"}','');
             var description = String(entity.properties['description']);
             description = description.replace('{"fr_FR": "', '');
+            description = description.replace(/href=\\"/g, 'href=https://www.strasbourg.eu');
+            description = description.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
+            description = description.replace(/<a/g,'<a target=_blank');
+            description = description.replace(/style=\\"width: 300px;/g,'style=\\"align: center; width: 99%;');
             description = description.replace(/\\n/g,'');
             description = description.replace(/\\t/g,'');
             description = description.replace('"}','');
@@ -2401,6 +2416,7 @@ class Globe {
             billboard[i].description += '<tr><td>Accès </td><td>' + acces + '</td></tr>';
             billboard[i].description += '<tr><td>Lien vers le site de la piscine</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
 
+            // on récupère le json chargé
             var attributPiscine = xmlhttp.response;
             for(let j = 0; j < attributPiscine.length; j++) {
               if(entity.name == attributPiscine[j].fields.name) {
@@ -2408,27 +2424,31 @@ class Globe {
                 billboard[i].description += '<tr><td>Occupation </td><td>' + String(attributPiscine[j].fields.occupation) + '</td></tr>';
                 billboard[i].description += '<tr><td>Heure de mise à jour </td><td>' + String(attributPiscine[j].fields.updatedate) + '</td></tr>';
 
+                // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit fermé
                 if(Cesium.defined(attributPiscine[j].fields.occupation)) {
-                  var occupation = attributPiscine[j].fields.occupation;
+                  var occupation = (attributPiscine[j].fields.occupation).toString();
                 } else {
                   var occupation = 'CLOSED';
                 }
 
+                // on ajoute le label
                 var statut = dataSource.entities.add({
                   position : coordLabel,
                   label : {
                     text : occupation,
                     font : '24px Helvetica',
-                    outlineColor: Cesium.Color.WHITE,
+                    outlineColor: Cesium.Color.fromCssColorString('#666a70'),
                     verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                     horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
-                    outlineWidth : 2,
                     style : Cesium.LabelStyle.FILL_AND_OUTLINE,
-                    scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0)
+                    scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+                    showBackground: true,
+                    backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
                   }
                 });
 
-                /*if(attributPiscine[j].fields.realtimestatus === 'GREEN') {
+                // classification du label en différente couleur en fonction de la fréquentation
+                if(attributPiscine[j].fields.realtimestatus === 'GREEN') {
                   statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
                 } else if(attributPiscine[j].fields.realtimestatus === 'ORANGE') {
                   statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
@@ -2438,11 +2458,12 @@ class Globe {
                   statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
                 } else if(attributPiscine[j].fields.realtimestatus === 'CLOSED') {
                   statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
-                }*/
+                }
 
               }
             }
 
+            // le reste du tableau d'attributs
             if (Cesium.defined(entity.properties['serviceandactivities'])) {
               billboard[i].description += '<tr><td>Services et activités </td><td>' + service + '</td></tr>';
             }
@@ -2476,6 +2497,30 @@ class Globe {
       globe.loadPiscine(link, name, image, billboard, choice, line, couleur, options);
       this.viewer.scene.requestRender();
     }
+
+  }
+
+  flecheNord() {
+    var camera = globe.viewer.camera.positionWC;
+
+    let heading = globe.viewer.camera.heading;
+    let pitch = globe.viewer.camera.pitch;
+    let roll = globe.viewer.camera.roll;
+    var orientation = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+    var north = new Cesium.HeadingPitchRoll(Cesium.Math.toRadians(0.0), Cesium.Math.toRadians(-90), 0);
+
+
+    var symbol = this.viewer.entities.add({
+      position : new Cesium.CallbackProperty(function (time, result) {
+
+        endLongitude = startLongitude + 0.001 * Cesium.JulianDate.secondsDifference(time, startTime);
+      return Cesium.Cartesian3.fromDegreesArray( [startLongitude, startLatitude, endLongitude, startLatitude], Cesium.Ellipsoid.WGS84, result);
+    }, false),
+      billboard : {
+        image : "<img src='src/img/icons8-nord.png'>",
+        sizeInMeters: true
+      }
+    });
 
   }
 

@@ -439,17 +439,20 @@ class Menu {
 
     // supprime toutes les entités
     document.querySelector('#suppr').addEventListener('click', function() {
-      globe.viewer.entities.removeAll();
-      for(var i = 0; i <= billboard.length+1; i++){
+      for(var i = 0; i <= billboard.length+10; i++){
+        globe.viewer.entities.remove(billboard[i]);
         billboard.pop();
       }
       for(var i = 0; i <= line.length+1; i++){
+        globe.viewer.entities.remove(line[i]);
         line.pop();
       }
       for(var i = 0; i <= surface.length+1; i++){
+        globe.viewer.entities.remove(surface[i]);
         surface.pop();
       }
       for(var i = 0; i <= volume.length+1; i++){
+        globe.viewer.entities.remove(volume[i]);
         volume.pop();
       }
     });
@@ -536,11 +539,13 @@ class Menu {
         let coordSurf = [];
         let arraySurf = [];
         let k = 0;
-        while (k < surface[i].polygon.hierarchy._value.length) {
+
+        while (k < surface[i].polygon.hierarchy._value.positions.length) {
+
           var typeSurf = {"type" : "Feature", "properties" : {}, "geometry" : {}};
           typeSurf["geometry"] = {"type" : "Polygon",  "coordinates" : [[]]};
 
-          let cartesian = new Cesium.Cartesian3(surface[i].polygon.hierarchy._value[k].x, surface[i].polygon.hierarchy._value[k].y, surface[i].polygon.hierarchy._value[k].z);
+          let cartesian = new Cesium.Cartesian3(surface[i].polygon.hierarchy._value.positions[k].x, surface[i].polygon.hierarchy._value.positions[k].y, surface[i].polygon.hierarchy._value.positions[k].z);
           let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
           let longitude = Cesium.Math.toDegrees(cartographic.longitude);
           let latitude = Cesium.Math.toDegrees(cartographic.latitude);
@@ -550,7 +555,7 @@ class Menu {
         }
 
         // on rajoute la première coordonnée à la fin de la liste pour permettre l'affichage
-        let cartesian = new Cesium.Cartesian3(surface[i].polygon.hierarchy._value[0].x, surface[i].polygon.hierarchy._value[0].y, surface[i].polygon.hierarchy._value[0].z);
+        let cartesian = new Cesium.Cartesian3(surface[i].polygon.hierarchy._value.positions[0].x, surface[i].polygon.hierarchy._value.positions[0].y, surface[i].polygon.hierarchy._value.positions[0].z);
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         let longitude = Cesium.Math.toDegrees(cartographic.longitude);
         let latitude = Cesium.Math.toDegrees(cartographic.latitude);
@@ -574,11 +579,11 @@ class Menu {
         let coordVol = [];
         let arrayVol = [];
         let k = 0;
-        while (k < volume[i].polygon.hierarchy._value.length) {
+        while (k < volume[i].polygon.hierarchy._value.positions.length) {
           var typeVol = {"type" : "Feature", "properties" : {}, "geometry" : {}};
           typeVol["geometry"] = {"type" : "Polygon",  "coordinates" : [[]]};
 
-          let cartesian = new Cesium.Cartesian3(volume[i].polygon.hierarchy._value[k].x, volume[i].polygon.hierarchy._value[k].y, volume[i].polygon.hierarchy._value[k].z);
+          let cartesian = new Cesium.Cartesian3(volume[i].polygon.hierarchy._value.positions[k].x, volume[i].polygon.hierarchy._value.positions[k].y, volume[i].polygon.hierarchy._value.positions[k].z);
           let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
           let longitude = Cesium.Math.toDegrees(cartographic.longitude);
           let latitude = Cesium.Math.toDegrees(cartographic.latitude);
@@ -588,7 +593,7 @@ class Menu {
         }
 
         // on rajoute la première coordonnée à la fin de la liste pour permettre l'affichage
-        let cartesian = new Cesium.Cartesian3(volume[i].polygon.hierarchy._value[0].x, volume[i].polygon.hierarchy._value[0].y, volume[i].polygon.hierarchy._value[0].z);
+        let cartesian = new Cesium.Cartesian3(volume[i].polygon.hierarchy._value.positions[0].x, volume[i].polygon.hierarchy._value.positions[0].y, volume[i].polygon.hierarchy._value.positions[0].z);
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         let longitude = Cesium.Math.toDegrees(cartographic.longitude);
         let latitude = Cesium.Math.toDegrees(cartographic.latitude);
@@ -693,6 +698,17 @@ class Menu {
     // Créé le calendrier
     this.datepicker.on('change', () => {
       this.onDateChanged(this.datepicker.val());
+
+      // on remet la date au bon format
+      var annee = this.datepicker.val().substring(6,10);
+      var mois = this.datepicker.val().substring(3,5);
+      var jour = this.datepicker.val().substring(0,2);
+      var date = (annee + '-' + mois + '-' + jour).toString();
+      var dateOmbre = Cesium.JulianDate.fromIso8601(date);
+
+      // on centre l'horloge sur la date choisie
+      globe.viewer.clock.startTime = dateOmbre;
+      globe.viewer.timeline.zoomTo(dateOmbre, Cesium.JulianDate.addDays(dateOmbre, 1, new Cesium.JulianDate()));
     });
 
     /*

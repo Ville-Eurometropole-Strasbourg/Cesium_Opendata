@@ -233,16 +233,17 @@ html, body {
   float: left;
   margin-bottom: 5px;
   text-align: center;
+
 }
 
 .legend .legend-text{
   padding-left: 5px;
-  text-align: center;
+  text-align: left;
 }
 
 .legend .legend-element:first-child{
   margin-top: 5px;
-  text-align: center;
+  text-align: left;
 }
 
 .legend .legend-element:after{
@@ -255,6 +256,8 @@ html, body {
   display: block;
   height: 3px;
   line-height: 3px;
+  position: relative;
+  top: 3px;
   width: 30%;
   float: left;
   margin-bottom: 5px;
@@ -457,13 +460,8 @@ i {
   display:block;
 }
 
-.textRefresh {
-  display: none;
-  background-color: black;
-  color: #fff;
+.nord {
   position: absolute;
-}
-
-#boutonrefresh:hover .textRefresh {
-  display: block;
+  right: 20px;
+  top: 100px;
 }

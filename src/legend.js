@@ -83,6 +83,7 @@ class LegendManager {
       legendColor.classList.add('legend-color');
       legendColor.style = "background-color: " + color + ";";
     } else if(choice === 'point') {
+      legendColor.classList.add('legend-color');
       legendColor.innerHTML = symbol;
     }
 
