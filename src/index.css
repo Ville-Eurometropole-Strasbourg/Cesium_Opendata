@@ -65,9 +65,10 @@ html, body {
   width: 275px;
   color: white;
   padding: 5px 5px 0 5px;
-  bottom: 120px;
+  bottom: 80px;
   overflow-y: auto;
   overflow-x: none;
+  pointer-events: none;
 }
 
 /* position quand le menu est ouvert */
@@ -82,6 +83,7 @@ html, body {
   background-color: rgba(57, 71, 75, 0.90);
   border: 1px solid #000;
   border-radius: 5px;
+  pointer-events: auto;
 }
 
 /* les titres des légendes et formulaires */
@@ -208,7 +210,7 @@ html, body {
 
 /*
  *
- * Style des légendes
+ * Style des légendes et formulaires
  *
  */
 .backdrop {
@@ -224,6 +226,7 @@ html, body {
   line-height: 150%;
   font-size: small;
   overflow: auto;
+  pointer-events: auto;
 }
 
 .backdrop a:link, .backdrop a:visited, .backdrop a:hover {
@@ -455,11 +458,19 @@ i {
   z-index: 0;
 }
 
+#poubelleDiv {
+  position: absolute;
+  right: 45px;
+  top: 7px;
+  z-index: 1;
+  border: none;
+}
+
 /* style de l'annotation pour tracer les figures */
 .annotation {
   position: absolute;
-  bottom: 50px;
-  right: 10px;
+  bottom: 40px;
+  right: 50px;
   padding: 5px 5px 0 5px;
   display: block;
   background: rgba(42, 42, 42, 0.8);
@@ -528,4 +539,5 @@ i {
 /* les éléments qu'on rend visible */
 .show {
   display:block;
+  pointer-events: auto;
 }

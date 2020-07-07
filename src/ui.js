@@ -78,6 +78,10 @@ class Menu {
 
     // la fonction pour gérer les paramètres d'affichage du photomaillage
 	  this.HSVinit();
+
+    // La fonction pour gérer la zone morte
+    this.panelGauche();
+
   }
   /*
   * Fin du constructeur
@@ -120,6 +124,23 @@ class Menu {
         $(element).hide();
       }
     });
+  }
+
+  /**
+  * Gère la zone morte sur la gauche de l'écran
+  * Permet de pouvoir cliquer dans la zone quand aucun formulaire ni légende n'est affiché
+  *
+  */
+  panelGauche() {
+    document.querySelector("#left-pane").addEventListener('mouseover', (e) => {
+      var panelGauche = document.getElementById("left-pane");
+      if ($('#left-pane').prop('scrollHeight') > $('#left-pane').prop('clientHeight')) {
+        panelGauche.style = "pointer-events: auto;";
+      } else {
+        panelGauche.style = "pointer-events: none;";
+      }
+    });
+
   }
 
   /**
@@ -194,16 +215,17 @@ class Menu {
       // Tout effacer
       globe.supprSouris();
       this.coordsList.classList.add('hidden');
-      this.distanceList.classList.add('hidden');
+      $("#distanceList").addClass('hidden');
       this.aideCheckbox.classList.add('hidden');
       // Enlever les entités
-      for(var i = 0; i < dline.length; i++){
+      for(var i = 0; i < dline.length+10; i++){
         globe.viewer.entities.remove(dline[i]);
       }
       // Vider le tableau
       for(var j = 0; j <= dline.length+1; j++){
         dline.pop();
       }
+
       this.aireList.classList.add('hidden');
       this.aideCheckbox.classList.add('hidden');
       for(var i = 0; i < dsurface.length; i++){
@@ -217,7 +239,7 @@ class Menu {
 
     document.querySelector('#point').addEventListener('click', (e) => {
       globe.supprSouris();
-      this.distanceList.classList.add('hidden');
+      $("#distanceList").addClass('hidden');
       this.aideCheckbox.classList.add('hidden');
       this.aireList.classList.add('hidden');
       this.aideCheckbox.classList.add('hidden');
@@ -238,7 +260,7 @@ class Menu {
       var hauteurVol;
       var url;
       globe.updateShape(choice, choice2, 3, '#FF0000', 1, hauteurVol, url, billboard, line, surface, volume, dline, dsurface);
-      this.distanceList.classList.remove('hidden');
+      $("#distanceList").removeClass('hidden');
       this.aideCheckbox.classList.remove('hidden');
       globe.viewer.scene.requestRender();
     });
@@ -246,7 +268,7 @@ class Menu {
     document.querySelector('#surface').addEventListener('click', (e) => {
       globe.supprSouris();
       this.coordsList.classList.add('hidden');
-      this.distanceList.classList.add('hidden');
+      $("#distanceList").addClass('hidden');
       this.aideCheckbox.classList.add('hidden');
 
       var choice = 'polygon';
@@ -828,16 +850,73 @@ class Menu {
     */
 
     document.querySelector('#nord').addEventListener('click', function() {
-      globe.fly(globe.viewer.camera.position, Cesium.Math.toRadians(0.0), globe.viewer.camera.pitch, 0);
+      // on récupère les coordonnées du centre de l'écran
+      var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
+      var test = globe.viewer.scene.pickPosition(windowPosition); // on les transforme en coordonnées cartographiques
+
+      // on calcule le range de la caméra, càd la distance depuis le centre
+      var CC3 = Cesium.Cartesian3;
+      var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
+
+      // on oriente la caméra avec pour position le centre de l'écran et le range d'origine
+      var location = new Cesium.BoundingSphere(test);
+      var zoom = new Cesium.HeadingPitchRange(Cesium.Math.toRadians(0.0), globe.viewer.camera.pitch, range);
+      globe.viewer.camera.flyToBoundingSphere(location, {
+        offset : zoom
+      });
+
     });
     document.querySelector('#ouest').addEventListener('click', function() {
-      globe.fly(globe.viewer.camera.position, Cesium.Math.toRadians(-90), globe.viewer.camera.pitch, 0);
+      var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
+      console.log(windowPosition);
+      var test = globe.viewer.scene.pickPosition(windowPosition);
+      console.log(test);
+
+      var CC3 = Cesium.Cartesian3;
+      var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
+
+      var location = new Cesium.BoundingSphere(test, 1);
+      var zoom = new Cesium.HeadingPitchRange(Cesium.Math.toRadians(-90), globe.viewer.camera.pitch, range);
+      globe.viewer.camera.flyToBoundingSphere(location, {
+        offset : zoom
+      });
+
     });
     document.querySelector('#est').addEventListener('click', function() {
-      globe.fly(globe.viewer.camera.position, Cesium.Math.toRadians(90), globe.viewer.camera.pitch, 0);
+      var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
+      console.log(windowPosition);
+      var test = globe.viewer.scene.pickPosition(windowPosition);
+      console.log(test);
+
+      var CC3 = Cesium.Cartesian3;
+      var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
+
+      var location = new Cesium.BoundingSphere(test, 1);
+      var zoom = new Cesium.HeadingPitchRange(Cesium.Math.toRadians(90), globe.viewer.camera.pitch, range);
+      globe.viewer.camera.flyToBoundingSphere(location, {
+        offset : zoom
+      });
     });
     document.querySelector('#sud').addEventListener('click', function() {
-      globe.fly(globe.viewer.camera.position, Cesium.Math.toRadians(180), globe.viewer.camera.pitch, 0);
+      var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
+      console.log(windowPosition);
+      var test = globe.viewer.scene.pickPosition(windowPosition);
+      console.log(test);
+
+      var CC3 = Cesium.Cartesian3;
+      var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
+
+      var location = new Cesium.BoundingSphere(test, 1);
+      var zoom = new Cesium.HeadingPitchRange(Cesium.Math.toRadians(180), globe.viewer.camera.pitch, range);
+      globe.viewer.camera.flyToBoundingSphere(location, {
+        offset : zoom
+      });
+    });
+
+    // bouton poubelle en haut à droite
+    document.querySelector('#poubelle').addEventListener('click', function() {
+      globe.viewer.entities.removeAll();
+      globe.viewer.scene.requestRender();
     });
 
   }

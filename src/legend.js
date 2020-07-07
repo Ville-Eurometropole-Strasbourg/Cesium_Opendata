@@ -87,9 +87,6 @@ class LegendManager {
       legendColor.innerHTML = symbol;
     }
 
-
-
-
     let legendText = document.createElement('span');
     legendText.classList.add('legend-text');
     legendText.innerHTML = label;

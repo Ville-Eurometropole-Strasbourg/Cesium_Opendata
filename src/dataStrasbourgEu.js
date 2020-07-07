@@ -24,6 +24,7 @@ class Data {
     var enableODPatrimoine = false;
     var enableODQualiteAir = false;
     var enableODPiscine = false;
+    var enableODVitaBoucle = false;
     var enableODLimitesCommunes = false;
     var enableODLimitesSections = false;
     var enableODCadastreBlaesheim = false;
@@ -97,6 +98,9 @@ class Data {
       break;
       case 'enableodpiscine':
       enableODPiscine = true;
+      break;
+      case 'enableodvitaboucle':
+      enableODVitaBoucle = true;
       break;
       case 'enableodlimitescommunes':
       enableODLimitesCommunes = true;
@@ -1845,6 +1849,41 @@ class Data {
 
     });
 
+// --------------------------------------------------------------------------------------------------------------
+
+    document.querySelector('#ODPLUdetaille').addEventListener('change', (e) => {
+      globe.showPolygon(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_decoupage&format=geojson', 'PLU detaille', lineTerrasse , '#FFFFFF', 0, '#708090', 0.5, {
+        classification: true,
+        classificationField: 'echelle'
+      });
+
+      /*if(e.target.checked){
+        var pludetaille = globe.viewer.entities.add({
+          polygon: {
+            hierarchy: Cesium.Cartesian3.fromRadiansArray([
+              0.13409615484666773,
+              0.8482662467760245,
+              0.1356682982396785,
+              0.848284967037624,
+              0.1356577303015877,
+              0.8474863781321933,
+              0.13384067919821924,
+              0.8475629459909885,
+            ]),
+            //material: "https://data.strasbourg.eu/api/datasets/1.0/carte_plu_detaille/attachments/carte_plu_detaille_png/",
+            material: "https://sig.strasbourg.eu/datastrasbourg/plu_planches/6.1-PLU_zonage%202000/6.1-PLU_zonage2000_80_092019.pdf",
+            classificationType: Cesium.ClassificationType.CESIUM_3D_TILE,
+          },
+        });
+
+        globe.viewer.scene.requestRender();
+
+      } else {
+        //globe.viewer.entities.remove(pludetaille);
+        globe.viewer.scene.requestRender();
+      }*/
+    });
+
     // --------------------------------------------------------------------------------------------------------------
     // Affichage de la couche des terrasses 2019 OPENDATA //
     var colorsTerrassesClassif = {
@@ -1943,7 +1982,7 @@ class Data {
     if (enableODPatrimoine) {
       document.getElementById("ODPatrimoine").checked = true;
 
-      globe.showPoint(true, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
+      globe.showPoint(true, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', undefined, 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
 
       globe.viewer.scene.requestRender();
 
@@ -1951,7 +1990,7 @@ class Data {
     }
 
     document.querySelector('#ODPatrimoine').addEventListener('change', (e) => {
-      globe.showPoint(e.target.checked, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
+      globe.showPoint(e.target.checked, 'ODPatrimoine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', undefined, 'src/img/billboard/marker_red.png', billboardPatrimoine, 'patrimoine', linePatrimoine, '#cf1204', {});
 
       globe.viewer.scene.requestRender();
 
@@ -1994,11 +2033,21 @@ class Data {
 
     };
 
+    // paramètre pour l'horloge
     var today = Cesium.JulianDate.now();
     var hier = Cesium.JulianDate.addDays(today, -1, new Cesium.JulianDate());
     var start = Cesium.JulianDate.addDays(today, -8, new Cesium.JulianDate());
 
     if (enableODQualiteAir) {
+      // quand on met les paramètres dans l'url l'animation se lance directement
+      globe.viewer.clock.startTime = start;
+      globe.viewer.clock.currentTime = start;
+      globe.viewer.clock.stopTime = today;
+      globe.viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; // loop when we hit the end time
+      globe.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+      globe.viewer.clock.multiplier = 50000; // how much time to advance each tick
+      globe.viewer.clock.shouldAnimate = true; // Animation on by default
+
       document.getElementById("ODQualiteAir").checked = true;
 
       globe.showTimeJson(true, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAir, 'Qualité air communes Eurométropole', start, hier, {
@@ -2014,6 +2063,7 @@ class Data {
     }
 
     document.querySelector('#ODQualiteAir').addEventListener('change', (e) => {
+      globe.viewer.clock.currentTime = hier;
       globe.showTimeJson(e.target.checked, 'ODQualiteAir', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', lineAir, 'Qualité air communes Eurométropole', start, hier, {
         classification: true,
         classificationField: 'valeur',
@@ -2044,7 +2094,7 @@ class Data {
 
     // --------------------------------------------------------------------------------------------------------------
 
-    // Affichage de la couche fréquentation des piscines de l'eurométropole OPENDATA //
+    // Affichage de la couche fréquentation des piscines temps réel de l'eurométropole OPENDATA //
     var linePiscine = [];
     var billboardPiscine = [];
     var colorsPiscineLegend = {
@@ -2054,7 +2104,7 @@ class Data {
     if (enableODPiscine) {
       document.getElementById("ODPiscine").checked = true;
 
-      globe.showPoint(true, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
+      globe.showPoint(true, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=frequentation-en-temps-reel-des-piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
 
       globe.viewer.scene.requestRender();
 
@@ -2062,7 +2112,7 @@ class Data {
     }
 
     document.querySelector('#ODPiscine').addEventListener('change', (e) => {
-      globe.showPoint(e.target.checked, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
+      globe.showPoint(e.target.checked, 'ODPiscine', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=frequentation-en-temps-reel-des-piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {});
 
       globe.viewer.scene.requestRender();
 
@@ -2076,9 +2126,51 @@ class Data {
 
     // le bouton pour rafraichir la donnée
     document.querySelector('#refreshPiscine').addEventListener('click', function() {
-      globe.updatePoint('https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'ODPiscine', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {
+      globe.updatePoint('https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=frequentation-en-temps-reel-des-piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json', 'ODPiscine', 'src/img/billboard/pool.png', billboardPiscine, 'piscine', linePiscine, '#4287f5', {
 
       });
+    });
+
+    // --------------------------------------------------------------------------------------------------------------
+
+    var colorsVitaBoucle = {
+      'facile': '#15780c',
+      'moyenne': '#097db8',
+      'difficile': '#fc0000'
+    };
+    var choice = 'Boucle sportive Vitaboucle';
+
+    if (enableODVitaBoucle) {
+      document.getElementById("ODVitaBoucle").checked = true;
+
+      globe.showPolyline(true, 'ODVitaBoucle', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=boucles_sportives_vitaboucle&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', choice, {
+        classification: true,
+        classificationField: 'difficulte',
+        colors: colorsVitaBoucle,
+        alpha: 0.7
+      });
+
+      globe.viewer.scene.requestRender();
+
+      globe.legendManager.addLegend('Boucle_sportive_Vitaboucle', 'ODVitaBoucleLegend', colorsVitaBoucle, 'line');
+    }
+
+    document.querySelector('#ODVitaBoucle').addEventListener('change', (e) => {
+
+      globe.showPolyline(e.target.checked, 'ODVitaBoucle', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=boucles_sportives_vitaboucle&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson', choice, {
+        classification: true,
+        classificationField: 'difficulte',
+        colors: colorsVitaBoucle,
+        alpha: 0.7
+      });
+      globe.viewer.scene.requestRender();
+
+      if(e.target.checked){
+        globe.legendManager.addLegend('Boucle_sportive_Vitaboucle', 'ODVitaBoucleLegend', colorsVitaBoucle, 'line');
+      } else{
+        globe.legendManager.removeLegend('ODVitaBoucleLegend');
+      }
+
     });
 
 
