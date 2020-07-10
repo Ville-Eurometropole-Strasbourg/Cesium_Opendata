@@ -1,0 +1,69 @@
+{ "param": "Cesium_Opendata",
+  "menu": [
+    { "name": "TRANSPORTS ET DEPLACEMENTS",
+      "couches": [
+          {
+            "type_donnee": "surface",
+            "temps_reel": "non",
+            "animation": "non",
+            "id_data": "ODStationPayant",
+            "name": "Stationnement payant",
+            "url_info": "https://data.strasbourg.eu/explore/dataset/stationnement-payant/information/",
+            "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+            "champ_classif": "libelle",
+            "couleur_classif" : {
+              "0.5€/h ou 1€/3h": "#C7F79A",
+              "1,7€/h": "#EBF975",
+              "2,1€/h": "#F378B5"
+            },
+            "alpha": 0.5,
+            "couleur_contour": "#FFFFFF",
+            "taille_contour": 0,
+            "couleur_highlight": "#708090",
+            "alpha_highlight": 0.5,
+            "nom_legende": "Stationnement_payant",
+            "type_legende": "polygon",
+            "couleur_legende": {
+              "0.5€/h_ou_1€/3h": "#C7F79A",
+              "1,7€/h": "#EBF975",
+              "2,1€/h": "#F378B5"
+            }
+
+          }
+        ]
+
+    },
+    { "name": "DATA.STRASBOURG.EU",
+      "couches": [
+          {
+            "type_donnee": "lineaire",
+            "temps_reel": "non",
+            "animation": "non",
+            "id_data": "ODVitaBoucle",
+            "name": "Boucles sportives : Vitaboucle",
+            "url_info": "https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/",
+            "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=boucles_sportives_vitaboucle&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson'",
+            "champ_classif": "difficulte",
+            "couleur_classif" : {
+              "facile": "#15780c",
+              "moyenne": "#097db8",
+              "difficile": "#fc0000"
+            },
+            "alpha": 0.7,
+            "nom_legende": "Boucle_sportive_Vitaboucle",
+            "type_legende": "line",
+            "couleur_legende": {
+              "facile": "#15780c",
+              "moyenne": "#097db8",
+              "difficile": "#fc0000"
+            }
+
+          }
+        ]
+
+    }
+
+
+  ]
+
+}

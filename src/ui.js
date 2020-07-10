@@ -96,7 +96,7 @@ class Menu {
     var i;
     for (i = 0; i < element.length; i++) {
       element[i].addEventListener('click', function() {
-        this.classList.toggle("active");
+        //this.classList.toggle("active");
         var dropdownContent = this.nextElementSibling;
         if (dropdownContent.style.display === "block") {
           dropdownContent.style.display = "none";
@@ -868,9 +868,7 @@ class Menu {
     });
     document.querySelector('#ouest').addEventListener('click', function() {
       var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
-      console.log(windowPosition);
       var test = globe.viewer.scene.pickPosition(windowPosition);
-      console.log(test);
 
       var CC3 = Cesium.Cartesian3;
       var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
@@ -884,9 +882,7 @@ class Menu {
     });
     document.querySelector('#est').addEventListener('click', function() {
       var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
-      console.log(windowPosition);
       var test = globe.viewer.scene.pickPosition(windowPosition);
-      console.log(test);
 
       var CC3 = Cesium.Cartesian3;
       var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
@@ -899,9 +895,7 @@ class Menu {
     });
     document.querySelector('#sud').addEventListener('click', function() {
       var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
-      console.log(windowPosition);
       var test = globe.viewer.scene.pickPosition(windowPosition);
-      console.log(test);
 
       var CC3 = Cesium.Cartesian3;
       var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));

@@ -292,9 +292,29 @@
                   <!--          <button class="button" id="boutonfile"><img src="src/img/icons8-add-file-50.png"></button>  -->
                   <br/><br/>
 
+                  <!------------------------------------------------------------->
+                  <button class="panel-title">PARAMETRES    <i class="arrow"></i></button>
+                  <div class="panel-content" id="parametres">
+                    <div id="HSVtoolbar">
+                      <table><tbody>
+                        <tr>
+                          <td>Modifier l'affichage</td>
+                          <td><input type="checkbox" data-bind="checked: show"></td>
+                        </tr>
+                        <tr>
+                          <td>Contraste</td>
+                          <td><input type="range" min="-255.0" max="255.0" step="0.01" data-bind="value: contrast, valueUpdate: 'input'"></td>
+                        </tr>
+                        <tr>
+                          <td>Luminosité</td>
+                          <td><input type="range" min="-1.0" max="1.0" step="0.01" data-bind="value: brightness, valueUpdate: 'input'"></td>
+                        </tr>
+                      </tbody></table>
+                    </div>
+                  </div>
 
                   <!------------------------------------------------------------->
-                  <button class="panel-title">INFORMATIONS CADASTRALES    <i class="arrow"></i>
+                  <!--<button class="panel-title">INFORMATIONS CADASTRALES    <i class="arrow"></i>
                   </button>
 
                   <div class="panel-content">
@@ -513,15 +533,15 @@
                       <label for="ODCadastreWolfisheim">WOLFISHEIM</label>
                       <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
                     </div>
-                  </div>
+                  </div> -->
 
-                  <!------------------------------------------------------------->
-                  <button class="panel-title">TRANSPORTS ET DEPLACEMENTS    <i class="arrow"></i>
+
+                  <!--<button class="panel-title">TRANSPORTS ET DEPLACEMENTS    <i class="arrow"></i>
                   </button>
-                  <!------------------------------------------------------------->
+
 
                   <div class="panel-content">
-                    <!-- création de la checkbox du stationnement payant opendata -->
+
                     <div class="nowrap show" id="ODStationPayantDiv">
                       <input id="ODStationPayant" type="checkbox" />
                       <label for="ODStationPayant">Stationnement payant</label>
@@ -535,28 +555,19 @@
                       <button  title="Rafraîchir la donnée" class="button refresh" id="refreshTraffic"><img src="src/img/icons8-synchroniser.png"></button>
                     </div>
 
-                  </div>
+                  </div>-->
 
-                  <!------------------------------------------------------------->
-                  <button class="panel-title">DATA.STRASBOURG.EU    <i class="arrow"></i>
+
+                  <!--<button class="panel-title">DATA.STRASBOURG.EU    <i class="arrow"></i>
                   </button>
-                  <!------------------------------------------------------------->
 
                   <div class="panel-content">
-                    <!-- création de la checkbox du zonage PLUi opendata -->
                     <div class="nowrap show" id="ODPLUiZonageDiv">
                       <input id="ODPLUiZonage" type="checkbox" />
                       <label for="PLUiZonage">PLU - Règlement graphique et écrit</label>
                       <a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
                     </div>
 
-                    <div class="nowrap show" id="ODPLUdetailleDiv">
-                      <input id="ODPLUdetaille" type="checkbox" />
-                      <label for="ODPLUdetaille">PLU - Détaillé</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-
-                    <!-- création de la checkbox des terrasses opendata -->
                     <div class="nowrap show" id="ODTerrassesDiv">
                       <input id="ODTerrasses" type="checkbox" />
                       <label for="ODTerrasses">Terrasses autorisées en 2019</label>
@@ -595,28 +606,8 @@
                       <label for="ODVitaBoucle">Boucles sportives : Vitaboucle</label>
                       <a href="https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
                     </div>
-                  </div>
-                  <!------------------------------------------------------------->
-                  <button class="panel-title">PARAMETRES    <i class="arrow"></i></button>
-                  <div class="panel-content" id="parametres">
-                    <div id="HSVtoolbar">
-                      <table><tbody>
-                        <tr>
-                          <td>Modifier l'affichage</td>
-                          <td><input type="checkbox" data-bind="checked: show"></td>
-                        </tr>
-                        <tr>
-                          <td>Contraste</td>
-                          <td><input type="range" min="-255.0" max="255.0" step="0.01" data-bind="value: contrast, valueUpdate: 'input'"></td>
-                        </tr>
-                        <tr>
-                          <td>Luminosité</td>
-                          <td><input type="range" min="-1.0" max="1.0" step="0.01" data-bind="value: brightness, valueUpdate: 'input'"></td>
-                        </tr>
-                      </tbody></table>
-                    </div>
-                  </div>
-                  <!-- PHS -->
+                  </div>-->
+
 
                 </div>
               </div>
@@ -965,7 +956,8 @@
             <script src="src/geocoder.js"></script>
             <script src="src/raf09.js"></script>
             <script src="src/ui.js"></script>
-            <script src="src/dataStrasbourgEu.js"></script>
+            <!--<script src="src/dataStrasbourgEu.js"></script>-->
+            <script src="src/param.js"></script>
             <script src="src/main.js"></script>
 
 

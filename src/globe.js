@@ -1688,7 +1688,6 @@ class Globe {
           }
           // If a feature was previously highlighted, undo the highlight
           if (Cesium.defined(highlighted.feature)) {
-            console.log(highlighted.feature);
             highlighted.feature.id.polyline.material = highlighted.originalMaterial;
             highlighted.feature = undefined;
             globe.viewer.scene.requestRender();
@@ -1698,7 +1697,7 @@ class Globe {
             if (pickedObject.id.name === choice ) {
               highlighted.feature = pickedObject;
               highlighted.originalMaterial = pickedObject.id.polyline.material;
-              pickedObject.id.polyline.material = Cesium.Color.fromCssColorString('#7a7628').withAlpha(0.8);
+              pickedObject.id.polyline.material = Cesium.Color.fromCssColorString('#ffe100').withAlpha(0.8);
               globe.viewer.scene.requestRender();
             }
           }
