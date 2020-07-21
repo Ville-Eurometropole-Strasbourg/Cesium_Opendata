@@ -1,4 +1,32 @@
-"use strict";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ui.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ui.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
 
 // Gérer les interactions avec l'utilisateur (évènement sur le menu)
 /**
@@ -54,12 +82,12 @@ class Menu {
     // coupe
     this.planList = document.querySelector('#planList');
     this.decoupeList = document.querySelector('#decoupeList');
-    //camera & lien
+    //camera &amp; lien
     this.cameraList = document.querySelector('#cameraList');
     this.linkList = document.querySelector('#linkList');
     // choisir config
     this.configList = document.querySelector('#configList');
-    // ajout de couches & classification des couches
+    // ajout de couches &amp; classification des couches
     this.fileList = document.querySelector('#fileList');
     this.classifList = document.querySelector('#classifList');
 
@@ -98,7 +126,7 @@ class Menu {
   */
   menuDeroulant(element){
     var i;
-    for (i = 0; i < element.length; i++) {
+    for (i = 0; i &lt; element.length; i++) {
       element[i].addEventListener('click', function() {
         //this.classList.toggle("active");
         var dropdownContent = this.nextElementSibling;
@@ -124,7 +152,7 @@ class Menu {
     });
     window.addEventListener('click', function(event){
       var $trigger = $(bouton);
-      if($trigger !== event.target && !$trigger.has(event.target).length){
+      if($trigger !== event.target &amp;&amp; !$trigger.has(event.target).length){
         $(element).hide();
       }
     });
@@ -222,20 +250,20 @@ class Menu {
       $("#distanceList").addClass('hidden');
       this.aideCheckbox.classList.add('hidden');
       // Enlever les entités
-      for(var i = 0; i < dline.length+10; i++){
+      for(var i = 0; i &lt; dline.length+10; i++){
         globe.viewer.entities.remove(dline[i]);
       }
       // Vider le tableau
-      for(var j = 0; j <= dline.length+1; j++){
+      for(var j = 0; j &lt;= dline.length+1; j++){
         dline.pop();
       }
 
       this.aireList.classList.add('hidden');
       this.aideCheckbox.classList.add('hidden');
-      for(var i = 0; i < dsurface.length; i++){
+      for(var i = 0; i &lt; dsurface.length; i++){
         globe.viewer.entities.remove(dsurface[i]);
       }
-      for(var j = 0; j <= dsurface.length+1; j++){
+      for(var j = 0; j &lt;= dsurface.length+1; j++){
         dsurface.pop();
       }
       globe.viewer.scene.requestRender();
@@ -397,19 +425,19 @@ class Menu {
 
     // supprime toutes les entités
     document.querySelector('#suppr').addEventListener('click', function() {
-      for(var i = 0; i <= billboard.length+10; i++){
+      for(var i = 0; i &lt;= billboard.length+10; i++){
         globe.viewer.entities.remove(billboard[i]);
         billboard.pop();
       }
-      for(var i = 0; i <= line.length+1; i++){
+      for(var i = 0; i &lt;= line.length+1; i++){
         globe.viewer.entities.remove(line[i]);
         line.pop();
       }
-      for(var i = 0; i <= surface.length+1; i++){
+      for(var i = 0; i &lt;= surface.length+1; i++){
         globe.viewer.entities.remove(surface[i]);
         surface.pop();
       }
-      for(var i = 0; i <= volume.length+1; i++){
+      for(var i = 0; i &lt;= volume.length+1; i++){
         globe.viewer.entities.remove(volume[i]);
         volume.pop();
       }
@@ -427,12 +455,12 @@ class Menu {
       let features = [];
 
       // Export des entités ligne
-      for (let i = 0; i < line.length; i++) {
+      for (let i = 0; i &lt; line.length; i++) {
         let j = 0;
         // le tableaux dans lequel on va mettre les coordonnées des sommets de la ligne
         let coordLine = [];
         // On récupère la valeur de chaque coordonnée X Y Z
-        while (j < line[i].polyline.positions._value.length) {
+        while (j &lt; line[i].polyline.positions._value.length) {
           // Structure json
           var type = {"type" : "Feature", "properties" : {}, "geometry" : {}};
           type["geometry"] = {"type" : "LineString", "coordinates" : []};
@@ -464,7 +492,7 @@ class Menu {
       }
 
       // Export des entités billboard (ie des points)
-      for (let i = 0; i < billboard.length; i++) {
+      for (let i = 0; i &lt; billboard.length; i++) {
         // Structure du json
         var typePoint = {"type" : "Feature", "properties" : {}, "geometry" : {}};
         typePoint["geometry"] = {"type" : "Point", "coordinates" : {}};
@@ -493,12 +521,12 @@ class Menu {
       }
 
       // Export des surfaces
-      for (let i = 0; i < surface.length; i++) {
+      for (let i = 0; i &lt; surface.length; i++) {
         let coordSurf = [];
         let arraySurf = [];
         let k = 0;
 
-        while (k < surface[i].polygon.hierarchy._value.positions.length) {
+        while (k &lt; surface[i].polygon.hierarchy._value.positions.length) {
 
           var typeSurf = {"type" : "Feature", "properties" : {}, "geometry" : {}};
           typeSurf["geometry"] = {"type" : "Polygon",  "coordinates" : [[]]};
@@ -533,11 +561,11 @@ class Menu {
       }
 
       // Export des volumes, ie des surfaces avec un attribut 'extrudedHeight'
-      for (let i = 0; i < volume.length; i++) {
+      for (let i = 0; i &lt; volume.length; i++) {
         let coordVol = [];
         let arrayVol = [];
         let k = 0;
-        while (k < volume[i].polygon.hierarchy._value.positions.length) {
+        while (k &lt; volume[i].polygon.hierarchy._value.positions.length) {
           var typeVol = {"type" : "Feature", "properties" : {}, "geometry" : {}};
           typeVol["geometry"] = {"type" : "Polygon",  "coordinates" : [[]]};
 
@@ -620,7 +648,7 @@ class Menu {
     });
     document.querySelector("#supprimercoupe").addEventListener('click', (e) => {
       //this.viewer.entities.remove(planeEntity);
-      for(var i = 0; i < planeEntities.length; i++){
+      for(var i = 0; i &lt; planeEntities.length; i++){
         globe.viewer.entities.remove(planeEntities[i]);
       }
       clippingPlanes = [];
@@ -927,7 +955,7 @@ class Menu {
       /*var imageryLayers = globe.viewer.imageryLayers;
       imageryLayers.addImageryProvider(
         new Cesium.TileMapServiceImageryProvider({
-          url: "http://adict-preprod.strasbourg.eu/adictwms/?VERSION=1.3.0&MAP=/opt/wms/projects/dev_styles_plu.qgs",
+          url: "http://adict-preprod.strasbourg.eu/adictwms/?VERSION=1.3.0&amp;MAP=/opt/wms/projects/dev_styles_plu.qgs",
           proxy : new Cesium.DefaultProxy('/proxy/')
           //fileExtension: 'xml'
         })
@@ -1084,7 +1112,7 @@ class Menu {
     // permet de donner un identifiant aux couches
     // on ne peut pas avoir plus de 100 fichiers présents dans le dossier du serveur
     var N = 100;
-    for (var i = 1; i <= N; i++) {
+    for (var i = 1; i &lt;= N; i++) {
       id.push(i);
     }
 
@@ -1102,12 +1130,12 @@ class Menu {
       this.xmlhttp = this;
       xmlhttp.open("GET", filePath, true);
       xmlhttp.onreadystatechange = function () {
-        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+        if(xmlhttp.readyState === 4 &amp;&amp; xmlhttp.status === 200) {
 
           let html = xmlhttp.responseText; // renvoie un texte au format html où la liste des fichers est dans une li
           result = $(html).find("li > a"); // on récupère tous les li
 
-          for(let i=0;i<result.length;i++) {
+          for(let i=0;i&lt;result.length;i++) {
             noms.push(result[i].innerText);
             json.push(filePath + result[i].innerText);
 
@@ -1193,7 +1221,7 @@ class Menu {
                 }).get();
 
                 var colors = new Map();
-                for(let j=0; j<valeurClassif.length; j++) {
+                for(let j=0; j&lt;valeurClassif.length; j++) {
                   colors[valeurClassif[j]] = couleurClassif[j];
                 }
 
@@ -1235,7 +1263,7 @@ class Menu {
     var json = [];
     var id = [];
     var N = 100;
-    for (var i = 1; i <= N; i++) {
+    for (var i = 1; i &lt;= N; i++) {
       id.push(i);
     }
 
@@ -1251,12 +1279,12 @@ class Menu {
 
       xmlhttp.open("GET", filePath, true);
       xmlhttp.onreadystatechange = function () {
-        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+        if(xmlhttp.readyState === 4 &amp;&amp; xmlhttp.status === 200) {
 
           let html = xmlhttp.responseText;
           result = $(html).find("li > a");
 
-          for(let i=0;i<result.length;i++) {
+          for(let i=0;i&lt;result.length;i++) {
             noms.push(result[i].innerText);
             json.push(filePath + result[i].innerText + 'tileset.json');
 
@@ -1312,7 +1340,7 @@ class Menu {
     // permet de donner un identifiant aux couches
     // on ne peut pas avoir plus de 100 fichiers présents dans le dossier du serveur
     var N = 100;
-    for (var i = 1; i <= N; i++) {
+    for (var i = 1; i &lt;= N; i++) {
       id.push(i);
     }
 
@@ -1337,13 +1365,13 @@ class Menu {
       this.xmlhttp = this;
       xmlhttp.open("GET", filePath, true);
       xmlhttp.onreadystatechange = function () {
-        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+        if(xmlhttp.readyState === 4 &amp;&amp; xmlhttp.status === 200) {
 
           let html = xmlhttp.responseText; // renvoie un texte au format html où la liste des fichers est dans une li
           result = $(html).find("li > a"); // on récupère tous les li
 
 
-          for(let i=0;i<result.length;i++) {
+          for(let i=0;i&lt;result.length;i++) {
             noms.push(result[i].innerText);
             json.push(filePath + result[i].innerText);
 
@@ -1402,3 +1430,26 @@ class Menu {
   */
 
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Geocoder.html">Geocoder</a></li><li><a href="Globe.html">Globe</a></li><li><a href="LegendManager.html">LegendManager</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Raf09.html">Raf09</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Jul 21 2020 17:24:05 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

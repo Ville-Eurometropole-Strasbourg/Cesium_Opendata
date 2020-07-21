@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   <link rel="icon" type="src/img/logo" href="logo-strasbourg.png">
   <title>Viewer 3D - OPENDATA</title>
   <link rel="stylesheet" href="lib/jQuery/jquery-ui.min.css" />
@@ -313,300 +314,37 @@
                     </div>
                   </div>
 
-                  <!------------------------------------------------------------->
-                  <!--<button class="panel-title">INFORMATIONS CADASTRALES    <i class="arrow"></i>
-                  </button>
-
-                  <div class="panel-content">
-                    <div class="nowrap show" id="ODLimitesCommunesDiv">
-                      <input id="ODLimitesCommunes" type="checkbox" />
-                      <label for="ODLimitesCommunes">LIMITES DE COMMUNES</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/limites_de_communes/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODLimitesSectionsDiv">
-                      <input id="ODLimitesSections" type="checkbox" />
-                      <label for="ODLimitesSections">LIMITES DE SECTIONS</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/sections_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreAchenheimDiv">
-                      <input id="ODCadastreAchenheim" type="checkbox" />
-                      <label for="ODCadastreAchenheim">ACHENHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreBischheimDiv">
-                      <input id="ODCadastreBischheim" type="checkbox" />
-                      <label for="ODCadastreBischheim">BISCHHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreBlaesheimDiv">
-                      <input id="ODCadastreBlaesheim" type="checkbox" />
-                      <label for="ODCadastreBlaesheim">BLAESHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreBreuschwickersheimDiv">
-                      <input id="ODCadastreBreuschwickersheim" type="checkbox" />
-                      <label for="ODCadastreBreuschwickersheim">BREUSCHWICKERSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreEckbolsheimDiv">
-                      <input id="ODCadastreEckbolsheim" type="checkbox" />
-                      <label for="ODCadastreEckbolsheim">ECKBOLSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreEckwersheimDiv">
-                      <input id="ODCadastreEckwersheim" type="checkbox" />
-                      <label for="ODCadastreEckwersheim">ECKWERSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreEntzheimDiv">
-                      <input id="ODCadastreEntzheim" type="checkbox" />
-                      <label for="ODCadastreEntzheim">ENTZHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreEschauDiv">
-                      <input id="ODCadastreEschau" type="checkbox" />
-                      <label for="ODCadastreEschau">ESCHAU</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreFegersheimDiv">
-                      <input id="ODCadastreFegersheim" type="checkbox" />
-                      <label for="ODCadastreFegersheim">FEGERSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreGeispolsheimDiv">
-                      <input id="ODCadastreGeispolsheim" type="checkbox" />
-                      <label for="ODCadastreGeispolsheim">GEISPOLSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreHangenbietenDiv">
-                      <input id="ODCadastreHangenbieten" type="checkbox" />
-                      <label for="ODCadastreHangenbieten">HANGENBIETEN</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreHoenheimDiv">
-                      <input id="ODCadastreHoenheim" type="checkbox" />
-                      <label for="ODCadastreHoenheim">HOENHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreHoltzheimDiv">
-                      <input id="ODCadastreHoltzheim" type="checkbox" />
-                      <label for="ODCadastreHoltzheim">HOLTZHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreIllkirchDiv">
-                      <input id="ODCadastreIllkirch" type="checkbox" />
-                      <label for="ODCadastreIllkirch">ILLKIRCH-GRAFFENSTADEN</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreKolbsheimDiv">
-                      <input id="ODCadastreKolbsheim" type="checkbox" />
-                      <label for="ODCadastreKolbsheim">KOLBSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreLampertheimDiv">
-                      <input id="ODCadastreLampertheim" type="checkbox" />
-                      <label for="ODCadastreLampertheim">LAMPERTHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreLingolsheimDiv">
-                      <input id="ODCadastreLingolsheim" type="checkbox" />
-                      <label for="ODCadastreLingolsheim">LINGOLSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreLipsheimDiv">
-                      <input id="ODCadastreLipsheim" type="checkbox" />
-                      <label for="ODCadastreLipsheim">LIPSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreMittelhausbergenDiv">
-                      <input id="ODCadastreMittelhausbergen" type="checkbox" />
-                      <label for="ODCadastreMittelhausbergen">MITTELHAUSBERGEN</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreMundolsheimDiv">
-                      <input id="ODCadastreMundolsheim" type="checkbox" />
-                      <label for="ODCadastreMundolsheim">MUNDOLSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreNiederhausbergenDiv">
-                      <input id="ODCadastreNiederhausbergen" type="checkbox" />
-                      <label for="ODCadastreNiederhausbergen">NIEDERHAUSBERGEN</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreOberhausbergenDiv">
-                      <input id="ODCadastreOberhausbergen" type="checkbox" />
-                      <label for="ODCadastreOberhausbergen">OBERHAUSBERGEN</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreOberschaeffolsheimDiv">
-                      <input id="ODCadastreOberschaeffolsheim" type="checkbox" />
-                      <label for="ODCadastreOberschaeffolsheim">OBERSCHAEFFOLSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreOsthoffenDiv">
-                      <input id="ODCadastreOsthoffen" type="checkbox" />
-                      <label for="ODCadastreOsthoffen">OSTHOFFEN</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreOstwaldDiv">
-                      <input id="ODCadastreOstwald" type="checkbox" />
-                      <label for="ODCadastreOstwald">OSTWALD</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastrePlobsheimDiv">
-                      <input id="ODCadastrePlobsheim" type="checkbox" />
-                      <label for="ODCadastrePlobsheim">PLOBSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreReichstettDiv">
-                      <input id="ODCadastreReichstett" type="checkbox" />
-                      <label for="ODCadastreReichstett">REICHSTETT</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreSchiltigheimDiv">
-                      <input id="ODCadastreSchiltigheim" type="checkbox" />
-                      <label for="ODCadastreSchiltigheim">SCHILTIGHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreSouffelweyersheimDiv">
-                      <input id="ODCadastreSouffelweyersheim" type="checkbox" />
-                      <label for="ODCadastreSouffelweyersheim">SOUFFELWEYERSHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgCentreDiv">
-                      <input id="ODCadastreStrasbourgCentre" type="checkbox" />
-                      <label for="ODCadastreStrasbourgCentre">STRASBOURG Centre</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgGareKleberDiv">
-                      <input id="ODCadastreStrasbourgGareKleber" type="checkbox" />
-                      <label for="ODCadastreStrasbourgGareKleber">STRASBOURG Gare-Kléber</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgEsplaBourseKrutDiv">
-                      <input id="ODCadastreStrasbourgEsplaBourseKrut" type="checkbox" />
-                      <label for="ODCadastreStrasbourgEsplaBourseKrut">STRASBOURG Esplanade-Bourse-Krutenau</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgNeudorfDiv">
-                      <input id="ODCadastreStrasbourgNeudorf" type="checkbox" />
-                      <label for="ODCadastreStrasbourgNeudorf">STRASBOURG Neudorf-Schluthfeld-Port du Rhin-Musau</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgMeinauDiv">
-                      <input id="ODCadastreStrasbourgMeinau" type="checkbox" />
-                      <label for="ODCadastreStrasbourgMeinau">STRASBOURG Meinau</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgNeuhofDiv">
-                      <input id="ODCadastreStrasbourgNeuhof" type="checkbox" />
-                      <label for="ODCadastreStrasbourgNeuhof">STRASBOURG Neuhof</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgKoenigsMVDiv">
-                      <input id="ODCadastreStrasbourgKoenigsMV" type="checkbox" />
-                      <label for="ODCadastreStrasbourgKoenigsMV">STRASBOURG Koenigshoffen-Montagne Verte</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgCroHautPotHohbergDiv">
-                      <input id="ODCadastreStrasbourgCroHautPotHohberg" type="checkbox" />
-                      <label for="ODCadastreStrasbourgCroHautPotHohberg">STRASBOURG Cronenbourg-Hautepierre-Poteries-Hohberg</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreStrasbourgRobertsauDiv">
-                      <input id="ODCadastreStrasbourgRobertsau" type="checkbox" />
-                      <label for="ODCadastreStrasbourgRobertsau">STRASBOURG Robertsau</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreVendenheimDiv">
-                      <input id="ODCadastreVendenheim" type="checkbox" />
-                      <label for="ODCadastreVendenheim">VENDENHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreLaWantzenauDiv">
-                      <input id="ODCadastreLaWantzenau" type="checkbox" />
-                      <label for="ODCadastreLaWantzenau">LA_WANTZENAU</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                    <div class="nowrap show" id="ODCadastreWolfisheimDiv">
-                      <input id="ODCadastreWolfisheim" type="checkbox" />
-                      <label for="ODCadastreWolfisheim">WOLFISHEIM</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                  </div> -->
-
-
-                  <!--<button class="panel-title">TRANSPORTS ET DEPLACEMENTS    <i class="arrow"></i>
+                  <button class="panel-title">Test PLU    <i class="arrow"></i>
                   </button>
 
 
                   <div class="panel-content">
 
-                    <div class="nowrap show" id="ODStationPayantDiv">
-                      <input id="ODStationPayant" type="checkbox" />
-                      <label for="ODStationPayant">Stationnement payant</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/stationnement-payant/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
+                    <div class="nowrap show" id="ODPLUdetailleDiv">
+                      <input id="ODPLUdetaille" type="checkbox" />
+                      <label for="ODPLUdetaille">PLU détaillé</label>
+                      <a href="https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
                     </div>
 
-                    <div class="nowrap show" id="ODTrafficDiv">
-                      <input id="ODTraffic" type="checkbox" />
-                      <label for="ODTraffic">Traffic routier</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                      <button  title="Rafraîchir la donnée" class="button refresh" id="refreshTraffic"><img src="src/img/icons8-synchroniser.png"></button>
+                    <div class="nowrap show" id="ODPLUdetailleTransparentDiv">
+                      <input id="ODPLUdetailleTransparent" type="checkbox" />
+                      <label for="ODPLUdetailleTransparent">PLU détaillé transparent</label>
+                      <a href="https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
                     </div>
 
-                  </div>-->
-
-
-                  <!--<button class="panel-title">DATA.STRASBOURG.EU    <i class="arrow"></i>
-                  </button>
-
-                  <div class="panel-content">
-                    <div class="nowrap show" id="ODPLUiZonageDiv">
-                      <input id="ODPLUiZonage" type="checkbox" />
-                      <label for="PLUiZonage">PLU - Règlement graphique et écrit</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
+                    <div class="nowrap show" id="ODPLUPetitDiv">
+                      <input id="ODPLUPetit" type="checkbox" />
+                      <label for="ODPLUPetit">PLU petite emprise</label>
+                      <a href="https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
                     </div>
 
-                    <div class="nowrap show" id="ODTerrassesDiv">
-                      <input id="ODTerrasses" type="checkbox" />
-                      <label for="ODTerrasses">Terrasses autorisées en 2019</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2019/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
+                    <div class="nowrap show" id="ODPLUPetitTransDiv">
+                      <input id="ODPLUPetitTrans" type="checkbox" />
+                      <label for="ODPLUPetitTrans">PLU petite emprise transparent</label>
+                      <a href="https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
                     </div>
 
-                    <div class="nowrap show" id="ODTerrasses2020Div">
-                      <input id="ODTerrasses2020" type="checkbox" />
-                      <label for="ODTerrasses2020">Terrasses autorisées en 2020</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2020/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-
-                    <div class="nowrap show" id="ODPatrimoineDiv">
-                      <input id="ODPatrimoine" type="checkbox" />
-                      <label for="ODPatrimoine">Patrimoine de mon quartier</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-
-                    <div class="nowrap show" id="ODQualiteAirDiv">
-                      <input id="ODQualiteAir" type="checkbox"/>
-                      <label for="ODQualiteAir">Qualité de l'air Eurométropole (sur 7 jours)</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                      <button title="Démarrer l'animation des données" class="button" id="timeAir"><img src="src/img/icons8-temps.png"></button>
-                    </div>
-
-
-                    <div class="nowrap show" id="ODPiscineDiv">
-                      <input id="ODPiscine" type="checkbox"/>
-                      <label for="ODPiscine">Fréquentation des piscines</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/frequentation-en-temps-reel-des-piscines/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                      <button title="Rafraîchir la donnée" class="button refresh" id="refreshPiscine"><img src="src/img/icons8-synchroniser.png"></button>
-                    </div>
-
-                    <div class="nowrap show" id="ODVitaBoucleDiv">
-                      <input id="ODVitaBoucle" type="checkbox"/>
-                      <label for="ODVitaBoucle">Boucles sportives : Vitaboucle</label>
-                      <a href="https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/" target="_blank"><button title="Informations sur les données" class="button"><img src="src/img/icons8-info.png"></button></a>
-                    </div>
-                  </div>-->
+                  </div>
 
 
                 </div>

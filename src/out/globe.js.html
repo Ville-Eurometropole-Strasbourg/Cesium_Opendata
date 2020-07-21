@@ -1,11 +1,39 @@
-"use strict";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: globe.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: globe.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
 // web server: http://127.1.0.0:8000/
 // Créé un object globe qui pertmet de manipuler cesium plus simplement
 
 /**
 * La classe Globeva permettre de manipuler Cesium plus facilement ; elle contient toutes les fonctions techniques,
 * qui vont permettre d’ajouter des couches de données,
-* de dessiner, de découper, d’ajouter des points de vues de caméra, etc. <br/>
+* de dessiner, de découper, d’ajouter des points de vues de caméra, etc. &lt;br/>
 * Les fonctions peuvent être réutilisées dans un autre projet
 *
 *
@@ -14,13 +42,13 @@
 class Globe {
 
   /**
-  * Le constructeur de la classe globe, qui créé :  <br/>
-  * - le viewer Cesium <br/>
-  * - le handler c’est à dire l’objet qui va contenir les évènements liés à la souris <br/>
-  * - le tableau contenant les dataSources <br/>
-  * - la grille Raf09 pour les conversions hauteur ellipsoïdale/altitude <br/>
-  * - le PinBuilder <br/>
-  * - déclare toutes les checkbox de la boîte à outils pour l'affichage dynamique <br/>
+  * Le constructeur de la classe globe, qui créé :  &lt;br/>
+  * - le viewer Cesium &lt;br/>
+  * - le handler c’est à dire l’objet qui va contenir les évènements liés à la souris &lt;br/>
+  * - le tableau contenant les dataSources &lt;br/>
+  * - la grille Raf09 pour les conversions hauteur ellipsoïdale/altitude &lt;br/>
+  * - le PinBuilder &lt;br/>
+  * - déclare toutes les checkbox de la boîte à outils pour l'affichage dynamique &lt;br/>
   *
   * on supprime aussi le fond de plan, on définit la couleur de fond et on ajoute les logos en bas de l’écran
   *
@@ -73,10 +101,10 @@ class Globe {
       this.dataSources = [];
 
       // insère les logos en bas
-      this.viewer.bottomContainer.innerHTML = '<img src="src/img/logo/logo-strasbourg.png" alt="Logo strasbourg" />\
-      <img src="src/img/logo/europe-sengage.jpg" alt="Logo strasbourg" />\
-      <img src="src/img/logo/logo-ue.jpg" alt="Logo strasbourg" />\
-      <span style="color: #BEC8D1;font-size:small;"> Icons created by : <a style="color: #BEC8D1;font-size:small;" href="https://icons8.com" target="_blank" > https://icons8.com </span>';
+      this.viewer.bottomContainer.innerHTML = '&lt;img src="src/img/logo/logo-strasbourg.png" alt="Logo strasbourg" />\
+      &lt;img src="src/img/logo/europe-sengage.jpg" alt="Logo strasbourg" />\
+      &lt;img src="src/img/logo/logo-ue.jpg" alt="Logo strasbourg" />\
+      &lt;span style="color: #BEC8D1;font-size:small;"> Icons created by : &lt;a style="color: #BEC8D1;font-size:small;" href="https://icons8.com" target="_blank" > https://icons8.com &lt;/span>';
 
       // variable qui stocke les évenements liés à la souris
       this.handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
@@ -129,9 +157,9 @@ class Globe {
 
     /**
     *
-    * Elle permet de paramétrer la vue de base de l’application ainsi que le zoom par défaut sur lequel le viewer se repositionne lorsqu’on clique sur le bouton « maison » <br/>
-    * Elle ne prend pas de paramètres mais considère deux cas différents : <br/>
-    * Si l’URL ne contient pas de paramètres, elle définit le zoom sur le photomaillage global pour la vue de départ et le bouton maison <br/>
+    * Elle permet de paramétrer la vue de base de l’application ainsi que le zoom par défaut sur lequel le viewer se repositionne lorsqu’on clique sur le bouton « maison » &lt;br/>
+    * Elle ne prend pas de paramètres mais considère deux cas différents : &lt;br/>
+    * Si l’URL ne contient pas de paramètres, elle définit le zoom sur le photomaillage global pour la vue de départ et le bouton maison &lt;br/>
     * Si l’URL contient des paramètres spécifiques (outil partage de liens), elle lit ces paramètres pour zoomer à l’endroit voulu et définit le zoom par défaut sur cet endroit
     *
     */
@@ -182,7 +210,7 @@ class Globe {
     }
 
     /**
-    * lit et retourne les paramètres présents dans l'URL <br/>
+    * lit et retourne les paramètres présents dans l'URL &lt;br/>
     *
     * @param  {String} url L'url à analyser
     * @return  {Object} obj Un objet contenant les paramètres de l'url
@@ -193,9 +221,9 @@ class Globe {
 
       if (queryString) {
         queryString = queryString.split('#')[0];
-        var arr = queryString.split('&');
+        var arr = queryString.split('&amp;');
 
-        for (var i = 0; i < arr.length; i++) {
+        for (var i = 0; i &lt; arr.length; i++) {
           var a = arr[i].split('=');
           var paramName = a[0];
           var paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
@@ -216,7 +244,7 @@ class Globe {
           } else {
             if (!obj[paramName]) {
               obj[paramName] = paramValue;
-            } else if (obj[paramName] && typeof obj[paramName] === 'string'){
+            } else if (obj[paramName] &amp;&amp; typeof obj[paramName] === 'string'){
               obj[paramName] = [obj[paramName]];
               obj[paramName].push(paramValue);
             } else {
@@ -275,13 +303,13 @@ class Globe {
       let pitch = globe.viewer.camera.pitch;
       let roll = globe.viewer.camera.roll;
 
-      // le premier paramètre doit débuter avec un "?" et les autres paramètres doivent être séparés par un "&"
+      // le premier paramètre doit débuter avec un "?" et les autres paramètres doivent être séparés par un "&amp;"
 
       // On teste si le lien contient le paramètre open
       if (window.location.search.indexOf('open') > -1) {
-        document.getElementById('nomlink').value = window.location.href +'&X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
+        document.getElementById('nomlink').value = window.location.href +'&amp;X='+X+'&amp;Y='+Y+'&amp;Z='+Z+'&amp;heading='+heading+'&amp;pitch='+pitch+'&amp;roll='+roll;
       } else {
-        document.getElementById('nomlink').value = window.location.href +'?X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
+        document.getElementById('nomlink').value = window.location.href +'?X='+X+'&amp;Y='+Y+'&amp;Z='+Z+'&amp;heading='+heading+'&amp;pitch='+pitch+'&amp;roll='+roll;
       }
 
     }
@@ -293,9 +321,9 @@ class Globe {
     */
 
     /**
-    * Permet de charger et d'enregister le tileset au format 3DTiles <br/>
+    * Permet de charger et d'enregister le tileset au format 3DTiles &lt;br/>
     * Ce format est important dans la fonction holePlanes, où on ajoute une collection de ‘clippingPlanes’ qui vont découper le photomaillage ;
-    * l’ajout de cette collection n’est effectif qu’avec un format tileset <br/>
+    * l’ajout de cette collection n’est effectif qu’avec un format tileset &lt;br/>
     *
     * @param  {String} link Le lien vers le fichier
     * @param  {Number} maxError 'The maximum screen space error used to drive level of detail refinement', différent pour les deux photomaillages 2018 et PSMV
@@ -332,7 +360,7 @@ class Globe {
 
 
     /**
-    * combine les deux addPhotomaillage et loadPhotomaillage : elle charge le 3DTiles et l’ajoute sous forme d’entités. <br/>
+    * combine les deux addPhotomaillage et loadPhotomaillage : elle charge le 3DTiles et l’ajoute sous forme d’entités. &lt;br/>
     * Le format tileset est perdue pour les modèles chargés avec cette fonction ;
     * elle permet entres autres de charger des projets 3D sans que ceux-ci ne soient impactés par les découpes effectuées dans le photomaillage
     *
@@ -352,7 +380,7 @@ class Globe {
 
     /**
     *
-    * Afficher ou masquer la source de données 3DTiles "name" en fonction de la valeur de "show" <br/>
+    * Afficher ou masquer la source de données 3DTiles "name" en fonction de la valeur de "show" &lt;br/>
     * Si elle n'a pas enore été affiché, la fonction va télécharger les données avec le lien "link" passé en parametre
     *
     * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
@@ -383,10 +411,10 @@ class Globe {
     }
 
     /**
-    * Permet de charger les dessins exportés depuis Cesium <br/>
+    * Permet de charger les dessins exportés depuis Cesium &lt;br/>
     * va chercher les propriétés de dessin (couleur, épaisseur de ligne, hauteur de volume, etc)
-    * dans le json pour garder les propriétés à l'affichage <br/>
-    * Utilise la fonction showPolygon pour afficher les données <br/>
+    * dans le json pour garder les propriétés à l'affichage &lt;br/>
+    * Utilise la fonction showPolygon pour afficher les données &lt;br/>
     * Les points seront affichés simplement avec le même billboard pour tous
     *
     * @param  {String} link Le lien vers le fichier
@@ -407,7 +435,7 @@ class Globe {
 
         // Get the array of entities
         var entities = dataSource.entities.values;
-        for (let i = 0; i < entities.length; i++) {
+        for (let i = 0; i &lt; entities.length; i++) {
           let entity = entities[i];
           if(Cesium.defined(entity.billboard)) {
             entity.billboard.height = entity.properties.height;
@@ -510,7 +538,7 @@ class Globe {
 
     /**
     *
-    * ajoute un plan de coupe horizontal <br/>
+    * ajoute un plan de coupe horizontal &lt;br/>
     * les paramètres de la fonction vont être lus dans le formulaire avant de cliquer sur 'ajouter'
     *
     * @param  {Number} X la coordonnée X du point au centre du plan
@@ -530,7 +558,7 @@ class Globe {
         ]
       });
 
-      for (var i = 0; i < clippingPlanes.length; i=+1) {
+      for (var i = 0; i &lt; clippingPlanes.length; i=+1) {
         var coords = proj4('EPSG:3948','EPSG:4326', [Number(X), Number(Y)]);
         var a = Number(this.raf09.getGeoide(coords[1], coords[0]));
 
@@ -595,7 +623,7 @@ class Globe {
       // Select plane when mouse down
       this.handler.setInputAction(function(movement) {
         var pickedObject = scene.pick(movement.position);
-        if (Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id) && Cesium.defined(pickedObject.id.plane)) {
+        if (Cesium.defined(pickedObject) &amp;&amp; Cesium.defined(pickedObject.id) &amp;&amp; Cesium.defined(pickedObject.id.plane)) {
           selectedPlane = pickedObject.id.plane;
           selectedPlane.material = Cesium.Color.fromCssColorString(couleurCoupe).withAlpha(0.4);
           selectedPlane.outlineColor = Cesium.Color.WHITE;
@@ -658,7 +686,7 @@ class Globe {
 
     /**
     *
-    * Construit un marqueur maki (pin) à l'aide du symbole (url) et de la couleur <br/>
+    * Construit un marqueur maki (pin) à l'aide du symbole (url) et de la couleur &lt;br/>
     * On ajoute directement les entités dans le tableau dans la fonction ici à cause de la structure asynchrone
     *
     * @param  {Array} billboard le tableau où stocker les entités billboard
@@ -824,12 +852,12 @@ class Globe {
 
     /**
     *
-    * La fonction qui permet de tout dessiner <br/>
+    * La fonction qui permet de tout dessiner &lt;br/>
     * le paramètre choice designe si on mesure (dessins temporaires) ou si on dessine
-    * (dessins qui restent après fermeture de la fonction de dessin) <br/>
-    * le paramètre choice2 désigne le type de dessin (line, surface, volume etc) <br/>
+    * (dessins qui restent après fermeture de la fonction de dessin) &lt;br/>
+    * le paramètre choice2 désigne le type de dessin (line, surface, volume etc) &lt;br/>
     * On met tous les tableaux d'entités en paramètres de la fonction car ils seront définis dans la classe Menu
-    * pour garder une trace des entités et permettre leur annulation/exportation <br/>
+    * pour garder une trace des entités et permettre leur annulation/exportation &lt;br/>
     * Le reste des paramètres correspond aux paramètres de personnalisation définis par l'utilisateur dans les formulaires
     *
     * @param  {String} choice prend la valeur 'dessin' ou 'mesure'
@@ -927,7 +955,7 @@ class Globe {
             }
           }
         }
-        if(choice === 'polygon'&& choice2 === 'mesure') {
+        if(choice === 'polygon'&amp;&amp; choice2 === 'mesure') {
           globe.measureSurface(activeShapePoints); // mesure l'aire du polygone à chaque clic gauche
         }
         globe.viewer.scene.requestRender();
@@ -942,7 +970,7 @@ class Globe {
             activeShapePoints.push(newPosition);
           }
         }
-        if(choice === 'line' && choice2 === 'mesure') {
+        if(choice === 'line' &amp;&amp; choice2 === 'mesure') {
           globe.measureDistance(activeShapePoints); // mesure la distance à chaque mouvement de souris
           distanceList = $("#distanceList").clone();
         }
@@ -1002,7 +1030,7 @@ class Globe {
         activeShape = undefined;
         activeShapePoints = [];
 
-        if(choice === 'line' && choice2 === 'mesure') {
+        if(choice === 'line' &amp;&amp; choice2 === 'mesure') {
           // permet de garder l'affichage des mesures actif
           $("#distanceList").replaceWith(distanceList);
         }
@@ -1037,10 +1065,10 @@ class Globe {
     */
     supprFigure(element, figure) {
       document.querySelector(element).addEventListener('click', (e) => {
-        for(var i = 0; i < figure.length; i++){
+        for(var i = 0; i &lt; figure.length; i++){
           this.viewer.entities.remove(figure[i]);
         }
-        for(var j = 0; j <= figure.length+1; j++){
+        for(var j = 0; j &lt;= figure.length+1; j++){
           figure.pop();
         }
         this.viewer.scene.requestRender();
@@ -1064,7 +1092,7 @@ class Globe {
       var distCumul =0;
       var distInclCumul =0;
 
-      for (let i=0; i < activeShapePoints.length; i+=1) {
+      for (let i=0; i &lt; activeShapePoints.length; i+=1) {
         // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
         var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z);
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
@@ -1080,7 +1108,7 @@ class Globe {
         coordsZ.push(z);
       }
 
-      for (let i=0; i < coordsX.length-1; i+=1) {
+      for (let i=0; i &lt; coordsX.length-1; i+=1) {
         // calcul de distances et différences d'alti
         var a = (coordsX[i+1]-coordsX[i])*(coordsX[i+1]-coordsX[i]);
         var b = (coordsY[i+1]-coordsY[i])*(coordsY[i+1]-coordsY[i]);
@@ -1122,7 +1150,7 @@ class Globe {
       var aire = 0;
       this.aire.innerHTML = 0;
 
-      for (let i=0; i < activeShapePoints.length-1; i+=1) {
+      for (let i=0; i &lt; activeShapePoints.length-1; i+=1) {
         // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
         var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z);
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
@@ -1136,7 +1164,7 @@ class Globe {
 
       // dès qu'on a au moins 3 sommets
       if(coordsX.length > 2){
-        for (let i=0; i < coordsX.length; i+=1) {
+        for (let i=0; i &lt; coordsX.length; i+=1) {
           // le % est un modulo qui permet de faire une boucle des sommets (ie sommet n+1 = sommet 1)
           var a = (coordsX[(i+1) % coordsX.length] - coordsX[i]);
           var b = (coordsY[(i+1) % coordsX.length] + coordsY[i] - (2 * coordsY[0]));
@@ -1171,7 +1199,7 @@ class Globe {
     */
 
     /**
-    * Découpe un trou dans le photomaillage - ajoute les points blancs visuellement et coupe selon la forme définie <br/>
+    * Découpe un trou dans le photomaillage - ajoute les points blancs visuellement et coupe selon la forme définie &lt;br/>
     * La forme définie doit impérativement être convexe pour que la découpe soit cohérente
     *
     * @param  {tileset} viewModel le modèle 3D à impacter
@@ -1209,7 +1237,7 @@ class Globe {
       this.handler.setInputAction(function(event) {
         hole_pts = Array.from(dig_point);
 
-        for (let i=0; i < coordsX.length; i+=1) {
+        for (let i=0; i &lt; coordsX.length; i+=1) {
           var a = (coordsX[(i+1) % coordsX.length] - coordsX[i]);
           var b = (coordsY[(i+1) % coordsX.length] + coordsY[i] - (2 * coordsY[0]));
           var c = ((Number(a) * Number(b))/2);
@@ -1220,7 +1248,7 @@ class Globe {
         // on inverse le tableau de points pour que la découpe marche
         if(aire > 0) {
           globe.holePlanes(viewModel, hole_pts);
-        } else if(aire < 0) {
+        } else if(aire &lt; 0) {
           hole_pts = hole_pts.reverse();
           globe.holePlanes(viewModel, hole_pts);
         }
@@ -1248,7 +1276,7 @@ class Globe {
       var pointsLength = hole_pts.length;
       var clippingPlanes = [];
 
-      for (var i = 0; i < pointsLength; ++i) {
+      for (var i = 0; i &lt; pointsLength; ++i) {
         var nextIndex = (i + 1) % pointsLength;
         var midpoint = Cesium.Cartesian3.add(hole_pts[i], hole_pts[nextIndex], new Cesium.Cartesian3());
         midpoint = Cesium.Cartesian3.multiplyByScalar(midpoint, 0.5, midpoint);
@@ -1284,7 +1312,7 @@ class Globe {
   }
 
   /**
-  * permet de cliquer les attributs sur le 3DTiles <br/>
+  * permet de cliquer les attributs sur le 3DTiles &lt;br/>
   * colorise en vert les contours de la zone cliquée
   *
   * @param  {String} enabled le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
@@ -1329,14 +1357,14 @@ class Globe {
 
           selected.feature = pickedFeature;
           selected.selectedEntity.name = pickedFeature.getProperty('name');
-          selected.selectedEntity.description = '<table class="cesium-infoBox-defaultTable"><tbody>';
+          selected.selectedEntity.description = '&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
 
           // Générer les lignes du tableau
           let propertyNames = pickedFeature.getPropertyNames();
-          for(let i = 0; i < propertyNames.length; i++){
-            selected.selectedEntity.description += '<tr><th>' + propertyNames[i] + '</th><td>' + pickedFeature.getProperty(propertyNames[i]) + '</td></tr>';
+          for(let i = 0; i &lt; propertyNames.length; i++){
+            selected.selectedEntity.description += '&lt;tr>&lt;th>' + propertyNames[i] + '&lt;/th>&lt;td>' + pickedFeature.getProperty(propertyNames[i]) + '&lt;/td>&lt;/tr>';
           }
-          selected.selectedEntity.description += '</tbody></table>';
+          selected.selectedEntity.description += '&lt;/tbody>&lt;/table>';
 
           // Afficher le tableau en haut à droite
           globe.viewer.selectedEntity = selected.selectedEntity;
@@ -1390,7 +1418,7 @@ class Globe {
 
   /**
   *
-  * permet de charger des fichiers geojson surfaciques <br/>
+  * permet de charger des fichiers geojson surfaciques &lt;br/>
   * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
   *
   * @param  {String} link Le lien vers le fichier
@@ -1417,7 +1445,7 @@ class Globe {
       this.hideLoader();
 
       // permet de classifier les json
-      if(options.classification && options.classificationField !== undefined){
+      if(options.classification &amp;&amp; options.classificationField !== undefined){
         // Get the array of entities
         let entities = dataSource.entities.values;
         if(options.colors != undefined){
@@ -1428,7 +1456,7 @@ class Globe {
         }
         let colors = options.colors || {};
 
-        for (let i = 0; i < entities.length; i++) {
+        for (let i = 0; i &lt; entities.length; i++) {
           let entity = entities[i];
           if (Cesium.defined(entity.polygon)) {
             let color = colors[entity.properties[options.classificationField]];
@@ -1519,9 +1547,9 @@ class Globe {
 
 
   /**
-  * La fonction show associée à loadPolygon <br/>
-  * Afficher ou masquer la donnée "name" en fonction de la valeur de "show" <br/>
-  * Si elle n'a pas encore été affiché, la fonction va télécharger les données avec le lien "link" passé en parametre <br/>
+  * La fonction show associée à loadPolygon &lt;br/>
+  * Afficher ou masquer la donnée "name" en fonction de la valeur de "show" &lt;br/>
+  * Si elle n'a pas encore été affiché, la fonction va télécharger les données avec le lien "link" passé en parametre &lt;br/>
   * Met un highlight sur les entités selectionnées en cliquant
   *
   * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
@@ -1572,7 +1600,7 @@ class Globe {
       } else{
         this.dataSources[name].show = true;
         // montrer les lignes
-        for(var i = 0; i < line.length; i++){
+        for(var i = 0; i &lt; line.length; i++){
             line[i].show = true;
         }
       }
@@ -1582,7 +1610,7 @@ class Globe {
     else{
       if(this.dataSources[name] !== undefined){
         this.dataSources[name].show = false;
-        for(var i = 0; i < line.length; i++){
+        for(var i = 0; i &lt; line.length; i++){
             line[i].show = false;
         }
         this.viewer.scene.requestRender();
@@ -1615,7 +1643,7 @@ class Globe {
   }
 
   /**
-  * permet de charger des fichiers geojson linéaires <br/>
+  * permet de charger des fichiers geojson linéaires &lt;br/>
   * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
   *
   * @param  {String} link Le lien vers le fichier
@@ -1639,7 +1667,7 @@ class Globe {
       this.hideLoader();
 
       // permet de classifier les json
-      if(options.classification && options.classificationField !== undefined){
+      if(options.classification &amp;&amp; options.classificationField !== undefined){
 
         // Get the array of entities
         let entities = dataSource.entities.values;
@@ -1652,7 +1680,7 @@ class Globe {
         }
 
         let colors = options.colors || {};
-        for (let i = 0; i < entities.length; i++) {
+        for (let i = 0; i &lt; entities.length; i++) {
           let entity = entities[i];
 
           if (Cesium.defined(entity.polyline)) {
@@ -1677,7 +1705,7 @@ class Globe {
   }
 
   /**
-  * La fonction show associée à loadPolyline <br/>
+  * La fonction show associée à loadPolyline &lt;br/>
   * permet d'afficher ou de masquer la donnée linéaire en fonction de la valeur de show
   *
   * @param  {String} link Le lien vers le fichier
@@ -1753,7 +1781,7 @@ class Globe {
   }
 
   /**
-  * permet de charger des fichiers geojson ponctuels <br/>
+  * permet de charger des fichiers geojson ponctuels &lt;br/>
   * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
   *
   * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
@@ -1784,7 +1812,7 @@ class Globe {
 
       // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
       // l'entité billboard ne conserve pas les attributs
-      for(let i = 0; i < entities.length; i++) {
+      for(let i = 0; i &lt; entities.length; i++) {
         let entity = entities[i];
 
         // on récupère les coordonnées des points importés
@@ -1824,7 +1852,7 @@ class Globe {
   }
 
   /**
-  * La fonction show associée à loadPoint <br/>
+  * La fonction show associée à loadPoint &lt;br/>
   * permet d'afficher ou de masquer la donnée ponctuelle en fonction de la valeur de show
   *
   * @param  {String} link Le lien vers le fichier
@@ -1849,7 +1877,7 @@ class Globe {
 
       } else{
         this.dataSources[name].show = true;
-        for(var i = 0; i < billboard.length; i++){
+        for(var i = 0; i &lt; billboard.length; i++){
             billboard[i].show = true;
             line[i].show = true;
           }
@@ -1858,7 +1886,7 @@ class Globe {
     } else{
       if(this.dataSources[name] !== undefined){
         this.dataSources[name].show = false;
-        for(var i = 0; i < billboard.length; i++){
+        for(var i = 0; i &lt; billboard.length; i++){
             billboard[i].show = false;
             line[i].show = false;
           }
@@ -1897,7 +1925,7 @@ class Globe {
         // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
         let updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
 
-        for (let i = 0; i < entities.length; i++) {
+        for (let i = 0; i &lt; entities.length; i++) {
           let entity = entities[i];
 
           // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
@@ -1922,7 +1950,7 @@ class Globe {
       });
 
       // permet de classifier les json
-      if(options.classification && options.classificationField !== undefined){
+      if(options.classification &amp;&amp; options.classificationField !== undefined){
         let entities = dataSource.entities.values;
 
         if(options.colors != undefined){
@@ -1933,7 +1961,7 @@ class Globe {
         }
         let colors = options.colors || {};
 
-        for (let i = 0; i < entities.length; i++) {
+        for (let i = 0; i &lt; entities.length; i++) {
 
           let entity = entities[i];
           if (Cesium.defined(entity.polygon)) {
@@ -1960,7 +1988,7 @@ class Globe {
 
   /**
   *
-  * La fonction show associée à loadTimeJson <br/>
+  * La fonction show associée à loadTimeJson &lt;br/>
   * permet d'afficher ou de masquer la donnée temporelle en fonction de la valeur de show
   *
   * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
@@ -1985,7 +2013,7 @@ class Globe {
       } else{
         globe.viewer.timeline.zoomTo(start, end);
         this.dataSources[name].show = true;
-        for(var i = 0; i < line.length; i++){
+        for(var i = 0; i &lt; line.length; i++){
             line[i].show = true;
           }
         this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
@@ -2003,7 +2031,7 @@ class Globe {
         globe.viewer.timeline.zoomTo(today, demain);
 
         this.dataSources[name].show = false;
-        for(var i = 0; i < line.length; i++){
+        for(var i = 0; i &lt; line.length; i++){
             line[i].show = false;
           }
         this.viewer.scene.requestRender();
@@ -2012,8 +2040,8 @@ class Globe {
   }
 
   /**
-  * permet de charger un fichier de données géographiques (geojson) ainsi qu'un 2ème fichier attributaire au format json <br/>
-  * On lie ensuite les attributs à la donnée géographique <br/>
+  * permet de charger un fichier de données géographiques (geojson) ainsi qu'un 2ème fichier attributaire au format json &lt;br/>
+  * On lie ensuite les attributs à la donnée géographique &lt;br/>
   * utilise la fonction showPoint pour afficher la donnée
   *
   * @param  {String} link Le lien vers le fichier
@@ -2052,7 +2080,7 @@ class Globe {
 
       // une fois que le fichier est bien chargé
       xmlhttp.onreadystatechange = function () {
-        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+        if(xmlhttp.readyState === 4 &amp;&amp; xmlhttp.status === 200) {
           // on récupère le json chargé
           var jsonAttribut = xmlhttp.response;
 
@@ -2062,7 +2090,7 @@ class Globe {
             var stop = 8;
           }
 
-          for(let i = 0; i < stop; i++) {
+          for(let i = 0; i &lt; stop; i++) {
             let entity = entities[i];
 
             // on récupère les coordonnées des points importés
@@ -2121,7 +2149,7 @@ class Globe {
               // pour que les liens dans la description fonctionnent
               description = description.replace(/href=\\"/g, 'href=https://www.strasbourg.eu');
               description = description.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
-              description = description.replace(/<a/g,'<a target=_blank');
+              description = description.replace(/&lt;a/g,'&lt;a target=_blank');
               description = description.replace(/style=\\"width: 300px;/g,'style=\\"align: center; width: 99%;');
               description = description.replace(/\\n/g,'');
               description = description.replace(/\\t/g,'');
@@ -2131,7 +2159,7 @@ class Globe {
               info = info.replace('{"fr_FR": "', '');
               info = info.replace(/href=\\"/g, 'href="https://www.strasbourg.eu');
               info = info.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
-              info = info.replace(/<a/g,'<a target=_blank');
+              info = info.replace(/&lt;a/g,'&lt;a target=_blank');
               info = info.replace('"}','');
 
 
@@ -2141,24 +2169,24 @@ class Globe {
 
               // Renseignement des éléments de la boite d'information
               billboard[i].name = String(entity.properties['name']);
-              billboard[i].description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+              billboard[i].description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
               if (Cesium.defined(entity.properties['imageurl'])) {
-                billboard[i].description += '<img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
+                billboard[i].description += '&lt;img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
               }
 
-              billboard[i].description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
-              billboard[i].description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';
-              billboard[i].description += '<tr><td>Téléphone </td><td>' + String(entity.properties['phone']) + '</td></tr>';
-              billboard[i].description += '<tr><td>Adresse </td><td>' + String(entity.properties['address']) + '</td></tr>';
-              billboard[i].description += '<tr><td>Accès </td><td>' + acces + '</td></tr>';
-              billboard[i].description += '<tr><td>Lien vers le site de la piscine</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['name']) + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Mail&lt;/td>&lt;td>' + String(entity.properties['mail']) + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Téléphone &lt;/td>&lt;td>' + String(entity.properties['phone']) + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Adresse &lt;/td>&lt;td>' + String(entity.properties['address']) + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Accès &lt;/td>&lt;td>' + acces + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Lien vers le site de la piscine&lt;/td>&lt;td>' + '&lt;a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' &lt;/a>&lt;/td>&lt;/tr>';
 
               // on rentre dans le fichier json chargé pour récupérer les attributs
-              for(let j = 0; j < jsonAttribut.length; j++) {
+              for(let j = 0; j &lt; jsonAttribut.length; j++) {
                 if(entity.name == jsonAttribut[j].fields.name) {
-                  billboard[i].description += '<tr><td>Statut</td><td>' + String(jsonAttribut[j].fields.realtimestatus) + '</td></tr>';
-                  billboard[i].description += '<tr><td>Occupation </td><td>' + String(jsonAttribut[j].fields.occupation) + '</td></tr>';
-                  billboard[i].description += '<tr><td>Heure de mise à jour </td><td>' + String(jsonAttribut[j].fields.updatedate) + '</td></tr>';
+                  billboard[i].description += '&lt;tr>&lt;td>Statut&lt;/td>&lt;td>' + String(jsonAttribut[j].fields.realtimestatus) + '&lt;/td>&lt;/tr>';
+                  billboard[i].description += '&lt;tr>&lt;td>Occupation &lt;/td>&lt;td>' + String(jsonAttribut[j].fields.occupation) + '&lt;/td>&lt;/tr>';
+                  billboard[i].description += '&lt;tr>&lt;td>Heure de mise à jour &lt;/td>&lt;td>' + String(jsonAttribut[j].fields.updatedate) + '&lt;/td>&lt;/tr>';
 
                   // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'
                   if(Cesium.defined(jsonAttribut[j].fields.occupation)) {
@@ -2201,25 +2229,25 @@ class Globe {
 
               // le reste du tableau d'attributs
               if (Cesium.defined(entity.properties['serviceandactivities'])) {
-                billboard[i].description += '<tr><td>Services et activités </td><td>' + service + '</td></tr>';
+                billboard[i].description += '&lt;tr>&lt;td>Services et activités &lt;/td>&lt;td>' + service + '&lt;/td>&lt;/tr>';
               }
               if (Cesium.defined(entity.properties['characteristics'])) {
-                billboard[i].description += '<tr><td>Caractéristiques </td><td>' + caracteristique + '</td></tr>';
+                billboard[i].description += '&lt;tr>&lt;td>Caractéristiques &lt;/td>&lt;td>' + caracteristique + '&lt;/td>&lt;/tr>';
               }
               if (Cesium.defined(entity.properties['exceptionalschedule'])) {
-                billboard[i].description += '<tr><td>Mesures exceptionnelles </td><td>' + exception + '</td></tr>';
+                billboard[i].description += '&lt;tr>&lt;td>Mesures exceptionnelles &lt;/td>&lt;td>' + exception + '&lt;/td>&lt;/tr>';
               }
               if (Cesium.defined(entity.properties['additionalinformation'])) {
-                billboard[i].description += '<tr><td>Informations supplémentaires </td><td>' + info + '</td></tr>';
+                billboard[i].description += '&lt;tr>&lt;td>Informations supplémentaires &lt;/td>&lt;td>' + info + '&lt;/td>&lt;/tr>';
               }
 
-              billboard[i].description +='</tbody></table><br/>';
-              billboard[i].description += '<p>' + description + '</p>';
-              billboard[i].description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Information sur les données</a><br/><br/>';
+              billboard[i].description +='&lt;/tbody>&lt;/table>&lt;br/>';
+              billboard[i].description += '&lt;p>' + description + '&lt;/p>';
+              billboard[i].description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Information sur les données&lt;/a>&lt;br/>&lt;br/>';
 
             } // fin du if(choice = piscine)
 
-          } // fin du for(i < entities.length)
+          } // fin du for(i &lt; entities.length)
 
         } // fin de la requête xmlhttp
       } // fin de la requête xmlhttp
@@ -2270,45 +2298,45 @@ class Globe {
   */
   createTableauPLU(entity) {
     //Renseignement des éléments de la boite d'information
-    entity.description ='<br/><table class="cesium-infoBox-defaultTable"><tbody>';
+    entity.description ='&lt;br/>&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
     entity.name = 'PLUi Plan de Zonage'
     if (Cesium.defined(entity.properties['photo'])) {
-      entity.description += '<img src="https://sig.strasbourg.eu/datastrasbourg/plu_media/ims_zone/' + String(entity.properties['photo']) + '" align="center" width="99%">';
+      entity.description += '&lt;img src="https://sig.strasbourg.eu/datastrasbourg/plu_media/ims_zone/' + String(entity.properties['photo']) + '" align="center" width="99%">';
     }
     if (Cesium.defined(entity.properties['paraph01'])) {
-      entity.description += '<p>' + String(entity.properties['paraph01']) + '</p>';
+      entity.description += '&lt;p>' + String(entity.properties['paraph01']) + '&lt;/p>';
     }
     if (Cesium.defined(entity.properties['paraph02'])) {
-      entity.description += '<p>' + String(entity.properties['paraph02']) + '</p>';
+      entity.description += '&lt;p>' + String(entity.properties['paraph02']) + '&lt;/p>';
     }
     if (Cesium.defined(entity.properties['paraph03'])) {
-      entity.description += '<p>' + String(entity.properties['paraph03']) + '</p>';
+      entity.description += '&lt;p>' + String(entity.properties['paraph03']) + '&lt;/p>';
     }
     if (Cesium.defined(entity.properties['paraph04'])) {
-      entity.description += '<p>' + String(entity.properties['paraph04']) + '</p>';
+      entity.description += '&lt;p>' + String(entity.properties['paraph04']) + '&lt;/p>';
     }
     if (Cesium.defined(entity.properties['paraph05'])) {
-      entity.description += '<p>' + String(entity.properties['paraph05']) + '</p>';
+      entity.description += '&lt;p>' + String(entity.properties['paraph05']) + '&lt;/p>';
     }
     if (Cesium.defined(entity.properties['paraph06'])) {
-      entity.description += '<p>' + String(entity.properties['paraph06']) + '</p>';
+      entity.description += '&lt;p>' + String(entity.properties['paraph06']) + '&lt;/p>';
     }
     if (Cesium.defined(entity.properties['paraph07'])) {
-      entity.description += '<p>' + String(entity.properties['paraph07']) + '</p><br/><br/>';
+      entity.description += '&lt;p>' + String(entity.properties['paraph07']) + '&lt;/p>&lt;br/>&lt;br/>';
     }
-    entity.description += '<tr><td>Commune </td><td>' + String(entity.properties['commune']) + '</td></tr>';
-    entity.description += '<tr><td>Zone </td><td>' + String(entity.properties['main_type']) + '</td></tr>';
-    entity.description += '<tr><td>Secteur </td><td>' + String(entity.properties['type']) + '</td></tr>';
-    entity.description += '<tr><td>Hauteur maximale </td><td>' + String(entity.properties['ht_aff']) + '</td></tr>';
-    entity.description +='</tbody></table><br/>';
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['commune']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Zone &lt;/td>&lt;td>' + String(entity.properties['main_type']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Secteur &lt;/td>&lt;td>' + String(entity.properties['type']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Hauteur maximale &lt;/td>&lt;td>' + String(entity.properties['ht_aff']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
 
     if (Cesium.defined(entity.properties['page'])) {
-      entity.description += '<a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/reglement_actuel.pdf#page=' + String(entity.properties['page']) + '" target="_blank">Lien vers le règlement de la zone</a><br/><br/>';
+      entity.description += '&lt;a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/reglement_actuel.pdf#page=' + String(entity.properties['page']) + '" target="_blank">Lien vers le règlement de la zone&lt;/a>&lt;br/>&lt;br/>';
     }
     if (Cesium.defined(entity.properties['commune'])) {
-      entity.description += '<a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/pdf_commune/' + String(entity.properties['commune']) + '.pdf" target="_blank">Lien vers la présentation de la commune</a><br/><br/>';
+      entity.description += '&lt;a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/pdf_commune/' + String(entity.properties['commune']) + '.pdf" target="_blank">Lien vers la présentation de la commune&lt;/a>&lt;br/>&lt;br/>';
     }
-    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Information sur les données&lt;/a>&lt;br/>&lt;br/>';
   }
 
   /**
@@ -2320,15 +2348,15 @@ class Globe {
   createTableauCommunes(entity) {
     //Renseignement des éléments de la boite d'information
     entity.name = 'Limites de communes';
-    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-    entity.description += '<tr><td>Département </td><td>' + String(entity.properties['num_dept']) + '</td></tr>';
-    entity.description += '<tr><td>Commune </td><td>' + String(entity.properties['nom']) + '</td></tr>';
-    entity.description += '<tr><td>Code INSEE </td><td>' + String(entity.properties['num_com']) + '</td></tr>';
-    entity.description += '<tr><td>Source </td><td>' + String(entity.properties['source']) + '</td></tr>';
-    entity.description += '<tr><td>Date export </td><td>' + String(entity.properties['date_exprt']) + '</td></tr>';
-    entity.description += '<tr><td>Code précision </td><td>' + String(entity.properties['code_preci']) + '</td></tr>';
-    entity.description += '<tr><td>Licence </td><td>' + String(entity.properties['licence']) + '</td></tr>';
-    entity.description +='</tbody></table>';
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Département &lt;/td>&lt;td>' + String(entity.properties['num_dept']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['nom']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code INSEE &lt;/td>&lt;td>' + String(entity.properties['num_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code précision &lt;/td>&lt;td>' + String(entity.properties['code_preci']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
   }
 
   /**
@@ -2340,14 +2368,14 @@ class Globe {
   createTableauSections(entity) {
     //Renseignement des éléments de la boite d'information
     entity.name = 'Limites de sections'
-    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-    entity.description += '<tr><td>Commune </td><td>' + String(entity.properties['nom_com']) + '</td></tr>';
-    entity.description += '<tr><td>Code INSEE </td><td>' + String(entity.properties['num_com']) + '</td></tr>';
-    entity.description += '<tr><td>Numéro SECTION </td><td>' + String(entity.properties['n_section']) + '</td></tr>';
-    entity.description += '<tr><td>Source </td><td>' + String(entity.properties['source']) + '</td></tr>';
-    entity.description += '<tr><td>Date export </td><td>' + String(entity.properties['date_exprt']) + '</td></tr>';
-    entity.description += '<tr><td>Licence </td><td>' + String(entity.properties['licence']) + '</td></tr>';
-    entity.description +='</tbody></table>';
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['nom_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code INSEE &lt;/td>&lt;td>' + String(entity.properties['num_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Numéro SECTION &lt;/td>&lt;td>' + String(entity.properties['n_section']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
   }
 
   /**
@@ -2359,118 +2387,118 @@ class Globe {
   createTableauCadastre(entity) {
     //Renseignement des éléments de la boite d'information
     entity.name = 'Parcellaire cadastral'
-    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-    entity.description += '<tr><td>Département </td><td>' + String(entity.properties['num_dept']) + '</td></tr>';
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Département &lt;/td>&lt;td>' + String(entity.properties['num_dept']) + '&lt;/td>&lt;/tr>';
     switch (String(entity.properties['num_com'])) {
       case '049':
-      entity.description += '<tr><td>Commune </td><td>BLAESHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BLAESHEIM&lt;/td>&lt;/tr>'
       break;
       case '152':
-      entity.description += '<tr><td>Commune </td><td>GEISPOLSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>GEISPOLSHEIM&lt;/td>&lt;/tr>'
       break;
       case '001':
-      entity.description += '<tr><td>Commune </td><td>ACHENHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ACHENHEIM&lt;/td>&lt;/tr>'
       break;
       case '043':
-      entity.description += '<tr><td>Commune </td><td>BISCHHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BISCHHEIM&lt;/td>&lt;/tr>'
       break;
       case '065':
-      entity.description += '<tr><td>Commune </td><td>BREUSCHWICKERSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BREUSCHWICKERSHEIM&lt;/td>&lt;/tr>'
       break;
       case '118':
-      entity.description += '<tr><td>Commune </td><td>ECKBOLSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ECKBOLSHEIM&lt;/td>&lt;/tr>'
       break;
       case '119':
-      entity.description += '<tr><td>Commune </td><td>ECKWERSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ECKWERSHEIM&lt;/td>&lt;/tr>'
       break;
       case '124':
-      entity.description += '<tr><td>Commune </td><td>ENTZHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ENTZHEIM&lt;/td>&lt;/tr>'
       break;
       case '131':
-      entity.description += '<tr><td>Commune </td><td>ESCHAU</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ESCHAU&lt;/td>&lt;/tr>'
       break;
       case '137':
-      entity.description += '<tr><td>Commune </td><td>FEGERSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>FEGERSHEIM&lt;/td>&lt;/tr>'
       break;
       case '182':
-      entity.description += '<tr><td>Commune </td><td>HANGENBIETEN</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HANGENBIETEN&lt;/td>&lt;/tr>'
       break;
       case '204':
-      entity.description += '<tr><td>Commune </td><td>HOENHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HOENHEIM&lt;/td>&lt;/tr>'
       break;
       case '212':
-      entity.description += '<tr><td>Commune </td><td>HOLTZHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HOLTZHEIM&lt;/td>&lt;/tr>'
       break;
       case '218':
-      entity.description += '<tr><td>Commune </td><td>ILLKIRCH-GRAFFENSTADEN</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ILLKIRCH-GRAFFENSTADEN&lt;/td>&lt;/tr>'
       break;
       case '247':
-      entity.description += '<tr><td>Commune </td><td>KOLBSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>KOLBSHEIM&lt;/td>&lt;/tr>'
       break;
       case '256':
-      entity.description += '<tr><td>Commune </td><td>LAMPERTHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LAMPERTHEIM&lt;/td>&lt;/tr>'
       break;
       case '267':
-      entity.description += '<tr><td>Commune </td><td>LINGOLSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LINGOLSHEIM&lt;/td>&lt;/tr>'
       break;
       case '268':
-      entity.description += '<tr><td>Commune </td><td>LIPSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LIPSHEIM&lt;/td>&lt;/tr>'
       break;
       case '296':
-      entity.description += '<tr><td>Commune </td><td>MITTELHAUSBERGEN</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>MITTELHAUSBERGEN&lt;/td>&lt;/tr>'
       break;
       case '309':
-      entity.description += '<tr><td>Commune </td><td>MUNDOLSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>MUNDOLSHEIM&lt;/td>&lt;/tr>'
       break;
       case '326':
-      entity.description += '<tr><td>Commune </td><td>NIEDERHAUSBERGEN</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>NIEDERHAUSBERGEN&lt;/td>&lt;/tr>'
       break;
       case '343':
-      entity.description += '<tr><td>Commune </td><td>OBERHAUSBERGEN</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OBERHAUSBERGEN&lt;/td>&lt;/tr>'
       break;
       case '350':
-      entity.description += '<tr><td>Commune </td><td>OBERSCHAEFFOLSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OBERSCHAEFFOLSHEIM&lt;/td>&lt;/tr>'
       break;
       case '363':
-      entity.description += '<tr><td>Commune </td><td>OSTHOFFEN</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OSTHOFFEN&lt;/td>&lt;/tr>'
       break;
       case '365':
-      entity.description += '<tr><td>Commune </td><td>OSTWALD</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OSTWALD&lt;/td>&lt;/tr>'
       break;
       case '378':
-      entity.description += '<tr><td>Commune </td><td>PLOBSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>PLOBSHEIM&lt;/td>&lt;/tr>'
       break;
       case '389':
-      entity.description += '<tr><td>Commune </td><td>REICHSTETT</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>REICHSTETT&lt;/td>&lt;/tr>'
       break;
       case '447':
-      entity.description += '<tr><td>Commune </td><td>SCHILTIGHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>SCHILTIGHEIM&lt;/td>&lt;/tr>'
       break;
       case '471':
-      entity.description += '<tr><td>Commune </td><td>SOUFFELWEYERSHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>SOUFFELWEYERSHEIM&lt;/td>&lt;/tr>'
       break;
       case '482':
-      entity.description += '<tr><td>Commune </td><td>STRASBOURG</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>STRASBOURG&lt;/td>&lt;/tr>'
       break;
       case '506':
-      entity.description += '<tr><td>Commune </td><td>VENDENHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>VENDENHEIM&lt;/td>&lt;/tr>'
       break;
       case '519':
-      entity.description += '<tr><td>Commune </td><td>LA_WANTZENAU</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LA_WANTZENAU&lt;/td>&lt;/tr>'
       break;
       case '551':
-      entity.description += '<tr><td>Commune </td><td>WOLFISHEIM</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>WOLFISHEIM&lt;/td>&lt;/tr>'
       break;
       default:
-      entity.description += '<tr><td>Commune </td><td>Inconnue</td></tr>'
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>Inconnue&lt;/td>&lt;/tr>'
     }
-    entity.description += '<tr><td>Section </td><td>' + String(entity.properties['n_section']) + '</td></tr>';
-    entity.description += '<tr><td>Parcelle </td><td>' + String(entity.properties['n_parcelle']) + '</td></tr>';
-    //entity.description += '<tr><td>Code précision </td><td>' + String(entity.properties['code_preci']) + '</td></tr>';
-    entity.description += '<tr><td>Source </td><td>' + String(entity.properties['source']) + '</td></tr>';
-    entity.description += '<tr><td>Date export </td><td>' + String(entity.properties['date_exprt']) + '</td></tr>';
-    entity.description += '<tr><td>Licence </td><td>' + String(entity.properties['licence']) + '</td></tr>';
-    entity.description +='</tbody></table>';
+    entity.description += '&lt;tr>&lt;td>Section &lt;/td>&lt;td>' + String(entity.properties['n_section']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Parcelle &lt;/td>&lt;td>' + String(entity.properties['n_parcelle']) + '&lt;/td>&lt;/tr>';
+    //entity.description += '&lt;tr>&lt;td>Code précision &lt;/td>&lt;td>' + String(entity.properties['code_preci']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
   }
 
   /**
@@ -2483,24 +2511,24 @@ class Globe {
   createTableauPatrimoine(billboard, entity){
     //Renseignement des éléments de la boite d'information
     billboard.name = String(entity.properties['nom_du_patrimoine']);
-    billboard.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
     if (Cesium.defined(entity.properties['photo'])) {
-      billboard.description += '<img src="https://sig.strasbourg.eu/datastrasbourg/patrimoine_quartier/' + String(entity.properties['photo']) + '" align="center" width="99%">';
+      billboard.description += '&lt;img src="https://sig.strasbourg.eu/datastrasbourg/patrimoine_quartier/' + String(entity.properties['photo']) + '" align="center" width="99%">';
     }
-    billboard.description += '<p>' + String(entity.properties['texte_de_presentation']) + '</p>';
-    billboard.description += '<tr><td>Nom</td><td>' + String(entity.properties['nom_du_patrimoine']) + '</td></tr>';
+    billboard.description += '&lt;p>' + String(entity.properties['texte_de_presentation']) + '&lt;/p>';
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['nom_du_patrimoine']) + '&lt;/td>&lt;/tr>';
     if (Cesium.defined(entity.properties['quartier'])) {
-      billboard.description += '<tr><td>Quartier</td><td>' + String(entity.properties['quartier']) + '</td></tr>';
+      billboard.description += '&lt;tr>&lt;td>Quartier&lt;/td>&lt;td>' + String(entity.properties['quartier']) + '&lt;/td>&lt;/tr>';
     }
-    billboard.description += '<tr><td>Quartier calculé</td><td>' + String(entity.properties['quartier_calcule']) + '</td></tr>';
-    billboard.description += '<tr><td>Type de patrimoine </td><td>' + String(entity.properties['type_de_patrimoine']) + '</td></tr>';
+    billboard.description += '&lt;tr>&lt;td>Quartier calculé&lt;/td>&lt;td>' + String(entity.properties['quartier_calcule']) + '&lt;/td>&lt;/tr>';
+    billboard.description += '&lt;tr>&lt;td>Type de patrimoine &lt;/td>&lt;td>' + String(entity.properties['type_de_patrimoine']) + '&lt;/td>&lt;/tr>';
     if (Cesium.defined(entity.properties['copyright_photo'])) {
-      billboard.description += '<tr><td>Source photographie </td><td>' + String(entity.properties['copyright_photo']) + '</td></tr>';
+      billboard.description += '&lt;tr>&lt;td>Source photographie &lt;/td>&lt;td>' + String(entity.properties['copyright_photo']) + '&lt;/td>&lt;/tr>';
     }
-    billboard.description += '<tr><td>Source donnée </td><td>' + String(entity.properties['source']) + '</td></tr>';
-    billboard.description +='</tbody></table><br/>';
+    billboard.description += '&lt;tr>&lt;td>Source donnée &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
 
-    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank" rel="noopener">Information sur les données&lt;/a>&lt;br/>&lt;br/>';
   }
 
   /**
@@ -2512,15 +2540,38 @@ class Globe {
   createTableauQualiteAir(entity){
     //Renseignement des éléments de la boite d'information
     entity.name = 'Qualité air communes Eurométropole'
-    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-    entity.description += '<tr><td>Date d\'échéance (AAAA/MM/JJ)</td><td>' + String(entity.properties['date_echeance']) + '</td></tr>';
-    entity.description += '<tr><td>Qualificatif</td><td>' + String(entity.properties['qualificatif']) + '</td></tr>';
-    entity.description += '<tr><td>Valeur</td><td>' + String(entity.properties['valeur']) + '</td></tr>';
-    entity.description += '<tr><td>Commune</td><td>' + String(entity.properties['lib_zone']) + '</td></tr>';
-    entity.description += '<tr><td>Code zone</td><td>' + String(entity.properties['code_zone']) + '</td></tr>';
-    entity.description +='</tbody></table><br/>';
-    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Date d\'échéance (AAAA/MM/JJ)&lt;/td>&lt;td>' + String(entity.properties['date_echeance']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Qualificatif&lt;/td>&lt;td>' + String(entity.properties['qualificatif']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Valeur&lt;/td>&lt;td>' + String(entity.properties['valeur']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Commune&lt;/td>&lt;td>' + String(entity.properties['lib_zone']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code zone&lt;/td>&lt;td>' + String(entity.properties['code_zone']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Information sur les données&lt;/a>&lt;br/>&lt;br/>';
   }
 
 
 } // fin de la classe Globe
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Geocoder.html">Geocoder</a></li><li><a href="Globe.html">Globe</a></li><li><a href="LegendManager.html">LegendManager</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Raf09.html">Raf09</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Jul 21 2020 17:24:05 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
