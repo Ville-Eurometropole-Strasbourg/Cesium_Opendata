@@ -31,7 +31,7 @@ let cesiumEvent = new Menu(globe);
 cesiumEvent.evenementsCouches();
 
 let cesiumEventOD = new Data(globe);
-cesiumEventOD.couchesOD();
+cesiumEventOD.couchesJson();
 
 
 // Une fois le photo maillage chargé, l'enregister dans la liste des dataSource pour pouvoir interagir avec lui dans les évènements

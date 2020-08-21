@@ -1,7 +1,7 @@
 "use strict";
 
-/*
-* Classe permettant de gérer les légendes
+/**
+* Classe permettant de gérer les légendes: les créer dynamiquement, les ajouter et les supprimer
 */
 class LegendManager {
 
@@ -76,10 +76,10 @@ class LegendManager {
   */
   makeLegendItem(label, color, choice, symbol){
     let legendColor = document.createElement('span');
-    if(choice === 'line'){
+    if(choice === 'ligne'){
       legendColor.classList.add('legend-line');
       legendColor.style = "background-color: " + color + ";";
-    } else if(choice === 'polygon') {
+    } else if(choice === 'surface') {
       legendColor.classList.add('legend-color');
       legendColor.style = "background-color: " + color + ";";
     } else if(choice === 'point') {

@@ -1,11 +1,15 @@
 "use strict";
 
-// Gérer les interactions avec l'utilisateur (évènement sur le menu)
+/**
+* La classe Menu va permettre de gérer les interactions avec l'utilisateur <br/>
+* Elle définit tous les évenements sur la "partie fixe" de Cesium, ie la boîte à outils et la base du menu (sans les couches de données)<br/>
+*
+*
+*/
 class Menu {
 
   /**
-  * Le constructeur de la classe menu qui déclare toutes les variables utiles aux évènements
-  * et créé le LegendManager
+  * Le constructeur de la classe menu qui déclare toutes les variables de la partie fixe
   *
   * @param  {Object} globe L'objet globe défini dans la classe Globe
   */
@@ -30,10 +34,6 @@ class Menu {
     this.timeDiv = document.querySelector('#time');
     this.cameraDiv = document.querySelector('#camera');
     this.linkDiv = document.querySelector('#link');
-
-    // Créer un gestionnaire pour les légendes
-    this.legendManager = new LegendManager(this.leftPane);
-    globe.legendManager = this.legendManager;
 
     /*
     *  Div qui contiennent les formulaires de personnalisation (affichés à gauche)
@@ -96,7 +96,7 @@ class Menu {
     var i;
     for (i = 0; i < element.length; i++) {
       element[i].addEventListener('click', function() {
-        this.classList.toggle("active");
+        //this.classList.toggle("active");
         var dropdownContent = this.nextElementSibling;
         if (dropdownContent.style.display === "block") {
           dropdownContent.style.display = "none";
@@ -108,7 +108,7 @@ class Menu {
   }
 
   /**
-  * Affichage des divs dans la boîte à outils
+  * Affichage des divs de la boîte à outils
   * et permet de fermer les divs lorsqu'on clique ailleurs
   *
   * @param  {BoutonHTML} bouton Le bouton HTML sur lequel ajouter l'évènement
@@ -127,8 +127,9 @@ class Menu {
   }
 
   /**
-  * Gère la zone morte sur la gauche de l'écran
+  * Gère la zone morte sur la partie gauche de l'écran <br/>
   * Permet de pouvoir cliquer dans la zone quand aucun formulaire ni légende n'est affiché
+  * et de reprendre la main sur le slider lorsque les légendes sont trop nombreuses
   *
   */
   panelGauche() {
@@ -146,7 +147,7 @@ class Menu {
   /**
   *
   *
-  * Evenements sur tous les boutons dans le menu et toute la boîte à outils
+  * Evenements sur la partie fixe de Cesium (boîte à outils et base du menu)
   *
   *
   */
@@ -205,6 +206,10 @@ class Menu {
     // plan de coupe horizontal
     var planeEntities = [];
     var clippingPlanes = [];
+
+    // entités pour le plu détaillé
+    var pluTiles = [];
+    var linePLUdetaille = [];
 
     /*
     * MESURES
@@ -662,12 +667,16 @@ class Menu {
       var mois = this.datepicker.val().substring(3,5);
       var jour = this.datepicker.val().substring(0,2);
 
-      let startTime = Cesium.JulianDate.fromIso8601(annee + '-' + mois + '-' + jour + 'T00:00:00Z');
-      let stopTime = Cesium.JulianDate.fromIso8601(annee + '-' + mois + '-' + jour + 'T23:59:59Z');
+      let date = Cesium.JulianDate.fromIso8601(annee + '-' + mois + '-' + jour + 'T00:00:00Z');
+      var startTime = Cesium.JulianDate.addDays(date, -5, new Cesium.JulianDate());
+      var stopTime = Cesium.JulianDate.addDays(date, 5, new Cesium.JulianDate());
+      //let stopTime = Cesium.JulianDate.fromIso8601(annee + '-' + mois + '-' + jour + 'T23:59:59Z');
 
       // on centre l'horloge sur la date choisie
       globe.viewer.clock.startTime = startTime;
-      globe.viewer.timeline.zoomTo(startTime, stopTime);
+      globe.viewer.clock.stopTime = stopTime;
+      globe.viewer.clock.currentTime = date;
+      globe.viewer.timeline.zoomTo(date, Cesium.JulianDate.addDays(date, 1, new Cesium.JulianDate()));
     });
 
     /*
@@ -868,9 +877,7 @@ class Menu {
     });
     document.querySelector('#ouest').addEventListener('click', function() {
       var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
-      console.log(windowPosition);
       var test = globe.viewer.scene.pickPosition(windowPosition);
-      console.log(test);
 
       var CC3 = Cesium.Cartesian3;
       var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
@@ -884,9 +891,7 @@ class Menu {
     });
     document.querySelector('#est').addEventListener('click', function() {
       var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
-      console.log(windowPosition);
       var test = globe.viewer.scene.pickPosition(windowPosition);
-      console.log(test);
 
       var CC3 = Cesium.Cartesian3;
       var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
@@ -899,9 +904,7 @@ class Menu {
     });
     document.querySelector('#sud').addEventListener('click', function() {
       var windowPosition = new Cesium.Cartesian2(globe.viewer.container.clientWidth / 2, globe.viewer.container.clientHeight / 2);
-      console.log(windowPosition);
       var test = globe.viewer.scene.pickPosition(windowPosition);
-      console.log(test);
 
       var CC3 = Cesium.Cartesian3;
       var range = CC3.magnitude(CC3.subtract(globe.viewer.camera.position,test,new CC3()));
@@ -919,13 +922,188 @@ class Menu {
       globe.viewer.scene.requestRender();
     });
 
-  }
 
+    //document.querySelector('#ODPLUdetailleTransparent').addEventListener('change', (e) => {
+      // problème de CORS
+      /*var imageryLayers = globe.viewer.imageryLayers;
+      imageryLayers.addImageryProvider(
+        new Cesium.TileMapServiceImageryProvider({
+          url: "http://adict-preprod.strasbourg.eu/adictwms/?VERSION=1.3.0&MAP=/opt/wms/projects/dev_styles_plu.qgs",
+          proxy : new Cesium.DefaultProxy('/proxy/')
+          //fileExtension: 'xml'
+        })
+      );*/
+
+      // problème de CORS ? ou de proxy, n'affiche pas la couche
+      /*var imageryLayers = globe.viewer.imageryLayers;
+      imageryLayers.addImageryProvider(
+        new Cesium.WebMapServiceImageryProvider({
+          url : 'http://adict-preprod.strasbourg.eu/mapproxy/service',
+          layers: 'PLU_V2',
+          //proxy : new Cesium.DefaultProxy('/proxy/')
+        })
+      );*/
+
+        /*var latnord = 48.58251785890363;
+        var latsud = 48.566377216517914;
+        var lonouest= 7.734799244658492;
+        var lonest = 7.770381472835122;
+
+        var pludetaille = globe.viewer.entities.add({
+          polygon: {
+            hierarchy: Cesium.Cartesian3.fromDegreesArray([lonouest, latnord, lonest, latnord, lonest, latsud, lonouest, latsud]),
+            material: "src/img/plu4326_transparent.png",
+            classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
+          },
+        });
+
+        globe.viewer.scene.requestRender();
+
+    });
+
+    document.querySelector('#ODPLUdetaille').addEventListener('change', (e) => {
+        var latnord = 48.58251785890363;
+        var latsud = 48.566377216517914;
+        var lonouest= 7.734799244658492;
+        var lonest = 7.770381472835122;
+
+
+        var pludetaille = globe.viewer.entities.add({
+          polygon: {
+          hierarchy: Cesium.Cartesian3.fromDegreesArray([lonouest, latnord, lonest, latnord, lonest, latsud, lonouest, latsud]),
+          /*material: new Cesium.ImageMaterialProperty({
+                         image: "src/img/plu4326_png.png",
+                         transparent: true
+                     }),
+          material: "src/img/plu4326_png.png",
+          classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
+          },
+        });
+        globe.viewer.scene.requestRender();
+
+        // afficher la couche des ER en transparent par dessus
+        var lineER = [];
+        let colors = {
+          'Emplacement_réservé': '#F32525'
+        }
+        globe.showPolygon(true, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', lineER , '#FFFFFF', 0, '#708090', 0.001, {
+          classification: true,
+          classificationField: 'type_prescription',
+          colors: colors,
+          alpha: 0.001
+        });
+
+    });
+
+    document.querySelector('#ODPLUPetit').addEventListener('change', (e) => {
+        var latnord = 48.5847230127768412;
+        var latsud = 48.5834954665894969;
+        var lonouest= 7.7647821622436402;
+        var lonest = 7.7607339535004183;
+
+        var pludetaille = globe.viewer.entities.add({
+          polygon: {
+          hierarchy: Cesium.Cartesian3.fromDegreesArray([lonouest, latnord, lonest, latnord, lonest, latsud, lonouest, latsud]),
+          material: "src/img/petit_png.png",
+          classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
+          },
+        });
+        globe.viewer.scene.requestRender();
+
+    });
+
+    document.querySelector('#ODPLUPetitTrans').addEventListener('change', (e) => {
+        var latnord = 48.5847230127768412;
+        var latsud = 48.5834954665894969;
+        var lonouest= 7.7647821622436402;
+        var lonest = 7.7607339535004183;
+
+        var pludetaille = globe.viewer.entities.add({
+          polygon: {
+          hierarchy: Cesium.Cartesian3.fromDegreesArray([lonouest, latnord, lonest, latnord, lonest, latsud, lonouest, latsud]),
+          material: "src/img/petit_transparent.png",
+          classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
+          },
+        });
+        globe.viewer.scene.requestRender();
+
+    });*/
+
+    document.querySelector('#ODPLUdetaille').addEventListener('change', (e) => {
+      // afficher la couche des ER et du zonage PLU en transparent par dessus
+      var linetemp = [];
+      var legend = {
+        '    ': '#fcba03'
+      };
+
+      /*globe.showPolygon(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_zone_urba&format=geojson', 'PLUi Plan de Zonage', linetemp, {
+        classification: true,
+        classificationField: 'type',
+        alpha: 0.001
+      });*/
+
+      globe.showPolygon(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', {
+        classification: true,
+        classificationField: 'type_prescription',
+        colors: legend,
+        alpha: 0.001,
+        choiceTableau: 'ER'
+      });
+
+      if(e.target.checked){
+        globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
+        globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point', "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>");
+        globe.viewer.scene.requestRender();
+
+      } else {
+        // Enlever les entités
+        for(var i = 0; i < pluTiles.length+10; i++){
+          globe.viewer.entities.remove(pluTiles[i]);
+        }
+        // Vider le tableau
+        for(var j = 0; j <= pluTiles.length+1; j++){
+          pluTiles.pop();
+        }
+
+        for(var i = 0; i < linePLUdetaille.length+10; i++){
+          globe.viewer.entities.remove(linePLUdetaille[i]);
+        }
+        for(var j = 0; j <= linePLUdetaille.length+1; j++){
+          linePLUdetaille.pop();
+        }
+
+        globe.legendManager.removeLegend('ODPLUdetailleLegend');
+        globe.viewer.scene.requestRender();
+      }
+
+    });
+
+    document.querySelector('#refreshPLU').addEventListener('click', (e) => {
+      // Enlever les entités
+      for(var i = 0; i < pluTiles.length+10; i++){
+        globe.viewer.entities.remove(pluTiles[i]);
+      }
+      // Vider le tableau
+      for(var j = 0; j <= pluTiles.length+1; j++){
+        pluTiles.pop();
+      }
+      for(var i = 0; i < linePLUdetaille.length+10; i++){
+        globe.viewer.entities.remove(linePLUdetaille[i]);
+      }
+      for(var j = 0; j <= linePLUdetaille.length+1; j++){
+        linePLUdetaille.pop();
+      }
+
+      globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
+      globe.viewer.scene.requestRender();
+
+    });
+
+  }
   /*
   *
   * Fin de la fonction evenementsCouches
   */
-
 
 
   /**
@@ -958,11 +1136,12 @@ class Menu {
 
 
   /**
-  * Ajout de couches interactif
+  * Ajout de couches interactif pour les données geojson <br/>
   * Principe: on a un serveur web qui permet d'avoir les fichiers au format http (Cesium n'accepte pas les fichiers stockés en
   * local pour des raisons de crossOrigin), on veut récupérer une liste de tous les fichiers présents dans un dossier spécifique.
   * On envoie la requête sur le serveur qui nous donne la liste au format texte, on récupère tous les noms de fichiers et
-  * on s'en sert pour créer les liens d'accès jusqu'aux json
+  * on s'en sert pour créer les liens d'accès jusqu'aux json <br/>
+  * On propose à l'utilisateur de classifier la donnée lorsqu'il l'ajoute
   *
   * @return {Object} la liste des fichiers sur le serveur web
   *
@@ -1116,9 +1295,8 @@ class Menu {
   }
 
   /**
-  * Ajout de couches interactif
-  * La même fonction qui récupère les données dans le dossier 3dtiles et affiche la couche
-  * pas de classification simple pour les 3dtiles
+  * Ajout de couches interactif pour les données 3DTiles <br/>
+  * Pas de classification simple pour les 3dtiles
   *
   */
   get3DTiles() {
@@ -1191,8 +1369,7 @@ class Menu {
   }
 
   /**
-  * Ajout de couches interactif
-  * Et une 3ème fois la même fonction pour récupérer le contenu du dossier drawings et l'afficher
+  * Ajout de couches interactif pour les dessins issus de Cesium via la fonction d'export
   *
   */
   getDrawing() {
