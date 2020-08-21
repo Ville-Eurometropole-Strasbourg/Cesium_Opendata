@@ -1,0 +1,2577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: globe.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: globe.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+// web server: http://127.1.0.0:8000/
+// Créé un object globe qui pertmet de manipuler cesium plus simplement
+
+/**
+* La classe Globeva permettre de manipuler Cesium plus facilement ; elle contient toutes les fonctions techniques,
+* qui vont permettre d’ajouter des couches de données,
+* de dessiner, de découper, d’ajouter des points de vues de caméra, etc. &lt;br/>
+* Les fonctions peuvent être réutilisées dans un autre projet
+*
+*
+*/
+
+class Globe {
+
+  /**
+  * Le constructeur de la classe globe, qui créé :  &lt;br/>
+  * - le viewer Cesium &lt;br/>
+  * - le handler c’est à dire l’objet qui va contenir les évènements liés à la souris &lt;br/>
+  * - le tableau contenant les dataSources &lt;br/>
+  * - la grille Raf09 pour les conversions hauteur ellipsoïdale/altitude &lt;br/>
+  * - le PinBuilder &lt;br/>
+  * - déclare toutes les checkbox de la boîte à outils pour l'affichage dynamique &lt;br/>
+  *
+  * on supprime aussi le fond de plan, on définit la couleur de fond et on ajoute les logos en bas de l’écran
+  *
+  * @param  {String} elementId Le nom du contenant html dans lequel on l'ajoute
+  * @param  {Object} geocoder Le Geocoder à associer
+  */
+
+  constructor(elementId, geocoder){
+    // Activer cette ligne pour avoir accès aux différents fonds de plan dispo - accès vers mon compte Cesium
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyNDA3NDMwNi0zZGZmLTQ1MzEtOWZjOC1mNzE5YWM2MDkxNjkiLCJpZCI6ODEzNCwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU1MTI4MTk1NH0.bj-9TqaOHDBD8sMBIeIWTH6-YVl-1Zp6fxjjgP3OXEg';
+
+    // Créer le globe dans la div HTML qui a l'id cesiumContainer
+    this.viewer = new Cesium.Viewer(elementId, {
+      geocoder: geocoder, // connexion à la base de données d'adresses de l'EMS
+      selectionIndicator: false, // enlève le carré vert lorsqu'on clique sur qqch
+      requestRenderMode : true, // amélioration de performance: l'appli calcule uniquement quand on lui demande (https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/)
+        maximumRenderTimeChange : Infinity,
+        baseLayerPicker: false, // enlève le bouton qui permet de choisir le fond de plan
+        //scene3DOnly : true, // enlève le bouton permettant de basculer la vue en 2D
+        gamma : 5,
+        highDynamicRange : true,
+        skyBox : new Cesium.SkyBox({ // définit le ciel bleu
+          sources : {
+            positiveX : 'src/img/Sky.jpg',
+            negativeX : 'src/img/Sky.jpg',
+            positiveY : 'src/img/Sky.jpg',
+            negativeY : 'src/img/Sky.jpg',
+            positiveZ : 'src/img/Sky.jpg',
+            negativeZ : 'src/img/Sky.jpg'
+          }
+        })
+      });
+
+      //this.viewer.extend(Cesium.viewerCesiumNavigationMixin, {}); // pour ajouter la flèche nord (plus compatible avec Cesium 1.67)
+
+
+      //PHS
+      // Supprime le terrain par défaut sur le globe
+      this.viewer.scene.imageryLayers.removeAll();
+      // Définit la couleur de fond du globe étant donné qu'on a supprimé le terrain
+      this.viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#AB9B8B').withAlpha(0.4);
+      // importe la grille de conversion pour hauteur ellispoïdale vers altitude IGN69
+      this.raf09 = undefined;
+      new Raf09('src/grilles/RAF09.mnt', (raf090) => {
+        this.raf09 = raf090;
+      });
+
+      // Créer la liste des dataSource sous forme d'un object clé / valeur
+      // Avec le nom de la source comme clé et la dataSource comme valeur
+      this.dataSources = [];
+
+      // insère les logos en bas
+      this.viewer.bottomContainer.innerHTML = '&lt;img src="src/img/logo/logo-strasbourg.png" alt="Logo strasbourg" />\
+      &lt;img src="src/img/logo/europe-sengage.jpg" alt="Logo strasbourg" />\
+      &lt;img src="src/img/logo/logo-ue.jpg" alt="Logo strasbourg" />\
+      &lt;span style="color: #BEC8D1;font-size:small;"> Icons created by : &lt;a style="color: #BEC8D1;font-size:small;" href="https://icons8.com" target="_blank" > https://icons8.com &lt;/span>';
+
+      // variable qui stocke les évenements liés à la souris
+      this.handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
+
+      // Construction de pin pour les billboard
+      this.pinBuilder = new Cesium.PinBuilder();
+
+      /*
+      * Div pour les affichage de coordonnées et mesures
+      */
+      // mesures de coords
+      this.coordX = document.querySelector('#coordX');
+      this.coordY = document.querySelector('#coordY');
+      this.coordZ = document.querySelector('#coordZ');
+
+      // mesures de distance
+      this.distance = document.querySelector('#distance');
+      this.distanceCumulee = document.querySelector('#distancecumulee');
+      this.hauteur = document.querySelector('#hauteur');
+      this.distanceInclinee = document.querySelector('#distanceinclinee');
+      this.distanceInclineeC = document.querySelector('#distanceinclineecum');
+      // mesures de surface
+      this.aire = document.querySelector('#aire');
+      // plan de coupe
+      this.altitude = document.querySelector('#alticoupe');
+      this.coupeX = document.querySelector('#X');
+      this.coupeY = document.querySelector('#Y');
+      this.coupeZ = document.querySelector('#hauteurcoupe');
+
+      //paramètres de départ de l'amélioration du contraste et de la luminosité
+      this.viewModel = {
+        show : true,
+        contrast : -98,
+        brightness : 0.54,
+        delta : 3.0,
+        sigma : 5,
+        stepSize : 0
+      };
+
+    }
+    /*
+    * Fin du constructor
+    */
+
+    /*
+    *
+    *  Contrôle de la caméra/de la vue affichée
+    *
+    */
+
+    /**
+    *
+    * Elle permet de paramétrer la vue de base de l’application ainsi que le zoom par défaut sur lequel le viewer se repositionne lorsqu’on clique sur le bouton « maison » &lt;br/>
+    * Elle ne prend pas de paramètres mais considère deux cas différents : &lt;br/>
+    * Si l’URL ne contient pas de paramètres, elle définit le zoom sur le photomaillage global pour la vue de départ et le bouton maison &lt;br/>
+    * Si l’URL contient des paramètres spécifiques (outil partage de liens), elle lit ces paramètres pour zoomer à l’endroit voulu et définit le zoom par défaut sur cet endroit
+    *
+    */
+    setHome(){
+      var params = this.getAllUrlParams(window.location.href);
+      let X = params.x;
+      let Y = params.y;
+      let Z = params.z;
+      let heading = params.heading;
+      let pitch = params.pitch;
+      let roll = params.roll;
+
+      // si l'URL ne contient pas de paramètres
+      if(X === undefined || Y === undefined || Z === undefined || heading === undefined || pitch === undefined || roll === undefined) {
+        let position = new Cesium.Cartesian3(4227894, 573584, 4758748);
+        this.viewer.camera.setView({
+          destination : position,
+          orientation: {
+            heading : 0.0,
+            pitch : -0.808,
+            roll : 0
+          }
+        });
+      } else {
+        // sinon on lit les paramètres présents dans l'URL
+        let position = new Cesium.Cartesian3(X,Y,Z);
+        this.viewer.camera.setView({
+          destination : position,
+          orientation: {
+            heading : heading,
+            pitch : pitch,
+            roll : roll
+          }
+        });
+      }
+      // Définir ce qu'il se passe lorsqu'on clique sur le bouton "maison" (ici retour à l'écran d'accueil)
+      this.viewer.homeButton.viewModel.command.beforeExecute.addEventListener((e) => {
+        e.cancel = true;
+        if(X === undefined || Y === undefined || Z === undefined || heading === undefined || pitch === undefined || roll === undefined) {
+          let position = new Cesium.Cartesian3(4227894, 573584, 4758748)
+          this.fly(position, 0.0, -0.808, 0);
+
+        } else {
+          let position = new Cesium.Cartesian3(X,Y,Z);
+          this.fly(position, heading, pitch, roll);
+        }
+      });
+    }
+
+    /**
+    * lit et retourne les paramètres présents dans l'URL &lt;br/>
+    *
+    * @param  {String} url L'url à analyser
+    * @return  {Object} obj Un objet contenant les paramètres de l'url
+    */
+    getAllUrlParams(url) {
+      var queryString = url ? url.split('?')[1] : window.location.search.slice(1);
+      var obj = {};
+
+      if (queryString) {
+        queryString = queryString.split('#')[0];
+        var arr = queryString.split('&amp;');
+
+        for (var i = 0; i &lt; arr.length; i++) {
+          var a = arr[i].split('=');
+          var paramName = a[0];
+          var paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
+
+          paramName = paramName.toLowerCase();
+          if (typeof paramValue === 'string') paramValue = paramValue.toLowerCase();
+
+          if (paramName.match(/\[(\d+)?\]$/)) {
+            var key = paramName.replace(/\[(\d+)?\]/, '');
+            if (!obj[key]) obj[key] = [];
+
+            if (paramName.match(/\[\d+\]$/)) {
+              var index = /\[(\d+)\]/.exec(paramName)[1];
+              obj[key][index] = paramValue;
+            } else {
+              obj[key].push(paramValue);
+            }
+          } else {
+            if (!obj[paramName]) {
+              obj[paramName] = paramValue;
+            } else if (obj[paramName] &amp;&amp; typeof obj[paramName] === 'string'){
+              obj[paramName] = [obj[paramName]];
+              obj[paramName].push(paramValue);
+            } else {
+              obj[paramName].push(paramValue);
+            }
+          }
+        }
+      }
+      return obj;
+    }
+
+    /**
+    * Définit le point de vue de caméra en fonction de la position de la caméra (Cartesian3) et des 3 paramètres d'orientation
+    *
+    * @param  {Cartesian3} position La position de la caméra
+    * @param  {Number} lacet Le paramètre lacet d'orientation de la caméra
+    * @param  {Number} tangage Le paramètre tangage d'orientation de la caméra
+    * @param  {Number} roulis Le paramètre roulis d'orientation de la caméra
+    */
+    fly(position, lacet, tangage, roulis) {
+      this.viewer.camera.flyTo({
+        destination : position,
+        orientation: {
+          heading : lacet,
+          pitch : tangage,
+          roll : roulis
+        }
+      });
+    }
+
+    /**
+    * Ajoute un bouton HTML qui enregistre un point de vue de caméra
+    *
+    * @param  {String} nom Le nom qu'on souhaite donner au point de vue
+    * @return  {BoutonHTML} viewPoint Le bouton HTML avec le nom saisi
+    */
+    addViewPoint(nom) {
+      var viewPoint = document.createElement("BUTTON");
+      viewPoint.innerHTML = nom;
+      viewPoint.classList.add('nowrap');
+      document.getElementById("camera-content").appendChild(viewPoint);
+
+      return viewPoint;
+
+    }
+
+    /**
+    * récupère les paramètres actuels de position et orientation de la caméra pour créer un lien et l’afficher dans le format html correspondant
+    */
+    createLink() {
+      // On récupère les paramètres de la caméra
+      let X = globe.viewer.camera.positionWC.x;
+      let Y = globe.viewer.camera.positionWC.y;
+      let Z = globe.viewer.camera.positionWC.z;
+      let heading = globe.viewer.camera.heading;
+      let pitch = globe.viewer.camera.pitch;
+      let roll = globe.viewer.camera.roll;
+
+      // le premier paramètre doit débuter avec un "?" et les autres paramètres doivent être séparés par un "&amp;"
+
+      // On teste si le lien contient le paramètre open
+      if (window.location.search.indexOf('open') > -1) {
+        document.getElementById('nomlink').value = window.location.href +'&amp;X='+X+'&amp;Y='+Y+'&amp;Z='+Z+'&amp;heading='+heading+'&amp;pitch='+pitch+'&amp;roll='+roll;
+      } else {
+        document.getElementById('nomlink').value = window.location.href +'?X='+X+'&amp;Y='+Y+'&amp;Z='+Z+'&amp;heading='+heading+'&amp;pitch='+pitch+'&amp;roll='+roll;
+      }
+
+    }
+
+    /*
+    *
+    * Chargement de données
+    *
+    */
+
+    /**
+    * Permet de charger et d'enregister le tileset au format 3DTiles &lt;br/>
+    * Ce format est important dans la fonction holePlanes, où on ajoute une collection de ‘clippingPlanes’ qui vont découper le photomaillage ;
+    * l’ajout de cette collection n’est effectif qu’avec un format tileset &lt;br/>
+    *
+    * @param  {String} link Le lien vers le fichier
+    * @param  {Number} maxError 'The maximum screen space error used to drive level of detail refinement', différent pour les deux photomaillages 2018 et PSMV
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @return  {tileset} tileset Le 3DTileset
+    */
+    loadPhotomaillage(link, maxError, options = {}){
+      // Chargement du photo maillage au format 3D tiles
+      let tileset = new Cesium.Cesium3DTileset({
+        url : link, // URL vers le ficher JSON "racine"
+        maximumScreenSpaceError : maxError,
+        maximumNumberOfLoadedTiles : 1000, // Nombre maximum de dalles chargées simultanément
+        lightColor : new Cesium.Cartesian3(3,2.8,2.4),
+        imageBasedLightingFactor : new Cesium.Cartesian2(2,2),
+        luminanceAtZenith : 0.5,
+        immediatelyLoadDesiredLevelOfDetail : false,
+        foveatedConeSize : 0.5,
+        skipLevelOfDetail: true
+      });
+      return tileset;
+    }
+
+    /**
+    * ajoute le tileset sous forme d'entités  et garde une structure asynchrone
+    * qui permet de pouvoir naviguer dans l’application et d’interagir avec le photomaillage sans que celui-ci ne soit entièrement chargé
+    *
+    * @param  {tileset} tileset Le 3DTileset à ajouter
+    * @return  {tileset} tilesetPrimitive l'entité contenant le tileset
+    */
+    addPhotomaillage(tileset) {
+      var tilesetPrimitive = this.viewer.scene.primitives.add(tileset);
+      return tilesetPrimitive.readyPromise;
+    }
+
+
+    /**
+    * combine les deux addPhotomaillage et loadPhotomaillage : elle charge le 3DTiles et l’ajoute sous forme d’entités. &lt;br/>
+    * Le format tileset est perdue pour les modèles chargés avec cette fonction ;
+    * elle permet entres autres de charger des projets 3D sans que ceux-ci ne soient impactés par les découpes effectuées dans le photomaillage
+    *
+    * @param  {String} link Le lien vers le fichier
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @return  {tileset} tilesetPrimitive l'entité contenant le tileset
+    */
+    load3DTiles(link, options = {}){
+      let tileset = globe.viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+        url : link,
+        maximumScreenSpaceError : 0.1,
+        maximumNumberOfLoadedTiles : 1000
+
+      }));
+      return tileset.readyPromise;
+    }
+
+    /**
+    *
+    * Afficher ou masquer la source de données 3DTiles "name" en fonction de la valeur de "show" &lt;br/>
+    * Si elle n'a pas enore été affiché, la fonction va télécharger les données avec le lien "link" passé en parametre
+    *
+    * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
+    * @param  {String} link Le lien vers le fichier
+    * @param  {String} name Le nom qu'on donne au json
+    * @param  {Object} options facultatif - Les options pour le chargement
+    */
+    show3DTiles(show, name, link, maxError, options = {}){
+      if(show){
+        if(this.dataSources[name] === undefined){
+          globe.showLoader();
+
+          globe.addPhotomaillage(globe.loadPhotomaillage(link, maxError, options)).then((data) => {
+            this.dataSources[name] = data;
+            globe.hideLoader();
+          });
+
+        } else{
+          this.dataSources[name].show = true;
+          this.viewer.scene.requestRender();
+        }
+      } else{
+        if(this.dataSources[name] !== undefined){
+          this.dataSources[name].show = false;
+          this.viewer.scene.requestRender();
+        }
+      }
+    }
+
+    /**
+    * Permet de charger les dessins exportés depuis Cesium &lt;br/>
+    * va chercher les propriétés de dessin (couleur, épaisseur de ligne, hauteur de volume, etc)
+    * dans le json pour garder les propriétés à l'affichage &lt;br/>
+    * Utilise la fonction showPolygon pour afficher les données &lt;br/>
+    * Les points seront affichés simplement avec le même billboard pour tous
+    *
+    * @param  {String} link Le lien vers le fichier
+    * @param  {String} name Le nom qu'on donne au json
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+    */
+    loadDrawing(link, name, options = {}){
+      let promisse = Cesium.GeoJsonDataSource.load(link, {
+        clampToGround: true
+      });
+      this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+      promisse.then((dataSource) => {
+        this.viewer.dataSources.add(dataSource);
+        this.dataSources[name] = dataSource;
+        this.hideLoader();
+
+        // Get the array of entities
+        var entities = dataSource.entities.values;
+        for (let i = 0; i &lt; entities.length; i++) {
+          let entity = entities[i];
+          if(Cesium.defined(entity.billboard)) {
+            entity.billboard.height = entity.properties.height;
+            entity.billboard.verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
+            entity.billboard.image = entity.properties.image;
+
+          } else if (Cesium.defined(entity.polygon)) {
+            let rouge = entity.properties.color._value.red;
+            let vert = entity.properties.color._value.green;
+            let bleu = entity.properties.color._value.blue;
+            let alpha = entity.properties.color._value.alpha;
+            let couleur = new Cesium.Color(rouge, vert, bleu, alpha);
+
+            entity.polygon.material =  couleur;
+            entity.polygon.outline = false;
+            entity.polygon.extrudedHeight = entity.properties.extrudedHeight;
+            entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+
+          } else if(Cesium.defined(entity.polyline)) {
+            let rouge = entity.properties.color._value.red;
+            let vert = entity.properties.color._value.green;
+            let bleu = entity.properties.color._value.blue;
+            let alpha = entity.properties.color._value.alpha;
+            let couleur = new Cesium.Color(rouge, vert, bleu, alpha);
+
+            entity.polyline.material = couleur;
+            entity.polyline.width = entity.properties.width;
+            entity.polyline.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+
+          }
+        }
+      });
+      return promisse;
+    }
+
+    /**
+    * Affiche une icône de chargement sur l'écran
+    */
+    showLoader(){
+      document.querySelector('#loadingIndicator').classList.remove('hidden');
+    }
+    /**
+    * Retire l'icône de chargement sur l'écran
+    */
+    hideLoader(){
+      document.querySelector('#loadingIndicator').classList.add('hidden');
+    }
+
+    /**
+    *
+    * Afficher ou masquer les ombres
+    *
+    * @param  {String} enabled le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
+    */
+    shadow(enabled){
+      this.handler.globe = this; // pour les problèmes de scope
+      this.viewer.shadows = enabled;
+      if(enabled) {
+        document.addEventListener("mousemove", function() {
+          globe.viewer.scene.requestRender();
+        });
+      } else {
+        this.supprSouris();
+        globe.viewer.scene.requestRender();
+      }
+    }
+
+    /*
+    * Coordonnées
+    */
+
+    /**
+    *
+    * récupère lat/lon/hauteur à chaque clic gauche, les convertit en CC48 / IGN69 et les affiche
+    */
+    showCoords(){
+      let scene = this.viewer.scene;
+      this.handler.globe = this; // pour les problèmes de scope
+
+      this.handler.setInputAction(function(event) {
+        let cartesian = scene.pickPosition(event.position);
+        if (Cesium.defined(cartesian)) {
+          let cartographic = Cesium.Cartographic.fromCartesian(cartesian); // cartesian = coords géometriques de l'écran
+          // cartographic est en radians
+
+          let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7); // conversion en degrés décimaux
+          let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7);
+          let height = cartographic.height.toFixed(3);
+          var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
+          globe.coordX.innerHTML = coords[0].toFixed(2);
+          globe.coordY.innerHTML = coords[1].toFixed(2);
+          globe.coordZ.innerHTML = (Number(height) - Number(globe.raf09.getGeoide(latitude, longitude))).toFixed(2);
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    }
+
+    /*
+    * Plan de coupe horizontal
+    */
+
+    /**
+    *
+    * ajoute un plan de coupe horizontal &lt;br/>
+    * les paramètres de la fonction vont être lus dans le formulaire avant de cliquer sur 'ajouter'
+    *
+    * @param  {Number} X la coordonnée X du point au centre du plan
+    * @param  {Number} Y la coordonnée Y du point au centre du plan
+    * @param  {Number} hauteurCoupe la coordonnée Z du point au centre du plan
+    * @param  {Number} longueurCoupe la largeur du plan
+    * @param  {Number} largeurCoupe la longueur du plan
+    * @param  {String} couleurCoupe la couleur du plan
+    * @param  {Object} planeEntities les entités de plans
+    * @param  {ClippingPlaneCollection} clippingPlanes la collection de plan (array) dans laquelle stocker les plans
+    */
+    addClippingPlanes(X, Y, hauteurCoupe, longueurCoupe, largeurCoupe, couleurCoupe, planeEntities, clippingPlanes) {
+      // on n'associe pas les clippingPlanes au tileset: c'est pour ça qu'ils ne coupent pas le tileset mais passent à travers
+      var clippingPlanes = new Cesium.ClippingPlaneCollection({
+        planes : [
+          new Cesium.ClippingPlane(new Cesium.Cartesian3(0.0, 0, -1), 0.0) // donne l'orientation du clippingPlanes
+        ]
+      });
+
+      for (var i = 0; i &lt; clippingPlanes.length; i=+1) {
+        var coords = proj4('EPSG:3948','EPSG:4326', [Number(X), Number(Y)]);
+        var a = Number(this.raf09.getGeoide(coords[1], coords[0]));
+
+        var y = coords[1];
+        var x = coords[0];
+        var z = (Number(hauteurCoupe) + a);
+
+        var plane = clippingPlanes.get(i);
+        var planeEntity = this.viewer.entities.add({
+          position : Cesium.Cartesian3.fromDegrees(x, y, z),
+          plane : {
+            dimensions : new Cesium.Cartesian2(longueurCoupe, largeurCoupe),
+            material : Cesium.Color.fromCssColorString(couleurCoupe).withAlpha(0.4),
+            plane : new Cesium.CallbackProperty(this.planeUpdate(plane, couleurCoupe), false),
+            outline : true,
+            outlineColor : Cesium.Color.WHITE
+          }
+        });
+        planeEntities.push(planeEntity);
+      }
+      this.viewer.scene.requestRender();
+    }
+
+    /**
+    *  Récupère les coordonnées au clic et les affiche dans le formulaire du plan de coupe horizontal
+    */
+    coordCoupe(){
+      let scene = this.viewer.scene;
+      this.handler.globe = this;
+
+      this.handler.setInputAction(function(event) {
+        let cartesian = scene.pickPosition(event.position);
+        if (Cesium.defined(cartesian)) {
+          let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+          let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7);
+          let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7);
+          let height = cartographic.height.toFixed(3);
+
+          var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
+          document.getElementById("X").value = (coords[0].toFixed(2));
+          document.getElementById("Y").value = (coords[1].toFixed(2));
+          document.getElementById("hauteurcoupe").value = ((Number(height) - Number(globe.raf09.getGeoide(latitude, longitude))).toFixed(2));
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    }
+
+    /**
+    *
+    *  permet de gérer les mouvements du plan de coupe avec la souris
+    *
+    * @param  {Object} plane l'entité de plan
+    * @param  {String} couleurCoupe la couleur du plan à chaque évenement de souris
+    * @return {Entity} shape l'entité plan avec les évènements associés
+    */
+    planeUpdate(plane, couleurCoupe) {
+      var targetY = 0.0;
+      var selectedPlane;
+      var scene = this.viewer.scene;
+      this.altitude.innerHTML = 0;
+      this.handler.globe = this;
+
+      // Select plane when mouse down
+      this.handler.setInputAction(function(movement) {
+        var pickedObject = scene.pick(movement.position);
+        if (Cesium.defined(pickedObject) &amp;&amp; Cesium.defined(pickedObject.id) &amp;&amp; Cesium.defined(pickedObject.id.plane)) {
+          selectedPlane = pickedObject.id.plane;
+          selectedPlane.material = Cesium.Color.fromCssColorString(couleurCoupe).withAlpha(0.4);
+          selectedPlane.outlineColor = Cesium.Color.WHITE;
+          scene.screenSpaceCameraController.enableInputs = false;
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+
+      // Release plane on mouse up
+      this.handler.setInputAction(function() {
+        if (Cesium.defined(selectedPlane)) {
+          selectedPlane.material = Cesium.Color.fromCssColorString(couleurCoupe).withAlpha(0.4);
+          selectedPlane.outlineColor = Cesium.Color.WHITE;
+          selectedPlane = undefined;
+        }
+        scene.screenSpaceCameraController.enableInputs = true;
+      }, Cesium.ScreenSpaceEventType.LEFT_UP);
+
+      // Update plane on mouse move
+      this.handler.setInputAction(function(movement) {
+        if (Cesium.defined(selectedPlane)) {
+          var deltaY = movement.startPosition.y - movement.endPosition.y;
+          targetY += deltaY;
+        }
+        globe.altitude.innerHTML = targetY; // affiche la différence entre l'altitude actuelle et l'altitude de départ (pas métrique)
+        globe.viewer.scene.requestRender();
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+      return function () {
+        plane.distance = targetY;
+        return plane;
+      };
+    }
+
+    /*
+    *
+    *
+    *  Outils de dessin
+    *
+    *
+    */
+
+    /**
+    *
+    *  permet de créer un point: entité uniquement technique qui sert à dessiner les autres figures
+    * (chaque point est affiché transparent)
+    *
+    * @param  {Cartesian3} worldPosition la position du point
+    */
+    createPoint(worldPosition) {
+      var point = this.viewer.entities.add({
+        position : worldPosition,
+        point : {
+          color : Cesium.Color.TRANSPARENT,
+          pixelSize : 1,
+          heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND // plaque au 3dtiles
+        }
+      });
+      return point;
+    }
+
+    /**
+    *
+    * Construit un marqueur maki (pin) à l'aide du symbole (url) et de la couleur &lt;br/>
+    * On ajoute directement les entités dans le tableau dans la fonction ici à cause de la structure asynchrone
+    *
+    * @param  {Array} billboard le tableau où stocker les entités billboard
+    * @param  {Cartesian3} worldPosition la position du point
+    * @param  {String} url le lien vers l'image à utiliser
+    * @param  {String} couleur la couleur du pin
+    * @param  {Number} height la hauteur du pin
+    * @param  {Boolean} size true si on veut la taille en mètre, false si on veut la taille en pixels
+    * @return {Entity} shape l'entité ajoutée au viewer
+    */
+    createPinBillboard(billboard, worldPosition, url, couleur, height, size) {
+      this.handler.globe = this;
+      var url = Cesium.buildModuleUrl(url);
+      Cesium.when(globe.pinBuilder.fromUrl(url, Cesium.Color.fromCssColorString(couleur), height), function(canvas) {
+        var shape = globe.viewer.entities.add({
+          position : worldPosition,
+          billboard : {
+            image : canvas.toDataURL(),
+            height: height,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            sizeInMeters: size
+          }
+        });
+        billboard.push(shape);
+        return shape;
+      });
+    }
+
+    /**
+    *
+    *  Ajoute un billboard simple (une image) à une position spécifiée (structure synchrone)
+    *
+    * @param  {Cartesian3} worldPosition la position du point
+    * @param  {String} url le lien vers l'image à utiliser
+    * @param  {Boolean} size true si on veut la taille en mètre, false si on veut la taille en pixels
+    * @return {Entity} shape l'entité ajoutée au viewer
+    */
+    createBillboard(worldPosition, url, size) {
+      var symbol = this.viewer.entities.add({
+        position : worldPosition,
+        billboard : {
+          image : url,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          sizeInMeters: size,
+          scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0)
+        }
+      });
+      return symbol;
+    }
+
+    /**
+    *
+    *  Ajoute une polyligne
+    *
+    * @param  {Cartesian3} positionData les coordonnées des sommets de la ligne
+    * @param  {Number} largeur la largeur de la ligne
+    * @param  {String} couleur le couleur de la ligne
+    * @param  {Number} transparence la transparence de la ligne
+    * @param  {Boolean} clamp true si on veut que la ligne soit collée au photomaillage, false si pas collée
+    * @return {Entity} shape l'entité ajoutée au viewer
+    */
+    drawLine(positionData, largeur, couleur, transparence, clamp) {
+      var shape = this.viewer.entities.add({
+        polyline : {
+          positions : positionData,
+          material : Cesium.Color.fromCssColorString(couleur).withAlpha(transparence),
+          clampToGround : clamp,
+          width : largeur
+        }
+      });
+      return shape;
+    }
+
+    /**
+    *
+    *  Ajoute une polyligne avec une flèche au bout
+    *
+    * @param  {Cartesian3} positionData les coordonnées des sommets de la ligne
+    * @param  {Number} largeur la largeur de la ligne
+    * @param  {String} couleur le couleur de la ligne
+    * @param  {Number} transparence la transparence de la ligne
+    * @param  {Boolean} clamp true si on veut que la ligne soit collée au photomaillage, false si pas collée
+    * @return {Entity} shape l'entité ajoutée au viewer
+    */
+    drawArrowLine(positionData, largeur, couleur, transparence, clamp) {
+      var shape = this.viewer.entities.add({
+        polyline : {
+          positions : positionData,
+          material : new Cesium.PolylineArrowMaterialProperty(Cesium.Color.fromCssColorString(couleur).withAlpha(transparence)),
+          clampToGround : clamp,
+          width : largeur
+        }
+      });
+      return shape;
+    }
+
+    /**
+    *
+    *  Ajoute une polyligne en pointillés
+    *
+    * @param  {Cartesian3} positionData les coordonnées des sommets de la ligne
+    * @param  {Number} largeur la largeur de la ligne
+    * @param  {String} couleur le couleur de la ligne
+    * @param  {Number} transparence la transparence de la ligne
+    * @param  {Boolean} clamp true si on veut que la ligne soit collée au photomaillage, false si pas collée
+    * @return {Entity} shape l'entité ajoutée au viewer
+    */
+    drawDashLine(positionData, largeur, couleur, transparence, clamp) {
+      var shape = this.viewer.entities.add({
+        polyline : {
+          positions : positionData,
+          material : new Cesium.PolylineDashMaterialProperty({
+            color : Cesium.Color.fromCssColorString(couleur).withAlpha(transparence)
+          }),
+          clampToGround : clamp,
+          width : largeur
+        }
+      });
+      return shape;
+    }
+
+    /**
+    *
+    *  Ajoute une surface
+    *
+    * @param  {Cartesian3} positionData les coordonnées des sommets de la surface
+    * @param  {String} couleur le couleur de la surface
+    * @param  {Number} transparence la transparence de la surface
+    * @return {Entity} shape l'entité ajoutée au viewer
+    */
+    drawPolygon(positionData, couleur, transparence) {
+      var shape = this.viewer.entities.add({
+        polygon: {
+          hierarchy: positionData,
+          material : Cesium.Color.fromCssColorString(couleur).withAlpha(transparence)
+        }
+      });
+      return shape;
+    }
+
+    /**
+    *
+    *  Ajoute une surface extrudée, ie une boîte pour laquelle on précise la hauteur
+    *
+    * @param  {Cartesian3} positionData les coordonnées des sommets de la boîte
+    * @param  {String} couleur le couleur de la boîte
+    * @param  {Number} transparence la transparence de la boîte
+    * @param  {Number} hauteurVol la hauteur de la boîte
+    * @return {Entity} shape l'entité ajoutée au viewer
+    */
+    drawVolume(positionData, couleur, transparence, hauteurVol) {
+      var shape = this.viewer.entities.add({
+        polygon: {
+          hierarchy: positionData,
+          material : Cesium.Color.fromCssColorString(couleur).withAlpha(transparence),
+          extrudedHeight: hauteurVol,
+          shadows : Cesium.ShadowMode.ENABLED
+          //extrudedHeightReference : Cesium.HeightReference.CLAMP_TO_GROUND
+        }
+      });
+      return shape;
+    }
+
+    /**
+    *
+    * La fonction qui permet de tout dessiner &lt;br/>
+    * le paramètre choice designe si on mesure (dessins temporaires) ou si on dessine
+    * (dessins qui restent après fermeture de la fonction de dessin) &lt;br/>
+    * le paramètre choice2 désigne le type de dessin (line, surface, volume etc) &lt;br/>
+    * On met tous les tableaux d'entités en paramètres de la fonction car ils seront définis dans la classe Menu
+    * pour garder une trace des entités et permettre leur annulation/exportation &lt;br/>
+    * Le reste des paramètres correspond aux paramètres de personnalisation définis par l'utilisateur dans les formulaires
+    *
+    * @param  {String} choice prend la valeur 'dessin' ou 'mesure'
+    * @param  {String} choice2 le type d'entités à dessiner: 'point', 'line', 'polygon' ou 'volume'
+    * @param  {Number} largeur la transparence de l'entité
+    * @param  {String} couleur le couleur de l'entité
+    * @param  {Number} transparence la transparence de l'entité
+    * @param  {Number} hauteurVol la hauteur de l'entité
+    * @param  {String} url le lien vers les images pour les entités billboard
+    * @param  {Array} billboard le tableau où stocker les entités billboard
+    * @param  {Array} line le tableau où stocker les entités lignes
+    * @param  {Array} surface le tableau où stocker les entités surface
+    * @param  {Array} volume le tableau où stocker les entités boîte
+    * @param  {Array} dline le tableau où stocker les entités lignes pour les mesures
+    * @param  {Array} dsurface tableau où stocker les entités surface pour les mesures
+    */
+    updateShape(choice, choice2, largeur, couleur, transparence, hauteurVol, url, billboard, line, surface, volume, dline, dsurface) {
+      var activeShapePoints = [];
+      var activeShape;
+      var floatingPoint;
+      var z;
+      var distanceList;
+      var distanceListDebut = $("#distanceList").clone();
+
+      var scene = this.viewer.scene;
+      this.handler.globe = this; // problème de scope à l'intérieur du this.handler
+
+      this.handler.setInputAction(function(event) {
+        var earthPosition = scene.pickPosition(event.position);
+        if(Cesium.defined(earthPosition)) {
+          if(activeShapePoints.length === 0) {
+            // on ajoute 2 fois un point au début pour permettre l'affichage de la ligne/surface
+            // le dernier point correspond au point flottant du mouvement de la souris
+            floatingPoint = globe.createPoint(earthPosition);
+            activeShapePoints.push(earthPosition);
+            activeShapePoints.push(earthPosition);
+            var dynamicPositions = new Cesium.CallbackProperty(function () {
+              if (choice === 'polygon' || choice === 'volume') {
+                return new Cesium.PolygonHierarchy(activeShapePoints);
+              }
+              return activeShapePoints;
+            }, false);
+            largeur = parseFloat(largeur);
+            transparence = parseFloat(transparence);
+            if(choice === 'point') {
+              activeShape = globe.createPoint(dynamicPositions);
+              if($('#taille').val() === 'metre') {
+                floatingPoint = globe.createPinBillboard(billboard, earthPosition, url, couleur, hauteurVol, true);
+                billboard.pop();
+              } else if($('#taille').val() === 'pixel') {
+                floatingPoint = globe.createPinBillboard(billboard, earthPosition, url, couleur, hauteurVol, false);
+              }
+            } else if(choice === 'polygon') {
+              activeShape = globe.drawPolygon(dynamicPositions, couleur, transparence);
+            } else if(choice === 'volume') {
+              z = globe.getHauteur(activeShapePoints, hauteurVol);
+              activeShape = globe.drawVolume(dynamicPositions, couleur, transparence, z);
+            } else if(choice === 'line') {
+              if(choice2 === 'mesure') {
+                activeShape = globe.drawLine(dynamicPositions, largeur, couleur, transparence, false); // 1ère ligne non collée au sol pour la distance inclinée
+                largeur = parseFloat(largeur);
+                activeShape = globe.drawLine(dynamicPositions, largeur, '#000000', '0.5', true); // 2ème collée au sol pour distance horizontale
+              } else if(choice2 === 'dessin') {
+                couleur = couleur.toString();
+                if($('#clampligne').val() === 'colle') { // clamp to ground ou pas
+                  if($('#styleligne').val() === 'simple') { // style normal
+                    activeShape = globe.drawLine(dynamicPositions, largeur, couleur, transparence, true);
+                  } else if($('#styleligne').val() === 'pointille') { // style pointillé
+                    activeShape = globe.drawDashLine(dynamicPositions, largeur, couleur, transparence, true);
+                  } else if($('#styleligne').val() === 'fleche') { // avec une flèche à la fin
+                    activeShape = globe.drawArrowLine(dynamicPositions, largeur, couleur, transparence, true);
+                  }
+                } else if($('#clampligne').val() === 'noncolle'){ // mêmes instructions avec la ligne non collée au sol
+                  if($('#styleligne').val() === 'simple') {
+                    activeShape = globe.drawLine(dynamicPositions, largeur, couleur, transparence, false);
+                  } else if($('#styleligne').val() === 'pointille') {
+                    activeShape = globe.drawDashLine(dynamicPositions, largeur, couleur, transparence, false);
+                  } else if($('#styleligne').val() === 'fleche') {
+                    activeShape = globe.drawArrowLine(dynamicPositions, largeur, couleur, transparence, false);
+                  }
+                }
+              }
+            }
+          } else {
+            activeShapePoints.push(earthPosition);
+            if(choice === 'point'){
+              globe.createPoint(earthPosition);
+              if($('#taille').val() === 'metre') {
+                globe.createPinBillboard(billboard, earthPosition, url, couleur, hauteurVol, true);
+              } else if($('#taille').val() === 'pixel') {
+                globe.createPinBillboard(billboard, earthPosition, url, couleur, hauteurVol, false);
+              }
+            } else {
+              globe.createPoint(earthPosition);
+            }
+          }
+        }
+        if(choice === 'polygon'&amp;&amp; choice2 === 'mesure') {
+          globe.measureSurface(activeShapePoints); // mesure l'aire du polygone à chaque clic gauche
+        }
+        globe.viewer.scene.requestRender();
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      this.handler.setInputAction(function(event) {
+        if(Cesium.defined(floatingPoint)) {
+          var newPosition = scene.pickPosition(event.endPosition);
+          if (Cesium.defined(newPosition)) {
+            floatingPoint.position.setValue(newPosition);
+            activeShapePoints.pop();
+            activeShapePoints.push(newPosition);
+          }
+        }
+        if(choice === 'line' &amp;&amp; choice2 === 'mesure') {
+          globe.measureDistance(activeShapePoints); // mesure la distance à chaque mouvement de souris
+          distanceList = $("#distanceList").clone();
+        }
+        globe.viewer.scene.requestRender();
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+      this.handler.setInputAction(function(event) {
+        largeur = parseFloat(largeur);
+        transparence = parseFloat(transparence);
+        // on supprime le dernier point flottant
+        activeShapePoints.pop();
+
+        // on ajoute les entités dans le taleau d'entités correspondant
+        if(choice2 === 'dessin'){
+          if(choice === 'point') {
+            globe.createPoint(activeShapePoints);
+            if($('#taille').val() === 'metre') {
+              globe.createPinBillboard(billboard, activeShapePoints, url, couleur, hauteurVol, true);
+            } else if($('#taille').val() === 'pixel') {
+              globe.createPinBillboard(billboard, activeShapePoints, url, couleur, hauteurVol, false);
+            }
+          } else if(choice === 'line') {
+            if($('#clampligne').val() === 'colle') {
+              if($('#styleligne').val() === 'simple') {
+                line.push(globe.drawLine(activeShapePoints, largeur, couleur, transparence, true));
+              } else if($('#styleligne').val() === 'pointille') {
+                line.push(globe.drawDashLine(activeShapePoints, largeur, couleur, transparence, true));
+              } else if($('#styleligne').val() === 'fleche') {
+                line.push(globe.drawArrowLine(activeShapePoints, largeur, couleur, transparence, true));
+              }
+            } else if($('#clampligne').val() === 'noncolle') {
+              if($('#styleligne').val() === 'simple') {
+                line.push(globe.drawLine(activeShapePoints, largeur, couleur, transparence, false));
+              } else if($('#styleligne').val() === 'pointille') {
+                line.push(globe.drawDashLine(activeShapePoints, largeur, couleur, transparence, false));
+              } else if($('#styleligne').val() === 'fleche') {
+                line.push(globe.drawArrowLine(activeShapePoints, largeur, couleur, transparence, false));
+              }
+            }
+
+          } else if( choice === 'polygon') {
+            surface.push(globe.drawPolygon(activeShapePoints, couleur, transparence));
+          } else if( choice === 'volume') {
+            volume.push(globe.drawVolume(activeShapePoints, couleur, transparence, z));
+          }
+        } else if(choice2 === 'mesure'){
+          if(choice === 'line') {
+            dline.push(globe.drawLine(activeShapePoints, largeur, couleur, transparence, false));
+            dline.push(globe.drawLine(activeShapePoints, largeur, '#000000', '0.5', true));
+          } else if( choice === 'polygon') {
+            dsurface.push(globe.drawPolygon(activeShapePoints, couleur, transparence));
+          }
+        }
+        globe.viewer.entities.remove(floatingPoint);
+        globe.viewer.entities.remove(activeShape);
+        floatingPoint = undefined;
+        activeShape = undefined;
+        activeShapePoints = [];
+
+        if(choice === 'line' &amp;&amp; choice2 === 'mesure') {
+          // permet de garder l'affichage des mesures actif
+          $("#distanceList").replaceWith(distanceList);
+        }
+
+        globe.viewer.scene.requestRender();
+        //billboard.pop(); // quand on clique droit avec le billboard Cesium ajoute un billboard à la position (0,0,0)
+      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+    }
+
+    /**
+    *
+    *  Enlève la dernière entité dans le tableau spécifié en paramètre
+    *
+    * @param  {String} element l'élément HTML sur lequel ajouter l'évènement
+    * @param  {Array} figure le tableau d'entités à impacter
+    */
+    annulFigure(element, figure) {
+      document.querySelector(element).addEventListener('click', (e) => {
+        var lastLine = figure.pop();
+        this.viewer.entities.remove(lastLine);
+        this.viewer.scene.requestRender();
+      });
+    }
+
+    /**
+    *
+    *  Supprime toutes les entités par catégorie (vide le tableau correspondant)
+    *
+    * @param  {String} element l'élément HTML sur lequel ajouter l'évènement
+    * @param  {Array} figure le tableau d'entités à impacter
+    */
+    supprFigure(element, figure) {
+      document.querySelector(element).addEventListener('click', (e) => {
+        for(var i = 0; i &lt; figure.length; i++){
+          this.viewer.entities.remove(figure[i]);
+        }
+        for(var j = 0; j &lt;= figure.length+1; j++){
+          figure.pop();
+        }
+        this.viewer.scene.requestRender();
+      });
+      this.viewer.scene.requestRender();
+    }
+
+    /**
+    *
+    *  Permet de mesurer la distance horizontale et inclinée entre deux points
+    *
+    * @param  {Object} activeShapePoints le tableau de coordonnées cartésiennes x y z des points à partir duquel calculer la distance
+    */
+    measureDistance(activeShapePoints)  {
+      var coordsX = [];
+      var coordsY = [];
+      var coordsZ = [];
+      var distance;
+      var distanceIncl;
+      var difference;
+      var distCumul =0;
+      var distInclCumul =0;
+
+      for (let i=0; i &lt; activeShapePoints.length; i+=1) {
+        // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
+        var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z);
+        let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7);
+        let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7);
+        let height = cartographic.height.toFixed(3);
+
+        var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
+        // on stocke chque coordonnée dans un tableau séparé pour faliciter le calcul
+        coordsX.push(coords[0]);
+        coordsY.push(coords[1]);
+        var z = (Number(height) - Number(this.raf09.getGeoide(latitude, longitude))); // conversion des hauteurs
+        coordsZ.push(z);
+      }
+
+      for (let i=0; i &lt; coordsX.length-1; i+=1) {
+        // calcul de distances et différences d'alti
+        var a = (coordsX[i+1]-coordsX[i])*(coordsX[i+1]-coordsX[i]);
+        var b = (coordsY[i+1]-coordsY[i])*(coordsY[i+1]-coordsY[i]);
+        var c = (coordsZ[i+1]-coordsZ[i])*(coordsZ[i+1]-coordsZ[i]);
+
+        distance = Number(Math.sqrt(a+b).toFixed(3));
+        distanceIncl = Number(Math.sqrt(a+b+c).toFixed(3));
+        difference = Number(coordsZ[i+1]-coordsZ[i]).toFixed(2);
+
+        if(distance !== undefined) {
+          distCumul = Number((distCumul + distance).toFixed(2));
+          $("#distancecumulee").text(distCumul);
+          distInclCumul = Number((distInclCumul + distanceIncl).toFixed(2));
+          $("#distanceinclineecum").text(distInclCumul);
+        }
+      }
+
+      if(distance !== undefined) {
+        $("#distance").text((distance.toFixed(2).toString()));
+        $("#distanceinclinee").text((distanceIncl.toFixed(2).toString()));
+        $("#hauteur").text((difference.toString()));
+        distance = 0;
+        distanceIncl = 0;
+        difference = 0;
+        distCumul = 0;
+        distInclCumul = 0;
+      }
+    }
+
+    /**
+    *
+    *  Mesure l'aire plaquée au sol (2D) du polygone dessiné (le calcul de surface s'effectue uniquement avec les coordonnées XY)
+    *
+    * @param  {Array} activeShapePoints le tableau de coordonnées cartésiennes x y z des points à partir duquel calculer l'aire
+    */
+    measureSurface(activeShapePoints) {
+      var coordsX = [];
+      var coordsY = [];
+      var aire = 0;
+      this.aire.innerHTML = 0;
+
+      for (let i=0; i &lt; activeShapePoints.length-1; i+=1) {
+        // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
+        var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z);
+        let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7);
+        let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7);
+
+        var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
+        coordsX.push(coords[0]);
+        coordsY.push(coords[1]);
+      }
+
+      // dès qu'on a au moins 3 sommets
+      if(coordsX.length > 2){
+        for (let i=0; i &lt; coordsX.length; i+=1) {
+          // le % est un modulo qui permet de faire une boucle des sommets (ie sommet n+1 = sommet 1)
+          var a = (coordsX[(i+1) % coordsX.length] - coordsX[i]);
+          var b = (coordsY[(i+1) % coordsX.length] + coordsY[i] - (2 * coordsY[0]));
+          var c = ((Number(a) * Number(b))/2);
+          aire = (Number(aire) + Number(c)).toFixed(1);
+        }
+      }
+      this.aire.innerHTML = Math.abs(aire);
+    }
+
+    /**
+    *
+    *  Récupère la hauteur d'un point en coords cartésiennes et la transforme en hauteur ellipsoïdale (pour le dessin de volumes)
+    *
+    * @param  {Array} activeShapePoints le tableau de points à partir duquel calculer l'aire
+    * @param  {Number} hauteurVol la hauteur de l'entité
+    * @return {Number} z la hauteur ellipsoïdale du point
+    */
+    getHauteur(activeShapePoints, hauteurVol){
+      var cartesian = new Cesium.Cartesian3(activeShapePoints[0].x, activeShapePoints[0].y, activeShapePoints[0].z);
+      let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+      let alti = cartographic.height.toFixed(3);
+
+      var z = (Number(hauteurVol) + Number(alti));
+      return z;
+    }
+
+    /*
+    *
+    * Découpe dans le photomaillage
+    *
+    */
+
+    /**
+    * Découpe un trou dans le photomaillage - ajoute les points blancs visuellement et coupe selon la forme définie &lt;br/>
+    * La forme définie doit impérativement être convexe pour que la découpe soit cohérente
+    *
+    * @param  {tileset} viewModel le modèle 3D à impacter
+    */
+    createHole(viewModel) {
+      var dig_point = [];
+      var hole_pts = [];
+      var coordsX = [];
+      var coordsY = [];
+      var aire = 0;
+      var scene = this.viewer.scene;
+      this.handler.globe = this;
+      var points = globe.viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
+
+      this.handler.setInputAction(function(event) {
+        var earthPosition = scene.pickPosition(event.position);
+        let cartographic = Cesium.Cartographic.fromCartesian(earthPosition);
+        let longitudeString = Cesium.Math.toDegrees(cartographic.longitude);
+        let latitudeString = Cesium.Math.toDegrees(cartographic.latitude);
+
+        var coords = proj4('EPSG:4326','EPSG:3948', [longitudeString, latitudeString]);
+        coordsX.push(coords[0]);
+        coordsY.push(coords[1]);
+
+        // on ajoute visuellement des points pour la découpe qu'on supprimera au clic droit
+        points.add({
+          position : earthPosition,
+          color : Cesium.Color.WHITE
+        });
+
+        dig_point.push(new Cesium.Cartesian3.fromDegrees(longitudeString, latitudeString));
+        globe.viewer.scene.requestRender();
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      this.handler.setInputAction(function(event) {
+        hole_pts = Array.from(dig_point);
+
+        for (let i=0; i &lt; coordsX.length; i+=1) {
+          var a = (coordsX[(i+1) % coordsX.length] - coordsX[i]);
+          var b = (coordsY[(i+1) % coordsX.length] + coordsY[i] - (2 * coordsY[0]));
+          var c = ((Number(a) * Number(b))/2);
+          aire = (Number(aire) + Number(c)).toFixed(3);
+        }
+
+        // si l'aire est négative (ie si l'utilisateur a dessiné sa figure dans le sens trigo)
+        // on inverse le tableau de points pour que la découpe marche
+        if(aire > 0) {
+          globe.holePlanes(viewModel, hole_pts);
+        } else if(aire &lt; 0) {
+          hole_pts = hole_pts.reverse();
+          globe.holePlanes(viewModel, hole_pts);
+        }
+        points.removeAll();
+        dig_point = [];
+        globe.viewer.scene.requestRender();
+      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+      // définit les actions sur les 2 options du formulaire (afficher ou inverser la découpe)
+      Cesium.knockout.getObservable(viewModel, 'affich').subscribe(function(value) {
+        tileset.clippingPlanes.enabled = value;
+      });
+      Cesium.knockout.getObservable(viewModel, 'trou').subscribe(function(value) {
+        globe.holePlanes(viewModel, hole_pts);
+      });
+    }
+
+    /**
+    * Ajoute les plans de coupes nécessaire à la visualisation de la découpe dans la fonction createHole
+    *
+    * @param  {tileset} viewModel le modèle 3D à impacter
+    * @param  {Array} hole_pts les coordonnées de la forme à découper
+    */
+    holePlanes(viewModel, hole_pts) {
+      var pointsLength = hole_pts.length;
+      var clippingPlanes = [];
+
+      for (var i = 0; i &lt; pointsLength; ++i) {
+        var nextIndex = (i + 1) % pointsLength;
+        var midpoint = Cesium.Cartesian3.add(hole_pts[i], hole_pts[nextIndex], new Cesium.Cartesian3());
+        midpoint = Cesium.Cartesian3.multiplyByScalar(midpoint, 0.5, midpoint);
+        var up = Cesium.Cartesian3.normalize(midpoint, new Cesium.Cartesian3());
+        var right = Cesium.Cartesian3.subtract(hole_pts[nextIndex], midpoint, new Cesium.Cartesian3());
+        right = Cesium.Cartesian3.normalize(right, right);
+        var normal = Cesium.Cartesian3.cross(right, up, new Cesium.Cartesian3());
+        normal = Cesium.Cartesian3.normalize(normal, normal);
+        if (!viewModel.trou){
+          normal = Cesium.Cartesian3.multiplyByScalar(normal, -1 ,normal);
+        }
+        var plane = new Cesium.Plane.fromPointNormal(midpoint, normal);
+        var clippingPlane = new Cesium.ClippingPlane.fromPlane(plane);
+        clippingPlanes.push(clippingPlane);
+      }
+
+      // pour couper le globe
+      /*this.viewer.scene.globe.depthTestAgainstTerrain = true;
+      this.viewer.scene.globe.clippingPlanes = new Cesium.ClippingPlaneCollection({
+      planes : clippingPlanes,
+      unionClippingRegions : union,
+      edgeColor: Cesium.Color.WHITE,
+    });*/
+
+    // pour couper le photomaillage
+    tileset.clippingPlanes = new Cesium.ClippingPlaneCollection({
+      planes : clippingPlanes,
+      unionClippingRegions: viewModel.trou, //si true: coupe tout ce qui est à l'extérieur de la zone cliquée
+      enabled: viewModel.affich,
+      edgeColor: Cesium.Color.WHITE,
+      modelMatrix: Cesium.Matrix4.inverse(tileset._initialClippingPlanesOriginMatrix, new Cesium.Matrix4()) // ligne importante: on est obligés de passer par cette transfo de matrice car notre tileset n'a pas de matrice de transfo à la base
+    });
+  }
+
+  /**
+  * permet de cliquer les attributs sur le 3DTiles &lt;br/>
+  * colorise en vert les contours de la zone cliquée
+  *
+  * @param  {String} enabled le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
+  * @param  {tileset} tileset le modèle 3D à impacter
+  */
+  handleBatimentClick(enabled, tileset){
+    var scene = this.viewer.scene;
+    this.handler.globe = this;
+
+    // Informations sur le batiment séléctionné
+    let selected = {
+      feature: undefined,
+      originalColor: new Cesium.Color(),
+      selectedEntity: new Cesium.Entity() // Une entité qui contient les attributs du batiments selectionné
+    };
+
+    let defaultClickHandler = this.viewer.screenSpaceEventHandler.getInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+    if (Cesium.PostProcessStageLibrary.isSilhouetteSupported(this.viewer.scene)) {
+      // Créer la bordure verte
+      let silhouetteGreen = Cesium.PostProcessStageLibrary.createEdgeDetectionStage();
+      silhouetteGreen.uniforms.color = Cesium.Color.fromCssColorString('#E20000').withAlpha(0.7);
+      silhouetteGreen.uniforms.length = 0.01;
+      silhouetteGreen.selected = [];
+      // Enregistrer les bordures dans cesium
+      this.viewer.scene.postProcessStages.add(Cesium.PostProcessStageLibrary.createSilhouetteStage([silhouetteGreen]));
+
+      this.handler.setInputAction(function(movement) {
+        // Supprimer toutes les bordures verte
+        silhouetteGreen.selected = [];
+        // Récuperer la forme sur laquelle on a cliqué
+        let pickedFeature = scene.pick(movement.position);
+        // Si on clique sur un element qui n'appartient pas à tileset on ne met pas de bordure verte
+        if (!Cesium.defined(pickedFeature) || !Cesium.defined(pickedFeature.content) || pickedFeature.content._tileset != tileset) {
+          selected.feature = undefined;
+          defaultClickHandler(movement);
+          return;
+        }
+        // Ajouter le bord vert sur la forme selectionnée
+        if (pickedFeature !== silhouetteGreen.selected[0]) {
+          silhouetteGreen.selected = [pickedFeature];
+
+          selected.feature = pickedFeature;
+          selected.selectedEntity.name = pickedFeature.getProperty('name');
+          selected.selectedEntity.description = '&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+
+          // Générer les lignes du tableau
+          let propertyNames = pickedFeature.getPropertyNames();
+          for(let i = 0; i &lt; propertyNames.length; i++){
+            selected.selectedEntity.description += '&lt;tr>&lt;th>' + propertyNames[i] + '&lt;/th>&lt;td>' + pickedFeature.getProperty(propertyNames[i]) + '&lt;/td>&lt;/tr>';
+          }
+          selected.selectedEntity.description += '&lt;/tbody>&lt;/table>';
+
+          // Afficher le tableau en haut à droite
+          globe.viewer.selectedEntity = selected.selectedEntity;
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      // Quitter la fonction pour desactiver la selection de batiments
+      if(!enabled){
+        silhouetteGreen.selected = [];
+        return;
+      }
+    }
+  }
+
+  /**
+  * supprime toutes les actions liées à la souris sur le handler de Cesium (clic gauche, droit et mouvement de souris)
+  */
+  supprSouris(){
+    this.handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    this.handler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    this.handler.removeInputAction(Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+  }
+
+  /**
+  * Gere la luminosité et le contraste
+  */
+  updatePostProcess() {
+    var bloom = globe.viewer.scene.postProcessStages.bloom;
+    bloom.enabled = Boolean(globe.viewModel.show);
+    bloom.uniforms.contrast = Number(globe.viewModel.contrast);
+    bloom.uniforms.brightness = Number(globe.viewModel.brightness);
+    bloom.uniforms.delta = Number(globe.viewModel.delta);
+    bloom.uniforms.sigma = Number(globe.viewModel.sigma);
+    bloom.uniforms.stepSize = Number(globe.viewModel.stepSize);
+    globe.viewer.scene.requestRender();
+
+  }
+
+
+  /*
+  *
+  *
+  *
+  * Les fonctions de chargements des données opendata
+  * Surfaciques, linéaires, ponctuelles, temporelles
+  * Chaque fonction load a une fonction show associées pour simplifier les ajouts de couches et les arguments en paramètres
+  *
+  *
+  *
+  */
+
+  /**
+  *
+  * permet de charger des fichiers geojson surfaciques &lt;br/>
+  * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} choice permet de classifier la donnée pour charger le tableau d'attributs
+  * @param  {Array} line Le tableau d'entités pour stocker les lignes de contours des polygones
+  * @param  {String} couleurLigne La couleur des lignes de contour au format '#FFFFFF'
+  * @param  {Number} tailleLigne La largeur des lignes de contour
+  * @param  {Object} options facultatif - Les options pour le chargement
+  */
+  loadPolygon(link, name, choice, line, couleurLigne, tailleLigne, options = {}) {
+
+    let promisse = Cesium.GeoJsonDataSource.load(link, {
+      clampToGround: true
+    });
+    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
+    this.viewer.scene.logarithmicDepthBuffer = false; // idem
+    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+    promisse.then((dataSource) => {
+      // Ajoute le json dans la liste des dataSource
+      this.viewer.dataSources.add(dataSource);
+      this.dataSources[name] = dataSource;
+      this.hideLoader();
+
+      // permet de classifier les json
+      if(options.classification &amp;&amp; options.classificationField !== undefined){
+        // Get the array of entities
+        let entities = dataSource.entities.values;
+        if(options.colors != undefined){
+          Object.keys(options.colors).forEach(function(c){
+            options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
+            options.colors[c].alpha = options.alpha || 0.8;
+          })
+        }
+        let colors = options.colors || {};
+
+        for (let i = 0; i &lt; entities.length; i++) {
+          let entity = entities[i];
+          if (Cesium.defined(entity.polygon)) {
+            let color = colors[entity.properties[options.classificationField]];
+            if(!color){
+              color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
+              colors[entity.properties[options.classificationField]] = color;
+            }
+
+            // si la donnée n'a pas de tableau d'attributs particulier, on change juste le nom des entités
+            entity.name = choice;
+
+            if(choice === 'Parcellaire cadastral') {
+              this.createTableauCadastre(entity);
+            }
+            if(choice === 'PLUi Plan de Zonage') {
+              this.createTableauPLU(entity);
+            }
+
+            // classification spécifique à la donnée
+            // condition à rajouter en cas de nouvelles couches de données
+            if(choice === 'Limites de sections') {
+              let longitudeNom = entity._properties.geo_point_2d._value[1];
+              let latitudeNom = entity._properties.geo_point_2d._value[0];
+              dataSource.entities.add({
+                name : entity._properties.nom_com._value + '_SECTION ' + entity._properties.n_section._value,
+                position : Cesium.Cartesian3.fromDegrees(longitudeNom,latitudeNom,280),
+                label : {
+                  text : entity._properties.n_section._value,
+                  font : '24px Helvetica',
+                  showBackground : true,
+                  fillColor : Cesium.Color.WHITE,
+                  outlineColor : Cesium.Color.BLACK,
+                  outlineWidth : 2,
+                  style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+                  scaleByDistance : new Cesium.NearFarScalar(5000, 0.8, 100000, 0),
+                  verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+                }
+              });
+              this.createTableauSections(entity);
+            }
+            if(choice === 'Limites de communes') {
+              let longitudeNom = entity._properties.geo_point_2d._value[1];
+              let latitudeNom = entity._properties.geo_point_2d._value[0];
+
+              // on positionne le texte des communes (car en plusieurs morceaux)
+              if (entity._properties.nom._value == 'Schiltigheim') {
+                latitudeNom = latitudeNom - 0.0055;
+              };
+              if (entity._properties.nom._value == 'Bischheim') {
+                latitudeNom = latitudeNom - 0.0055;
+              };
+
+              // on ajoute une étiquette avec le nom de la commune
+              dataSource.entities.add({
+                name : entity._properties.nom._value + '_' + entity._properties.num_com._value,
+                position : Cesium.Cartesian3.fromDegrees(longitudeNom,latitudeNom,280),
+                label : {
+                  text : entity._properties.nom._value,
+                  font : '24px Helvetica',
+                  fillColor : Cesium.Color.WHITE,
+                  outlineColor : Cesium.Color.BLACK,
+                  outlineWidth : 2,
+                  style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+                  scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+                  verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+                }
+              });
+              this.createTableauCommunes(entity);
+            }
+
+
+            //Dessine le contour des limites des entités
+            line.push(this.drawLine(entity.polygon.hierarchy._value.positions, tailleLigne, couleurLigne, 0.7, true));
+
+            // on classifie les entités par couleur
+            entity.polygon.material = color;
+            entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+            entity.polygon.arcType = Cesium.ArcType.GEODESIC;
+          }
+        }
+        globe.viewer.scene.requestRender();
+      }
+
+    })
+    return promisse;
+
+  }
+
+
+  /**
+  * La fonction show associée à loadPolygon &lt;br/>
+  * Afficher ou masquer la donnée "name" en fonction de la valeur de "show" &lt;br/>
+  * Si elle n'a pas encore été affiché, la fonction va télécharger les données avec le lien "link" passé en parametre &lt;br/>
+  * Met un highlight sur les entités selectionnées en cliquant
+  *
+  * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} choice permet de classifier la donnée pour charger le tableau d'attributs
+  * @param  {Array} line Le tableau d'entités pour stocker les lignes de contours des polygones
+  * @param  {String} couleurLigne La couleur des lignes de contour au format '#FFFFFF'
+  * @param  {Number} tailleLigne La largeur des lignes de contour
+  * @param  {String} couleurSurf La couleur du highlight quand on clique à l'intérieur du polygone au format '#FFFFFF'
+  * @param  {Number} transparence La transparence du highlight
+  * @param  {Object} options facultatif - Les options pour le chargement
+  */
+  showPolygon(show, name, link, choice, line, couleurLigne, tailleLigne, couleurSurf, transparence, options = {}){
+    if(show){
+      if(this.dataSources[name] === undefined){
+        globe.loadPolygon(link, name, choice, line, couleurLigne, tailleLigne, options);
+
+        var highlighted = {
+          feature : undefined,
+          originalMaterial : new Cesium.Color()
+        };
+        // when we click on the entity change its scale and color
+        var handler = new Cesium.ScreenSpaceEventHandler(globe.viewer.canvas);
+        handler.setInputAction(function(movement) {
+          var pickedObject = globe.viewer.scene.pick(movement.position);
+          if (!Cesium.defined(pickedObject)) {
+            return;
+          }
+          // If a feature was previously highlighted, undo the highlight
+          if (Cesium.defined(highlighted.feature)) {
+            highlighted.feature.id.polygon.material = highlighted.originalMaterial;
+            highlighted.feature = undefined;
+            globe.viewer.scene.requestRender();
+          }
+          // colorer la zone cliquée dans une couleur précise
+          if (Cesium.defined(pickedObject)) {
+            if (pickedObject.id.name === choice ) {
+              highlighted.feature = pickedObject;
+              highlighted.originalMaterial = pickedObject.id.polygon.material;
+              pickedObject.id.polygon.material = Cesium.Color.fromCssColorString(couleurSurf).withAlpha(transparence);
+              globe.viewer.scene.requestRender();
+            }
+          }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+      } else{
+        this.dataSources[name].show = true;
+        // montrer les lignes
+        for(var i = 0; i &lt; line.length; i++){
+            line[i].show = true;
+        }
+      }
+      this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
+
+    } //Fin du IF Show = true
+    else{
+      if(this.dataSources[name] !== undefined){
+        this.dataSources[name].show = false;
+        for(var i = 0; i &lt; line.length; i++){
+            line[i].show = false;
+        }
+        this.viewer.scene.requestRender();
+      }
+
+    }
+  }
+
+  /**
+  *
+  * permet de re-charger des fichiers geojson surfaciques pour actualiser la donnée (temps réel)
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} choice permet de classifier la donnée pour charger le tableau d'attributs
+  * @param  {Array} line Le tableau d'entités pour stocker les lignes de contours des polygones
+  * @param  {String} couleurLigne La couleur des lignes de contour au format '#FFFFFF'
+  * @param  {Number} tailleLigne La largeur des lignes de contour
+  * @param  {Object} options facultatif - Les options pour le chargement
+  */
+  updatePolygon(link, name, choice, line, couleurLigne, tailleLigne, couleurSurf, transparence, options) {
+    if(this.dataSources[name] !== undefined){
+      this.viewer.dataSources.remove(this.dataSources[name]);
+      this.viewer.scene.requestRender();
+
+      globe.loadPolygon(link, name, choice, line, couleurLigne, tailleLigne, options);
+      this.viewer.scene.requestRender();
+    }
+
+  }
+
+  /**
+  * permet de charger des fichiers geojson linéaires &lt;br/>
+  * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format et de donner un nom aux entités
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  loadPolyline(link, name, choice, options = {}) {
+    let promisse = Cesium.GeoJsonDataSource.load(link, {
+      clampToGround: true
+    });
+    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
+    this.viewer.scene.logarithmicDepthBuffer = false; // idem
+    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+    promisse.then((dataSource) => {
+      // Ajoute le json dans la liste des dataSource
+      this.viewer.dataSources.add(dataSource);
+      this.dataSources[name] = dataSource;
+      this.hideLoader();
+
+      // permet de classifier les json
+      if(options.classification &amp;&amp; options.classificationField !== undefined){
+
+        // Get the array of entities
+        let entities = dataSource.entities.values;
+
+        if(options.colors != undefined){
+          Object.keys(options.colors).forEach(function(c){
+            options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
+            options.colors[c].alpha = options.alpha || 1;
+          });
+        }
+
+        let colors = options.colors || {};
+        for (let i = 0; i &lt; entities.length; i++) {
+          let entity = entities[i];
+
+          if (Cesium.defined(entity.polyline)) {
+            let color = colors[entity.properties[options.classificationField]];
+            if(!color){
+              color = Cesium.Color.fromRandom({ alpha : options.alpha || 1 });
+              colors[entity.properties[options.classificationField]] = color;
+            }
+
+            entity.polyline.material = color;
+            entity.polyline.width = 4.0;
+            entity.polyline.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+            entity.polyline.arcType = Cesium.ArcType.GEODESIC;
+          }
+
+          entity.name = choice;
+        }
+        globe.viewer.scene.requestRender();
+      }
+    })
+    return promisse;
+  }
+
+  /**
+  * La fonction show associée à loadPolyline &lt;br/>
+  * permet d'afficher ou de masquer la donnée linéaire en fonction de la valeur de show
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  showPolyline(show, name, link, choice, options = {}) {
+    if(show){
+      if(this.dataSources[name] === undefined){
+        globe.loadPolyline(link, name, choice, options);
+
+        // Information about the currently highlighted feature
+        var highlighted = {
+          feature : undefined,
+          originalMaterial : new Cesium.Color()
+        };
+        // when we click on the entity change its scale and color
+        var handler = new Cesium.ScreenSpaceEventHandler(globe.viewer.canvas);
+        handler.setInputAction(function(movement) {
+          var pickedObject = globe.viewer.scene.pick(movement.position);
+          if (!Cesium.defined(pickedObject)) {
+            return;
+          }
+          // If a feature was previously highlighted, undo the highlight
+          if (Cesium.defined(highlighted.feature)) {
+            highlighted.feature.id.polyline.material = highlighted.originalMaterial;
+            highlighted.feature = undefined;
+            globe.viewer.scene.requestRender();
+          }
+          // colorer la zone cliquée dans une couleur précise
+          if (Cesium.defined(pickedObject)) {
+            if (pickedObject.id.name === choice ) {
+              highlighted.feature = pickedObject;
+              highlighted.originalMaterial = pickedObject.id.polyline.material;
+              pickedObject.id.polyline.material = Cesium.Color.fromCssColorString('#ffe100').withAlpha(0.8);
+              globe.viewer.scene.requestRender();
+            }
+          }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      } else{
+        this.dataSources[name].show = true;
+        this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
+      }
+    } else{
+      if(this.dataSources[name] !== undefined){
+        this.dataSources[name].show = false;
+        this.viewer.scene.requestRender();
+      }
+    }
+  }
+
+  /**
+  * permet de re-charger la donnée linéaire pour actualiser la donnée (temps réel)
+
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format et de donner un nom aux entités
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  updatePolyline(link, name, choice, options) {
+    if(this.dataSources[name] !== undefined){
+      this.viewer.dataSources.remove(this.dataSources[name]);
+      this.viewer.scene.requestRender();
+
+      globe.loadPolyline(link, name, choice, options);
+      this.viewer.scene.requestRender();
+    }
+
+  }
+
+  /**
+  * permet de charger des fichiers geojson ponctuels &lt;br/>
+  * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
+  *
+  * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
+  * @param  {Array} billboard Le tableau d'entités où stocker les billboards
+  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format
+  * @param  {Array} line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
+  * @param  {String} couleur La couleur de la ligne au format '#FFFFFF'
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  loadPoint(link, name, image, billboard, choice, line, couleur, options = {}){
+    let promisse = Cesium.GeoJsonDataSource.load(link, {
+      markerSize: 0 //pour que l'épingle n'apparaisse pas
+    });
+    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
+    this.viewer.scene.logarithmicDepthBuffer = false; // idem
+    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+    promisse.then((dataSource) => {
+      // Ajoute le json dans la liste des dataSource
+      this.viewer.dataSources.add(dataSource);
+      this.dataSources[name] = dataSource;
+      this.hideLoader();
+      let entities = dataSource.entities.values;
+
+      // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
+      // l'entité billboard ne conserve pas les attributs
+      for(let i = 0; i &lt; entities.length; i++) {
+        let entity = entities[i];
+
+        // on récupère les coordonnées des points importés
+        var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
+        var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
+        var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
+
+        var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
+        let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
+        let longitude = cartographic.longitude;
+        let latitude = cartographic.latitude;
+        // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
+
+        let randomHeight = Math.floor(Math.random() * 20) + 230;
+        let height = Number(randomHeight + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
+
+        var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
+
+        // on ajoute une entité billboard à chaque point, 225m plus haut
+        billboard.push(this.createBillboard(coordHauteur, image, false));
+        // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
+
+        //on trace une ligne partant du sol jusqu'à la base du billboard
+        var coordLigne = [position, coordHauteur];
+        line.push(this.drawLine(coordLigne, 2, couleur, 1, false));
+
+        // on lie les attributs des points au nouvelles entités billboard
+        // l'attribut choice permet de classifier entre les différentes données
+        if(choice == 'patrimoine'){
+          this.createTableauPatrimoine(billboard[i], entity);
+        }
+
+      }
+    });
+    return promisse;
+
+  }
+
+  /**
+  * La fonction show associée à loadPoint &lt;br/>
+  * permet d'afficher ou de masquer la donnée ponctuelle en fonction de la valeur de show
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} linkAttribut Le lien vers le fichier json attributaires sans géométrie
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
+  * @param  {Array} billboard Le tableau d'entités où stocker les billboards
+  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format
+  * @param  {Array} line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
+  * @param  {String} couleur La couleur de la ligne au format '#FFFFFF'
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  showPoint(show, name, link, linkAttribut, image, billboard, choice, line, couleur, options = {}){
+    if(show){
+      if(this.dataSources[name] === undefined){
+        if(linkAttribut != undefined) {
+          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, choice, line, couleur, options);
+        } else {
+          globe.loadPoint(link, name, image, billboard, choice, line, couleur, options);
+        }
+
+      } else{
+        this.dataSources[name].show = true;
+        for(var i = 0; i &lt; billboard.length; i++){
+            billboard[i].show = true;
+            line[i].show = true;
+          }
+        this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
+      }
+    } else{
+      if(this.dataSources[name] !== undefined){
+        this.dataSources[name].show = false;
+        for(var i = 0; i &lt; billboard.length; i++){
+            billboard[i].show = false;
+            line[i].show = false;
+          }
+        this.viewer.scene.requestRender();
+      }
+    }
+  }
+
+  /**
+  * permet de charger des fichiers geojson temporels (donnée dynamique qui va s'actualiser lorsqu'on bouge le curseur temps de Cesium)
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {Array} line Le tableau d'entités où stocker les contours des polygones
+  * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  loadTimeJson(link, name, line, choice, options = {}){
+    let promisse = Cesium.GeoJsonDataSource.load(link, {
+      clampToGround: true
+    });
+    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
+    this.viewer.scene.logarithmicDepthBuffer = false; // idem
+    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+    promisse.then((dataSource) => {
+      // Ajoute le json dans la liste des dataSource
+      this.viewer.dataSources.add(dataSource);
+      this.dataSources[name] = dataSource;
+      let entities = dataSource.entities.values;
+      this.hideLoader();
+
+      // l'évenement qui actualise la valeur de l'horloge quand on clique sur la timeline
+      this.viewer.clock.onTick.addEventListener(function () {
+        // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
+        let updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
+
+        for (let i = 0; i &lt; entities.length; i++) {
+          let entity = entities[i];
+
+          // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
+          // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
+          // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
+          if(choice === 'Qualité air communes Eurométropole') {
+            var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date_echeance._value);
+            var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
+            var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+          }
+
+          // si la date des attributs correspond à la date de la timeline on affiche l'entité
+          if(dateValidite == updateTime) {
+            entity.show = true;
+          } else {
+            entity.show = false;
+          }
+          // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
+          globe.viewer.scene.requestRender();
+        }
+
+      });
+
+      // permet de classifier les json
+      if(options.classification &amp;&amp; options.classificationField !== undefined){
+        let entities = dataSource.entities.values;
+
+        if(options.colors != undefined){
+          Object.keys(options.colors).forEach(function(c){
+            options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
+            options.colors[c].alpha = options.alpha || 0.8;
+          })
+        }
+        let colors = options.colors || {};
+
+        for (let i = 0; i &lt; entities.length; i++) {
+
+          let entity = entities[i];
+          if (Cesium.defined(entity.polygon)) {
+            let color = colors[entity.properties[options.classificationField]];
+            if(!color){
+              color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
+              colors[entity.properties[options.classificationField]] = color;
+            }
+            entity.polygon.material = color;
+            entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+            entity.polygon.arcType = Cesium.ArcType.GEODESIC;
+          }
+
+          entity.name = choice;
+          // on trace les contours des entités
+          line.push(this.drawLine(entity.polygon.hierarchy._value.positions, 3, '#FFFFFF', 1, true));
+        }
+      }
+
+    });
+    return promisse;
+  }
+
+
+  /**
+  *
+  * La fonction show associée à loadTimeJson &lt;br/>
+  * permet d'afficher ou de masquer la donnée temporelle en fonction de la valeur de show
+  *
+  * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {Array} line Le tableau d'entités où stocker les contours des polygones
+  * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
+  * @param  {JulianDate} start La date de début de l'intervalle de temps qu'on souhaite afficher dans la timeline
+  * @param  {JulianDate} end La date de fin de l'intervalle de temps qu'on souhaite afficher dans la timeline
+  * @param  {Object} options facultatif - Les options pour le chargement
+  */
+  showTimeJson(show, name, link, line, choice, start, end, options = {}){
+    var today = Cesium.JulianDate.now();
+    var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
+
+    if(show){
+      if(this.dataSources[name] === undefined){
+        globe.loadTimeJson(link, name, line, choice, options);
+        // on zoome la timeline sur l'intervalle souhaité
+        globe.viewer.timeline.zoomTo(start, end);
+
+      } else{
+        globe.viewer.timeline.zoomTo(start, end);
+        this.dataSources[name].show = true;
+        for(var i = 0; i &lt; line.length; i++){
+            line[i].show = true;
+          }
+        this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
+      }
+    } else{
+      if(this.dataSources[name] !== undefined){
+        // on rezoome la timeline sur aujourd'hui et on reset les paramètres de l'horloge
+        var today = Cesium.JulianDate.now();
+        var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
+        globe.viewer.clock.shouldAnimate = false;
+        globe.viewer.clock.currentTime = today;
+        globe.viewer.clock.startTime = Cesium.JulianDate.addDays(today, -10, new Cesium.JulianDate());
+        globe.viewer.clock.stopTime = Cesium.JulianDate.addDays(today, 10, new Cesium.JulianDate());
+        globe.viewer.clock.multiplier = 1.0;
+        globe.viewer.timeline.zoomTo(today, demain);
+
+        this.dataSources[name].show = false;
+        for(var i = 0; i &lt; line.length; i++){
+            line[i].show = false;
+          }
+        this.viewer.scene.requestRender();
+      }
+    }
+  }
+
+  /**
+  * permet de charger un fichier de données géographiques (geojson) ainsi qu'un 2ème fichier attributaire au format json &lt;br/>
+  * On lie ensuite les attributs à la donnée géographique &lt;br/>
+  * utilise la fonction showPoint pour afficher la donnée
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
+  * @param  {Array} billboard Le tableau d'entités où stocker les billboards
+  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format
+  * @param  {Array} line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
+  * @param  {String} couleur La couleur de la ligne au format '#FFFFFF'
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  loadJsonAttribut(link, linkAttribut, name, image, billboard, choice, line, couleur, options = {}){
+    let promisse = Cesium.GeoJsonDataSource.load(link, {
+      markerSize: 0 //pour que l'épingle n'apparaisse pas
+    });
+    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
+    this.viewer.scene.logarithmicDepthBuffer = false; // idem
+    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+    promisse.then((dataSource) => {
+      // Ajoute le json dans la liste des dataSource
+      this.viewer.dataSources.add(dataSource);
+      this.dataSources[name] = dataSource;
+      this.hideLoader();
+
+      let entities = dataSource.entities.values;
+
+      // on récupère le fichier json de la fréquentation en temps réel
+      var lienJson = linkAttribut;
+      var xmlhttp = new XMLHttpRequest();
+      this.xmlhttp = this;
+      xmlhttp.open('GET', lienJson);
+      xmlhttp.responseType = 'json';
+      xmlhttp.send();
+
+      // une fois que le fichier est bien chargé
+      xmlhttp.onreadystatechange = function () {
+        if(xmlhttp.readyState === 4 &amp;&amp; xmlhttp.status === 200) {
+          // on récupère le json chargé
+          var jsonAttribut = xmlhttp.response;
+
+          // on est obligés de s'arrêter au nombre précis d'entités car ensuite les labels sont rajoutés à la liste des entités
+          // ce qui entraine des bugs d'affichage et des erreurs au moment de la création du tableau d'attributs
+          if(choice === 'piscine') {
+            var stop = 8;
+          }
+
+          for(let i = 0; i &lt; stop; i++) {
+            let entity = entities[i];
+
+            // on récupère les coordonnées des points importés
+            var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
+            var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
+            var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
+
+            var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
+            let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
+            let longitude = cartographic.longitude;
+            let latitude = cartographic.latitude;
+            // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
+            let height = Number(225 + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
+            var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
+
+            // on ajoute une entité billboard à chaque point, 225m plus haut
+            // l'entité billboard ne conserve pas les attributs
+            billboard.push(globe.createBillboard(coordHauteur, image, false));
+            // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
+
+            //on trace une ligne partant du sol jusqu'à la base du billboard
+            var coordLigne = [position, coordHauteur];
+            line.push(globe.drawLine(coordLigne, 2, couleur, 1, false));
+            globe.viewer.scene.requestRender();
+
+            // coordonnées 15m en dessous pour la lisibilité du texte
+            let heightLabel = Number(210 + cartographic.height);
+            var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
+
+            if(choice === 'piscine') {
+              // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasite)
+              var acces = String(entity.properties['access']);
+              acces = acces.replace('{"fr_FR": "', '');
+              acces = acces.replace(/\\n/g,'');
+              acces = acces.replace(/\\t/g,'');
+              acces = acces.replace(/\\/g,'');
+              acces = acces.replace('"}','');
+              var service = String(entity.properties['serviceandactivities']);
+              service = service.replace('{"fr_FR": "', '');
+              service = service.replace(/\\n/g,'');
+              service = service.replace(/\\t/g,'');
+              service = service.replace('"}','');
+              var caracteristique = String(entity.properties['characteristics']);
+              caracteristique = caracteristique.replace('{"fr_FR": "', '');
+              caracteristique = caracteristique.replace(/\\n/g,'');
+              caracteristique = caracteristique.replace(/\\t/g,'');
+              caracteristique = caracteristique.replace(/\\/g,'');
+              caracteristique = caracteristique.replace('"}','');
+              var exception = String(entity.properties['exceptionalschedule']);
+              exception = exception.replace('{"fr_FR": "', '');
+              exception = exception.replace(/\\n/g,'');
+              exception = exception.replace(/\\/g,'');
+              exception = exception.replace('"}','');
+              var description = String(entity.properties['description']);
+              description = description.replace('{"fr_FR": "', '');
+              // pour que les liens dans la description fonctionnent
+              description = description.replace(/href=\\"/g, 'href=https://www.strasbourg.eu');
+              description = description.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
+              description = description.replace(/&lt;a/g,'&lt;a target=_blank');
+              description = description.replace(/style=\\"width: 300px;/g,'style=\\"align: center; width: 99%;');
+              description = description.replace(/\\n/g,'');
+              description = description.replace(/\\t/g,'');
+              description = description.replace('"}','');
+              description = description.replace('{}','');
+              var info = String(entity.properties['additionalinformation']);
+              info = info.replace('{"fr_FR": "', '');
+              info = info.replace(/href=\\"/g, 'href="https://www.strasbourg.eu');
+              info = info.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
+              info = info.replace(/&lt;a/g,'&lt;a target=_blank');
+              info = info.replace('"}','');
+
+
+              // on lie les attributs des points au nouvelles entités billboard
+              // on ne peut pas faire de fonction à part createTableauPiscine() car certains attributs dépendent de l'autre fichier json
+              // et sont chargés dans une deuxième boucle if
+
+              // Renseignement des éléments de la boite d'information
+              billboard[i].name = String(entity.properties['name']);
+              billboard[i].description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+              if (Cesium.defined(entity.properties['imageurl'])) {
+                billboard[i].description += '&lt;img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
+              }
+
+              billboard[i].description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['name']) + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Mail&lt;/td>&lt;td>' + String(entity.properties['mail']) + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Téléphone &lt;/td>&lt;td>' + String(entity.properties['phone']) + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Adresse &lt;/td>&lt;td>' + String(entity.properties['address']) + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Accès &lt;/td>&lt;td>' + acces + '&lt;/td>&lt;/tr>';
+              billboard[i].description += '&lt;tr>&lt;td>Lien vers le site de la piscine&lt;/td>&lt;td>' + '&lt;a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' &lt;/a>&lt;/td>&lt;/tr>';
+
+              // on rentre dans le fichier json chargé pour récupérer les attributs
+              for(let j = 0; j &lt; jsonAttribut.length; j++) {
+                if(entity.name == jsonAttribut[j].fields.name) {
+                  billboard[i].description += '&lt;tr>&lt;td>Statut&lt;/td>&lt;td>' + String(jsonAttribut[j].fields.realtimestatus) + '&lt;/td>&lt;/tr>';
+                  billboard[i].description += '&lt;tr>&lt;td>Occupation &lt;/td>&lt;td>' + String(jsonAttribut[j].fields.occupation) + '&lt;/td>&lt;/tr>';
+                  billboard[i].description += '&lt;tr>&lt;td>Heure de mise à jour &lt;/td>&lt;td>' + String(jsonAttribut[j].fields.updatedate) + '&lt;/td>&lt;/tr>';
+
+                  // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'
+                  if(Cesium.defined(jsonAttribut[j].fields.occupation)) {
+                    var occupation = (jsonAttribut[j].fields.occupation).toString();
+                  } else {
+                    var occupation = 'CLOSED';
+                  }
+
+                  // on ajoute le label
+                  var statut = dataSource.entities.add({
+                    position : coordLabel,
+                    label : {
+                      text : occupation,
+                      font : '24px Helvetica',
+                      outlineColor: Cesium.Color.fromCssColorString('#666a70'),
+                      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                      horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+                      style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+                      scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+                      showBackground: true,
+                      backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
+                    }
+                  });
+
+                  // classification du label en différentes couleurs en fonction de la fréquentation
+                  if(jsonAttribut[j].fields.realtimestatus === 'GREEN') {
+                    statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
+                  } else if(jsonAttribut[j].fields.realtimestatus === 'ORANGE') {
+                    statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
+                  } else if(jsonAttribut[j].fields.realtimestatus === 'RED') {
+                    statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
+                  } else if(jsonAttribut[j].fields.realtimestatus === 'BLACK') {
+                    statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
+                  } else if(jsonAttribut[j].fields.realtimestatus === 'CLOSED') {
+                    statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
+                  }
+
+                }
+              }
+
+              // le reste du tableau d'attributs
+              if (Cesium.defined(entity.properties['serviceandactivities'])) {
+                billboard[i].description += '&lt;tr>&lt;td>Services et activités &lt;/td>&lt;td>' + service + '&lt;/td>&lt;/tr>';
+              }
+              if (Cesium.defined(entity.properties['characteristics'])) {
+                billboard[i].description += '&lt;tr>&lt;td>Caractéristiques &lt;/td>&lt;td>' + caracteristique + '&lt;/td>&lt;/tr>';
+              }
+              if (Cesium.defined(entity.properties['exceptionalschedule'])) {
+                billboard[i].description += '&lt;tr>&lt;td>Mesures exceptionnelles &lt;/td>&lt;td>' + exception + '&lt;/td>&lt;/tr>';
+              }
+              if (Cesium.defined(entity.properties['additionalinformation'])) {
+                billboard[i].description += '&lt;tr>&lt;td>Informations supplémentaires &lt;/td>&lt;td>' + info + '&lt;/td>&lt;/tr>';
+              }
+
+              billboard[i].description +='&lt;/tbody>&lt;/table>&lt;br/>';
+              billboard[i].description += '&lt;p>' + description + '&lt;/p>';
+              billboard[i].description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Information sur les données&lt;/a>&lt;br/>&lt;br/>';
+
+            } // fin du if(choice = piscine)
+
+          } // fin du for(i &lt; entities.length)
+
+        } // fin de la requête xmlhttp
+      } // fin de la requête xmlhttp
+
+    });
+    return promisse;
+
+  }
+
+  /**
+  *
+  * Permet de re-charger la donnée ponctuelle (temps réel)
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} linkAttribut Le lien vers le fichier json attributaires sans géométrie
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {String} image Le lien vers l'image à utiliser pour le billboard
+  * @param  {Array} billbard Le tableau d'entités où stocker les billboard
+  * @param  {String} choice spécifique à la donnée, permet de charger de classifier
+  * @param  {Array} line Le tableau d'entités où stocker la ligne qu'on trace jusqu'au sol
+  * @param  {String} couleur la couleur de la ligne
+  * @param  {Object} options facultatif - Les options pour le chargement
+  */
+  updatePoint(link, linkAttribut, name, image, billboard, choice, line, couleur, options) {
+    if(this.dataSources[name] !== undefined){
+      this.viewer.dataSources.remove(this.dataSources[name]);
+      this.viewer.scene.requestRender();
+      if(linkAttribut != undefined) {
+        globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, choice, line, couleur, options);
+      } else {
+        globe.loadPoint(link, undefined, name, image, billboard, choice, line, couleur, options);
+      }
+
+      this.viewer.scene.requestRender();
+    }
+
+  }
+
+  //---------------------------------------------------------------------------------------------------
+  // les fonctions createTableau(entity) permettent de charger les tableaux d'attributs spécifiques à chaque couche de donnée
+  //---------------------------------------------------------------------------------------------------
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée PLUi_Plan_de_zonage avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauPLU(entity) {
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;br/>&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.name = 'PLUi Plan de Zonage'
+    if (Cesium.defined(entity.properties['photo'])) {
+      entity.description += '&lt;img src="https://sig.strasbourg.eu/datastrasbourg/plu_media/ims_zone/' + String(entity.properties['photo']) + '" align="center" width="99%">';
+    }
+    if (Cesium.defined(entity.properties['paraph01'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph01']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph02'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph02']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph03'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph03']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph04'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph04']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph05'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph05']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph06'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph06']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph07'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph07']) + '&lt;/p>&lt;br/>&lt;br/>';
+    }
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['commune']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Zone &lt;/td>&lt;td>' + String(entity.properties['main_type']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Secteur &lt;/td>&lt;td>' + String(entity.properties['type']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Hauteur maximale &lt;/td>&lt;td>' + String(entity.properties['ht_aff']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+
+    if (Cesium.defined(entity.properties['page'])) {
+      entity.description += '&lt;a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/reglement_actuel.pdf#page=' + String(entity.properties['page']) + '" target="_blank">Lien vers le règlement de la zone&lt;/a>&lt;br/>&lt;br/>';
+    }
+    if (Cesium.defined(entity.properties['commune'])) {
+      entity.description += '&lt;a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/pdf_commune/' + String(entity.properties['commune']) + '.pdf" target="_blank">Lien vers la présentation de la commune&lt;/a>&lt;br/>&lt;br/>';
+    }
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Information sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Limites_de_communes avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauCommunes(entity) {
+    //Renseignement des éléments de la boite d'information
+    entity.name = 'Limites de communes';
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Département &lt;/td>&lt;td>' + String(entity.properties['num_dept']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['nom']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code INSEE &lt;/td>&lt;td>' + String(entity.properties['num_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code précision &lt;/td>&lt;td>' + String(entity.properties['code_preci']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Limite de sections avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauSections(entity) {
+    //Renseignement des éléments de la boite d'information
+    entity.name = 'Limites de sections'
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['nom_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code INSEE &lt;/td>&lt;td>' + String(entity.properties['num_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Numéro SECTION &lt;/td>&lt;td>' + String(entity.properties['n_section']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs des couches de données du parcellaire cadastral avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauCadastre(entity) {
+    //Renseignement des éléments de la boite d'information
+    entity.name = 'Parcellaire cadastral'
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Département &lt;/td>&lt;td>' + String(entity.properties['num_dept']) + '&lt;/td>&lt;/tr>';
+    switch (String(entity.properties['num_com'])) {
+      case '049':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BLAESHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '152':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>GEISPOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '001':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ACHENHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '043':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BISCHHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '065':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BREUSCHWICKERSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '118':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ECKBOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '119':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ECKWERSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '124':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ENTZHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '131':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ESCHAU&lt;/td>&lt;/tr>'
+      break;
+      case '137':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>FEGERSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '182':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HANGENBIETEN&lt;/td>&lt;/tr>'
+      break;
+      case '204':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HOENHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '212':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HOLTZHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '218':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ILLKIRCH-GRAFFENSTADEN&lt;/td>&lt;/tr>'
+      break;
+      case '247':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>KOLBSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '256':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LAMPERTHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '267':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LINGOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '268':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LIPSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '296':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>MITTELHAUSBERGEN&lt;/td>&lt;/tr>'
+      break;
+      case '309':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>MUNDOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '326':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>NIEDERHAUSBERGEN&lt;/td>&lt;/tr>'
+      break;
+      case '343':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OBERHAUSBERGEN&lt;/td>&lt;/tr>'
+      break;
+      case '350':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OBERSCHAEFFOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '363':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OSTHOFFEN&lt;/td>&lt;/tr>'
+      break;
+      case '365':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OSTWALD&lt;/td>&lt;/tr>'
+      break;
+      case '378':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>PLOBSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '389':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>REICHSTETT&lt;/td>&lt;/tr>'
+      break;
+      case '447':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>SCHILTIGHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '471':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>SOUFFELWEYERSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '482':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>STRASBOURG&lt;/td>&lt;/tr>'
+      break;
+      case '506':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>VENDENHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '519':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LA_WANTZENAU&lt;/td>&lt;/tr>'
+      break;
+      case '551':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>WOLFISHEIM&lt;/td>&lt;/tr>'
+      break;
+      default:
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>Inconnue&lt;/td>&lt;/tr>'
+    }
+    entity.description += '&lt;tr>&lt;td>Section &lt;/td>&lt;td>' + String(entity.properties['n_section']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Parcelle &lt;/td>&lt;td>' + String(entity.properties['n_parcelle']) + '&lt;/td>&lt;/tr>';
+    //entity.description += '&lt;tr>&lt;td>Code précision &lt;/td>&lt;td>' + String(entity.properties['code_preci']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Patrimoine de mon quartier avec le bon format
+  *
+  * @param  {Array} billboard le billboard auquel on va lier l'attribut de l'entité
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauPatrimoine(billboard, entity){
+    //Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['nom_du_patrimoine']);
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['photo'])) {
+      billboard.description += '&lt;img src="https://sig.strasbourg.eu/datastrasbourg/patrimoine_quartier/' + String(entity.properties['photo']) + '" align="center" width="99%">';
+    }
+    billboard.description += '&lt;p>' + String(entity.properties['texte_de_presentation']) + '&lt;/p>';
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['nom_du_patrimoine']) + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['quartier'])) {
+      billboard.description += '&lt;tr>&lt;td>Quartier&lt;/td>&lt;td>' + String(entity.properties['quartier']) + '&lt;/td>&lt;/tr>';
+    }
+    billboard.description += '&lt;tr>&lt;td>Quartier calculé&lt;/td>&lt;td>' + String(entity.properties['quartier_calcule']) + '&lt;/td>&lt;/tr>';
+    billboard.description += '&lt;tr>&lt;td>Type de patrimoine &lt;/td>&lt;td>' + String(entity.properties['type_de_patrimoine']) + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['copyright_photo'])) {
+      billboard.description += '&lt;tr>&lt;td>Source photographie &lt;/td>&lt;td>' + String(entity.properties['copyright_photo']) + '&lt;/td>&lt;/tr>';
+    }
+    billboard.description += '&lt;tr>&lt;td>Source donnée &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank" rel="noopener">Information sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Qualite_Air_Eurométropole avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauQualiteAir(entity){
+    //Renseignement des éléments de la boite d'information
+    entity.name = 'Qualité air communes Eurométropole'
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Date d\'échéance (AAAA/MM/JJ)&lt;/td>&lt;td>' + String(entity.properties['date_echeance']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Qualificatif&lt;/td>&lt;td>' + String(entity.properties['qualificatif']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Valeur&lt;/td>&lt;td>' + String(entity.properties['valeur']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Commune&lt;/td>&lt;td>' + String(entity.properties['lib_zone']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code zone&lt;/td>&lt;td>' + String(entity.properties['code_zone']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Information sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+
+} // fin de la classe Globe
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Geocoder.html">Geocoder</a></li><li><a href="Globe.html">Globe</a></li><li><a href="LegendManager.html">LegendManager</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Raf09.html">Raf09</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Jul 21 2020 17:24:05 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

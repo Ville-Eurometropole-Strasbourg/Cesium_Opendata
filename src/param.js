@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
 * La classe Data lit le fichier de paramétrage param.json et récupère les informations pour créer l'intérieur du menu dynamiquement (toutes les couches de données) <br/>
 * Elle créé ensuite les évènements liés aux couches de données
@@ -13,6 +14,10 @@ class Data {
   *
   * @param  {Object} globe L'objet globe défini dans la classe Globe
   */
+=======
+class Data {
+
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
   constructor(globe){
     this.globe = globe;
     this.terrain = terrain; // format entités
@@ -21,6 +26,7 @@ class Data {
     this.handler = Globe.handler;
     this.dataSources = globe.dataSources; // liste des dataSources (photomaillage, json, 3dtiles)
 
+<<<<<<< HEAD
     this.leftPane = document.querySelector('#left-pane');
     // Créer un gestionnaire pour les légendes
     this.legendManager = new LegendManager(this.leftPane);
@@ -37,6 +43,15 @@ class Data {
     var lectureURL = params[Object.keys(params)[0]];
 
     var filePath = 'src/param.json'; // donne le chemin d'accès au dossier
+=======
+  }
+
+  couchesOD() {
+    var params = globe.getAllUrlParams(window.location.href);
+    var lectureURL = params[Object.keys(params)[0]];
+
+    var filePath = 'https://3d.strasbourg.eu/TEST/CESIUM_OPENDATA/src/param.json'; // donne le chemin d'accès au dossier
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
 
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open('GET', filePath);
@@ -51,24 +66,37 @@ class Data {
         console.log(paramJson);
 
         for(let i=0;i<paramJson.menu.length;i++) {
+<<<<<<< HEAD
           // ajout du menu déroulant thématique
+=======
+          // ajout du menu déroulant
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
           let boutonMenu = document.createElement('BUTTON');
           boutonMenu.classList.add('panel-title');
           boutonMenu.innerHTML = paramJson.menu[i].name;
 
+<<<<<<< HEAD
           var space = document.createTextNode("     ");
           boutonMenu.appendChild(space);
 
           // et la flèche pour le dérouler
+=======
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
           let fleche = document.createElement('i');
           fleche.classList.add('arrow');
           boutonMenu.appendChild(fleche);
 
+<<<<<<< HEAD
           // on l'ajoute à la div panel = contient tout le menu
           var panel = document.getElementsByClassName("panel");
           panel[0].appendChild(boutonMenu);
 
           // on créé la div sous le bouton (cachée par défaut) et qui va contenir les couches de données
+=======
+          var panel = document.getElementsByClassName("panel");
+          panel[0].appendChild(boutonMenu);
+
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
           let couchesDiv = document.createElement('div');
           couchesDiv.classList.add('panel-content');
           couchesDiv.style.display = "none";
@@ -77,19 +105,29 @@ class Data {
 
           for(let j=0;j<paramJson.menu[i].couches.length;j++) {
 
+<<<<<<< HEAD
             // on créé la div propre à la couche qui va contenir la checkbox et le bouton info
+=======
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
             let couche = document.createElement('div');
             couche.classList.add('nowrap');
             couche.classList.add('show');
             couche.style.display === "block";
 
+<<<<<<< HEAD
             // la checkbox
+=======
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
             let coucheCheckbox = document.createElement("input");
             coucheCheckbox.type = "checkbox";
             coucheCheckbox.id = paramJson.menu[i].couches[j].id_data;
             coucheCheckbox.style.display === "block";
 
+<<<<<<< HEAD
             // et le nom qu'on lui donne
+=======
+
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
             var nom = document.createElement("Label");
             nom.setAttribute("for",coucheCheckbox.id);
             nom.innerHTML = paramJson.menu[i].couches[j].name;
@@ -97,10 +135,13 @@ class Data {
             couche.appendChild(coucheCheckbox);
             couche.appendChild(nom);
 
+<<<<<<< HEAD
             var spaceBouton = document.createTextNode("     ");
             couche.appendChild(spaceBouton);
 
             // on créé le bouton info et le lien vers la donnée correspondante
+=======
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
             let lienInfo = document.createElement("a");
             lienInfo.href = paramJson.menu[i].couches[j].url_info;
             lienInfo.target = "_blank";
@@ -111,6 +152,7 @@ class Data {
             lienInfo.appendChild(boutonInfo);
             couche.appendChild(lienInfo);
 
+<<<<<<< HEAD
             // Si la donnée est en temps réel, on créé un bouton actualiser
             if(paramJson.menu[i].couches[j].temps_reel === 'oui') {
               if(paramJson.menu[i].couches[j].type_donnee != 'point') {
@@ -120,6 +162,15 @@ class Data {
 
               couche.appendChild(spaceBouton);
 
+=======
+            if(paramJson.menu[i].couches[j].temps_reel === 'oui') {
+              if(paramJson.menu[i].couches[j].type_donnee != 'point') {
+                // on clone l'objet qui contient les couleurs car Cesium modifie la structure après le passage
+                // dans les fonctions show et perd ensuite la classification
+                var cloneColor = JSON.parse(JSON.stringify(paramJson.menu[i].couches[j].couleur_classif));
+              }
+
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
               let boutonRefresh = document.createElement('BUTTON');
               boutonRefresh.classList.add('button');
               boutonRefresh.id = paramJson.menu[i].couches[j].id_data + 'Refresh';
@@ -128,9 +179,13 @@ class Data {
               couche.appendChild(boutonRefresh);
             }
 
+<<<<<<< HEAD
             // idem si la donnée est temporelle, on créé le bouton horloge pour l'animation
             if(paramJson.menu[i].couches[j].animation === 'oui') {
               couche.appendChild(spaceBouton);
+=======
+            if(paramJson.menu[i].couches[j].animation === 'oui') {
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
               let boutonTime = document.createElement('BUTTON');
               boutonTime.classList.add('button');
               boutonTime.id = paramJson.menu[i].couches[j].id_data + 'Time';
@@ -142,6 +197,7 @@ class Data {
             couchesDiv.appendChild(couche);
 
 
+<<<<<<< HEAD
             // on créé une variable différente unique pour chaque array de ligne de contour et de billboard
             window['line'+i+j] = [];
             window['billboard'+i+j] = [];
@@ -249,12 +305,79 @@ class Data {
                 var cloneBis = JSON.parse(JSON.stringify(cloneColor));
 
                 // paramètres pour l'horloge
+=======
+            // on créé une variable différente pour chaque array de ligne de contour
+            window['line'+i+j] = [];
+            window['billboard'+i+j] = [];
+
+
+            coucheCheckbox.addEventListener('change', (e) => {
+              if(paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].animation === 'non') {
+                globe.showPolygon(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, window['line'+i+j] , paramJson.menu[i].couches[j].couleur_contour, paramJson.menu[i].couches[j].taille_contour, paramJson.menu[i].couches[j].couleur_highlight, paramJson.menu[i].couches[j].alpha_highlight, {
+                  classification: true,
+                  classificationField: paramJson.menu[i].couches[j].champ_classif,
+                  colors: paramJson.menu[i].couches[j].couleur_classif,
+                  alpha: paramJson.menu[i].couches[j].alpha
+                });
+
+                if(e.target.checked){
+                  if(paramJson.menu[i].couches[j].legende === 'oui') {
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee);
+                  }
+
+                } else{
+                  if(paramJson.menu[i].couches[j].legende === 'oui') {
+                    globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
+                  }
+                }
+                globe.viewer.scene.requestRender();
+
+              }
+
+              if(paramJson.menu[i].couches[j].type_donnee === 'ligne') {
+
+                globe.showPolyline(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, {
+                  classification: true,
+                  classificationField: paramJson.menu[i].couches[j].champ_classif,
+                  colors: paramJson.menu[i].couches[j].couleur_classif,
+                  alpha: paramJson.menu[i].couches[j].alpha
+                });
+
+                if(e.target.checked){
+                  globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee);
+                } else{
+                  globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
+                }
+                globe.viewer.scene.requestRender();
+
+              }
+
+              if(paramJson.menu[i].couches[j].type_donnee === 'point') {
+                if(paramJson.menu[i].couches[j].couche_attributaire === 'oui') {
+                  globe.showPoint(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].url_attribut, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].choice, window['line'+i+j], paramJson.menu[i].couches[j].couleur_ligne, {});
+                } else {
+                  globe.showPoint(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, undefined, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].choice, window['line'+i+j], paramJson.menu[i].couches[j].couleur_ligne, {});
+                }
+
+
+                if(e.target.checked){
+                  globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, paramJson.menu[i].couches[j].billboard_legende);
+                } else{
+                  globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
+                }
+                globe.viewer.scene.requestRender();
+
+              }
+
+              if(paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].animation === 'oui') {
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
                 var today = Cesium.JulianDate.now();
                 var start = Cesium.JulianDate.addDays(today, Number(paramJson.menu[i].couches[j].start), new Cesium.JulianDate());
                 var end = Cesium.JulianDate.addDays(today, Number(paramJson.menu[i].couches[j].end), new Cesium.JulianDate());
                 globe.viewer.clock.currentTime = end;
 
                 globe.showTimeJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, window['line'+i+j] , paramJson.menu[i].couches[j].choice, start, end, {
+<<<<<<< HEAD
                   classification: true,
                   classificationField: paramJson.menu[i].couches[j].champ_classif,
                   colors: cloneColor,
@@ -273,12 +396,25 @@ class Data {
                   }
                 }
 
+=======
+                  classification: true,                  classificationField: paramJson.menu[i].couches[j].champ_classif,
+                  colors: paramJson.menu[i].couches[j].couleur_classif,
+                  alpha: paramJson.menu[i].couches[j].alpha
+                });
+
+                if(e.target.checked){
+                  globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee);
+                } else{
+                  globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
+                }
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
                 globe.viewer.scene.requestRender();
 
               }
 
             }); // fin de l'évènement change
 
+<<<<<<< HEAD
             // les évènements de rafraichissement de la donnée
             if(paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].temps_reel === 'oui') {
 
@@ -335,6 +471,39 @@ class Data {
             }
 
             // lancer l'animation lorsqu'on clique sur le bouton horloge
+=======
+
+            if(paramJson.menu[i].couches[j].type_donnee === 'ligne' && paramJson.menu[i].couches[j].temps_reel === 'oui') {
+
+              document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
+                // On fait un 2ème clone qu'on garde en mémoire avant que le 1er ne soit modifié par la fonction updatePolyline
+                var cloneBis = JSON.parse(JSON.stringify(cloneColor));
+
+                globe.updatePolyline(paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].name, {
+                  classification: true,
+                  classificationField: paramJson.menu[i].couches[j].champ_classif,
+                  colors: cloneColor,
+                  alpha: paramJson.menu[i].couches[j].alpha
+                });
+
+                // on redonne le bon format à la couleur
+                cloneColor = cloneBis;
+              });
+
+            }
+
+            if(paramJson.menu[i].couches[j].type_donnee === 'point' && paramJson.menu[i].couches[j].temps_reel === 'oui' && paramJson.menu[i].couches[j].couche_attributaire === 'oui') {
+
+              document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
+
+                globe.updatePoint(paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].url_attribut, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].choice, window['line'+i+j], paramJson.menu[i].couches[j].couleur_ligne,{
+                });
+
+              });
+
+            }
+
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
             if(paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].animation === 'oui') {
               document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Time').addEventListener('click', function() {
                 var today = Cesium.JulianDate.now();
@@ -377,7 +546,10 @@ class Data {
 
           } // fin du for j
 
+<<<<<<< HEAD
           // la fonction pour ouvrir la div caché sous le menu déroulant
+=======
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
           boutonMenu.addEventListener('click', function() {
             boutonMenu.classList.toggle("active");
             if (couchesDiv.style.display === "block") {
@@ -390,8 +562,18 @@ class Data {
 
         } // fin du for i
 
+<<<<<<< HEAD
       }
 
+=======
+
+
+
+
+      }
+
+
+>>>>>>> 3cfdba6e9501362aa267d9cb5a069d91d2499de8
     }
   }
 
