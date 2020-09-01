@@ -1,6 +1,9 @@
 "use strict";
 
-/* Créé un geocoder pour cesium qui uilise adict.strasbourg.eu */
+/**
+* Permet de paramétrer la recherche d'adresse <br/>
+* Créé un geocoder pour cesium qui uilise adict.strasbourg.eu
+*/
 class Geocoder {
 
   /**
@@ -28,7 +31,11 @@ class Geocoder {
     });
 
     return resource.fetchJson().then(function (results) {
+      console.log(results);
+      console.log(resource);
       return results.features.map(function (resultObject) {
+        console.log(results.features);
+        console.log(resultObject);
 
         /*var lonOuest = Cesium.Math.toRadians(resultObject.geometry.coordinates[0] - 0.0001);
         var latSud = Cesium.Math.toRadians(resultObject.geometry.coordinates[1] - 0.0001);

@@ -1,18 +1,31 @@
+/**
+  * La classe Tableau regroupe les fonctions qui permettent de charger les tableaux d'attributs spécifiques à chaque couche de donnée <br/>
+  * Une fois créees ici, les fonctions sont appelées automatiquement dans la fonction load associée (sans devoir modifier la classe Globe),
+  * à condition de définir l'attribut "choiceTableau" comme suivant: nom de la fonction = createTableau + 'choiceTableau' <br/>
+  * Exemple pour les limites de communes, on a défini dans le json l'attribut choiceTableau = Communes, la fonction doit donc s'appeler createTableauCommunes
+  * (attention aux majuscules) <br/>
+  * Attention à respecter les paramètres en fonction des différentes fonction load
+  *
+  */
+
+
 class TableauAttribut {
-  //---------------------------------------------------------------------------------------------------
-  // les fonctions createTableau(entity) permettent de charger les tableaux d'attributs spécifiques à chaque couche de donnée
-  //---------------------------------------------------------------------------------------------------
+
+  //--------------------------------------------------------------------------------------------------------------------------
+  // Les fonctions appelées dans la fonction loadPolygon
+  // Note: les fonctions pour la fonction loadPolyline prennent les mêmes arguments
 
   /**
   *
-  * Afficher le tableau d'attributs de la donnée PLUi_Plan_de_zonage avec le bon format
+  * Afficher le tableau d'attributs de la donnée PLUi_Plan_de_zonage avec le bon format <br/>
+  * Utilisée dans loadPolygon
   *
   * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
   */
-  createTableauPLU(entity) {
+  createTableauPLU(entity, dataSource) {
     //Renseignement des éléments de la boite d'information
     entity.description ='<br/><table class="cesium-infoBox-defaultTable"><tbody>';
-    entity.name = 'PLUi Zonage   ' + String(entity.properties['main_type'])
     if (Cesium.defined(entity.properties['photo'])) {
       entity.description += '<img src="https://sig.strasbourg.eu/datastrasbourg/plu_media/ims_zone/' + String(entity.properties['photo']) + '" align="center" width="99%">';
     }
@@ -54,9 +67,11 @@ class TableauAttribut {
 
   /**
   *
-  * Afficher le tableau d'attributs de la donnée Limites_de_communes avec le bon format
+  * Afficher le tableau d'attributs de la donnée Limites_de_communes avec le bon format <br/>
+  * Utilisée dans loadPolygon
   *
   * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
   */
   createTableauCommunes(entity, dataSource) {
 
@@ -88,7 +103,6 @@ class TableauAttribut {
     });
 
     //Renseignement des éléments de la boite d'information
-    entity.name = 'Limites de communes';
     entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
     entity.description += '<tr><td>Département </td><td>' + String(entity.properties['num_dept']) + '</td></tr>';
     entity.description += '<tr><td>Commune </td><td>' + String(entity.properties['nom']) + '</td></tr>';
@@ -102,9 +116,11 @@ class TableauAttribut {
 
   /**
   *
-  * Afficher le tableau d'attributs de la donnée Limite de sections avec le bon format
+  * Afficher le tableau d'attributs de la donnée Limite de sections avec le bon format  <br/>
+  * Utilisée dans loadPolygon
   *
   * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
   */
   createTableauSections(entity, dataSource) {
 
@@ -127,7 +143,6 @@ class TableauAttribut {
     });
 
     //Renseignement des éléments de la boite d'information
-    entity.name = 'Limites de sections'
     entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
     entity.description += '<tr><td>Commune </td><td>' + String(entity.properties['nom_com']) + '</td></tr>';
     entity.description += '<tr><td>Code INSEE </td><td>' + String(entity.properties['num_com']) + '</td></tr>';
@@ -140,13 +155,14 @@ class TableauAttribut {
 
   /**
   *
-  * Afficher le tableau d'attributs des couches de données du parcellaire cadastral avec le bon format
+  * Afficher le tableau d'attributs des couches de données du parcellaire cadastral avec le bon format <br/>
+  * Utilisée dans loadPolygon
   *
   * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
   */
-  createTableauCadastre(entity) {
+  createTableauCadastre(entity, dataSource) {
     //Renseignement des éléments de la boite d'information
-    entity.name = 'Parcellaire cadastral'
     entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
     entity.description += '<tr><td>Département </td><td>' + String(entity.properties['num_dept']) + '</td></tr>';
     switch (String(entity.properties['num_com'])) {
@@ -263,7 +279,84 @@ class TableauAttribut {
 
   /**
   *
-  * Afficher le tableau d'attributs de la donnée Patrimoine de mon quartier avec le bon format
+  * Afficher le tableau d'attributs de la donnée Emplacement_réservé avec le bon format <br/>
+  * Utilisée dans loadPolygon
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  */
+  createTableauER(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.name = 'Emplacement réservé n°  ' + String(entity.properties['er_numero']);
+    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    entity.description += '<hr/>'
+    entity.description += '<p>' + String(entity.properties['er_designation']) + '<p/>';
+    entity.description += '<hr/><br/>'
+    entity.description += '<tr><td>Bénéficiaire</td><td>' + String(entity.properties['er_beneficiaire']) + '</td></tr>';
+    entity.description += '<tr><td>Commune</td><td>' + String(entity.properties['commune']) + '</td></tr>';
+    entity.description += '<tr><td>Surface (m²)</td><td>' + String(entity.properties['surf_m2']) + '</td></tr>';
+    entity.description +='</tbody></table><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+  }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    // Les fonctions appelées dans la fonction loadPolyline
+
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Traffic_routier_Eurométropole avec le bon format <br/>
+  * Utilisée dans loadPolyline
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolyline
+  */
+  createTableauTraffic(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    entity.description += '<tr><td>Nom</td><td>' + String(entity.properties['nom']) + '</td></tr>';
+    entity.description += '<tr><td>Etat du traffic</td><td>' + String(entity.properties['etat']) + '</td></tr>';
+    entity.description += '<tr><td>Date/heure de mise à jour</td><td>' + String(entity.properties['dmajetatexp']) + '</td></tr>';
+    entity.description += '<tr><td>tauxlisse</td><td>' + String(entity.properties['tauxlisse']) + '</td></tr>';
+    entity.description += '<tr><td>debitlisse</td><td>' + String(entity.properties['debitlisse']) + '</td></tr>';
+    entity.description += '<tr><td>vitessebrp</td><td>' + String(entity.properties['vitessebrp']) + '</td></tr>';
+    entity.description += '<tr><td>debit</td><td>' + String(entity.properties['debit']) + '</td></tr>';
+    entity.description += '<tr><td>ident</td><td>' + String(entity.properties['ident']) + '</td></tr>';
+    entity.description +='</tbody></table><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/" target="_blank" rel="noopener">Information sur les données</a><br/>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Vitaboucle avec le bon format <br/>
+  * Utilisée dans loadPolyline
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolyline
+  */
+  createTableauVitaboucle(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    entity.description += '<tr><td>Commune</td><td>' + String(entity.properties['commune']) + '</td></tr>';
+    entity.description += '<tr><td>Distance</td><td>' + String(entity.properties['distance']) + '</td></tr>';
+    entity.description += '<tr><td>Difficulté</td><td>' + String(entity.properties['difficulte']) + '</td></tr>';
+    entity.description += '<tr><td>Numéro</td><td>' + String(entity.properties['numero']) + '</td></tr>';
+    entity.description += '<tr><td>Longueur du parcours</td><td>' + String(entity.properties['long_km']) + '</td></tr>';
+    entity.description += '<tr><td>Nom</td><td>' + String(entity.properties['nom']) + '</td></tr>';
+    entity.description += '<tr><td>Identifiant</td><td>' + String(entity.properties['id']) + '</td></tr>';
+    entity.description +='</tbody></table><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/" target="_blank" rel="noopener">Information sur les données</a><br/>';
+  }
+
+
+  //--------------------------------------------------------------------------------------------------------------------------
+  // Les fonctions appelées dans la fonction loadPoint
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Patrimoine de mon quartier avec le bon format<br/>
+  * Utilisée dans loadPoint
   *
   * @param  {Array} billboard le billboard auquel on va lier l'attribut de l'entité
   * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
@@ -306,13 +399,18 @@ class TableauAttribut {
     billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
   }
 
-  /**
-  *
-  * Afficher le tableau d'attributs de la donnée Qualite_Air_Eurométropole avec le bon format
-  *
-  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
-  */
-  createTableauQualiteAir(entity){
+  //--------------------------------------------------------------------------------------------------------------------------
+  // Les fonctions appelées dans la fonction loadTimeJson
+
+
+/**
+*
+* Afficher le tableau d'attributs de la donnée Qualite_Air_Eurométropole avec le bon format <br/>
+* Utilisée dans loadTimeJson
+*
+* @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+*/
+createTableauQualiteAir(entity){
     //Renseignement des éléments de la boite d'information
     entity.name = 'Qualité air communes Eurométropole'
     entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
@@ -325,26 +423,22 @@ class TableauAttribut {
     entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
   }
 
+
+  //--------------------------------------------------------------------------------------------------------------------------
+  // Les fonctions appelées dans la fonction loadJsonAttribut
+
+
   /**
   *
-  * Afficher le tableau d'attributs de la donnée Emplacement_réservé avec le bon format
+  * Afficher le tableau d'attributs de la donnée fréquentation en temps réel avec le bon format
   *
   * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {json} jsonAttribut l'objet Json attributaire qu'on charge par dessus le GeoJson
+  * @param  {Array} billboard le tableau qui sert à stocker le CustomDataSource dans lequel on range les billboardData
+  * @param  {Cartesian3} coordLabel les coordonnées du label
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  *
   */
-  createTableauER(entity){
-    //Renseignement des éléments de la boite d'information
-    entity.name = 'Emplacement réservé n°  ' + String(entity.properties['er_numero']);
-    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-    entity.description += '<hr/>'
-    entity.description += '<p>' + String(entity.properties['er_designation']) + '<p/>';
-    entity.description += '<hr/><br/>'
-    entity.description += '<tr><td>Bénéficiaire</td><td>' + String(entity.properties['er_beneficiaire']) + '</td></tr>';
-    entity.description += '<tr><td>Commune</td><td>' + String(entity.properties['commune']) + '</td></tr>';
-    entity.description += '<tr><td>Surface (m²)</td><td>' + String(entity.properties['surf_m2']) + '</td></tr>';
-    entity.description +='</tbody></table><br/>';
-    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
-  }
-
   createTableauPiscine(entity, jsonAttribut, billboard, coordLabel, dataSource) {
     // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasite)
     var acces = String(entity.properties['access']);

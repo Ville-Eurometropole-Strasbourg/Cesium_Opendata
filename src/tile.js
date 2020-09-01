@@ -48,6 +48,11 @@ MERCATOR={
 
 }
 
+/**
+  * La classe Tile regroupe les fonctions de transformations de coordonnées entre les dalles TMS et lat/long
+  *
+  */
+
 class Tile {
   constructor(tileSize) {
     this.tileSize = tileSize;

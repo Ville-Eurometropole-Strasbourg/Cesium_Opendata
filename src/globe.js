@@ -132,7 +132,7 @@ class Globe {
 
     /**
     *
-    * Elle permet de paramétrer la vue de base de l’application ainsi que le zoom par défaut sur lequel le viewer se repositionne lorsqu’on clique sur le bouton « maison » <br/>
+    * Permet de paramétrer la vue de base de l’application ainsi que le zoom par défaut sur lequel le viewer se repositionne lorsqu’on clique sur le bouton « maison » <br/>
     * Elle ne prend pas de paramètres mais considère deux cas différents : <br/>
     * Si l’URL ne contient pas de paramètres, elle définit le zoom sur le photomaillage global pour la vue de départ et le bouton maison <br/>
     * Si l’URL contient des paramètres spécifiques (outil partage de liens), elle lit ces paramètres pour zoomer à l’endroit voulu et définit le zoom par défaut sur cet endroit
@@ -267,7 +267,8 @@ class Globe {
     }
 
     /**
-    * récupère les paramètres actuels de position et orientation de la caméra pour créer un lien et l’afficher dans le format html correspondant
+    * récupère les paramètres actuels de position et orientation de la caméra ainsi que les couches cochées
+    * pour créer un lien et l’afficher dans le format html correspondant
     */
     createLink() {
       // On récupère les paramètres de la caméra
@@ -282,9 +283,54 @@ class Globe {
 
       // On teste si le lien contient le paramètre open
       if (window.location.search.indexOf('open') > -1) {
-        document.getElementById('nomlink').value = window.location.href +'&X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
-      } else {
-        document.getElementById('nomlink').value = window.location.href +'?X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
+        // on récupère l'url et on le sépare à chaque '?'
+          var url = window.location.href.split('&');
+
+          // si l'url contient déjà des paramètres d'orientation, on coupe la fin de l'url pour pouvoir en remettre des nouveaux après
+          if (window.location.search.indexOf('X') > -1) {
+            url.splice(url.length-6, 6);
+          }
+
+          var string = '&';
+          for (let i = 1; i < url.length; i++) {
+            var minuscule = url[i].toLowerCase();
+            string += minuscule + '&';
+          }
+
+          // on créé le lein
+          document.getElementById('nomlink').value = url[0] + string +'X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
+
+      }  else { // si le lien ne contient rien du tout on regarde si les couches sont cochées
+        var url = window.location.href.split('?');
+        var couches = [];
+        var open = [];
+
+        // on récupère tous les id dans les panel-content
+        $('.panel-content input').each(function(){
+          if(this.id !== null) {
+            couches.push(this.id);
+          }
+        });
+
+        // si l'id est défini et coché, on le met dans un tableau
+        for (let j = 0; j < couches.length; j++) {
+          if(document.getElementById(couches[j]) !== null) {
+            if (document.getElementById(couches[j]).checked) {
+              open.push(couches[j]);
+            }
+          }
+        }
+
+        // on créé la chaine de caractère qui va permettre d'ouvrir toutes les couches
+        var string = '?';
+        for (let k = 0; k < open.length; k++) {
+          var minuscule = open[k].toLowerCase();
+          string += 'open' + k + '=enable' + minuscule + '&';
+
+        }
+
+        document.getElementById('nomlink').value = url[0] + string +'X='+X+'&Y='+Y+'&Z='+Z+'&heading='+heading+'&pitch='+pitch+'&roll='+roll;
+
       }
 
     }
@@ -1396,7 +1442,8 @@ class Globe {
   *
   * permet de charger des fichiers geojson surfaciques <br/>
   * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités <br/>
-  * Note: dans le fichier param.js, l'option classification vaut toujours true
+  * Note: dans le fichier param.js, l'option classification vaut toujours true <br/>
+  * Optionnel: trace un contour autour des surfaces
   *
   * @param  {String} link Le lien vers le fichier
   * @param  {String} name Le nom qu'on donne au json
@@ -1483,6 +1530,7 @@ class Globe {
   * La fonction show associée à loadPolygon <br/>
   * Charger ou dé-charger la donnée "name" en fonction de la valeur de "show" <br/>
   * Met un highlight sur les entités selectionnées en cliquant
+  * optionnel: peut mettre un highlight sur les entités sélectionnées en cliquant
   *
   * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
   * @param  {String} link Le lien vers le fichier
@@ -1519,6 +1567,7 @@ class Globe {
           }
           // If a feature was previously highlighted, undo the highlight
           if (Cesium.defined(highlighted.feature)) {
+            console.log(highlighted.originalMaterial);
             highlighted.feature.id.polygon.material = highlighted.originalMaterial;
             highlighted.feature = undefined;
             globe.viewer.scene.requestRender();
@@ -1566,13 +1615,14 @@ class Globe {
     }
   }
 
+>>>>>>> Stashed changes
   /**
   * permet de charger des fichiers geojson linéaires <br/>
   * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
   *
   * @param  {String} link Le lien vers le fichier
   * @param  {String} name Le nom qu'on donne au json
-  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format et de donner un nom aux entités
+  * @param  {String} choice spécifique à la donnée de donner un nom aux entités
   * @param  {Boolean} clamp true pour clampToGround et false sinon
   * @param  {Object} options facultatif - Les options pour le chargement
   * @param  {Boolean} options.classification true si la donnée doit être classifiée
@@ -1653,7 +1703,7 @@ class Globe {
   *
   * @param  {String} link Le lien vers le fichier
   * @param  {String} name Le nom qu'on donne au json
-  * @param  {String} choice spécifique à la donnée, permet de charger le tableau d'attributs au bon format
+  * @param  {String} choice permet de donner un nom aux entités
   * @param  {Boolean} clamp true pour clampToGround et false sinon
   * @param  {Object} options facultatif - Les options pour le chargement
   * @param  {Boolean} options.classification true si la donnée doit être classifiée
@@ -1791,7 +1841,6 @@ class Globe {
           });
 
         } else if(point3D === true) {
-          console.log(position);
           var billboardEntity = billboardData.entities.add({
             position : position,
             billboard : {
@@ -1825,7 +1874,7 @@ class Globe {
 
       if(cluster === true) {
         // on zoome sur les entités pour que le cluster apparaisse (apparait seulement une fois que tout est chargé)
-        this.viewer.zoomTo(billboardData);
+        //this.viewer.zoomTo(billboardData);
 
         if(point3D === false) {
           // on masque les lignes par défaut car on est à un haut niveau de zoom
@@ -1929,7 +1978,6 @@ class Globe {
     * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
     * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
     * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
-    * @return  {GeoJsonDataSource} le json une fois que tout est chargé
     */
     showPoint(show, name, link, linkAttribut, image, billboard, point3D, cluster, options = {}){
       if(show){
@@ -1980,21 +2028,23 @@ class Globe {
     * @param  {String} link Le lien vers le fichier
     * @param  {String} linkAttribut Le lien vers le fichier json attributaires sans géométrie
     * @param  {String} name Le nom qu'on donne au json
-    * @param  {String} image Le lien vers l'image à utiliser pour le billboard
-    * @param  {Array} billbard Le tableau d'entités où stocker les billboard
-    * @param  {String} choice spécifique à la donnée, permet de charger de classifier
-    * @param  {Array} line Le tableau d'entités où stocker la ligne qu'on trace jusqu'au sol
-    * @param  {String} couleur la couleur de la ligne
+    * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
+    * @param  {Array} billboard l'objet dans lequel on stocke le CustomDataSource
+    * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
+    * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
     * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
+    * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
+    * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
     */
-    updatePoint(link, linkAttribut, name, image, billboard, choice, line, couleur, options) {
+    updatePoint(link, linkAttribut, name, image, billboard, point3D, cluster, options = {}) {
       if(this.dataSources[name] !== undefined){
         this.viewer.dataSources.remove(this.dataSources[name]);
         this.viewer.scene.requestRender();
         if(linkAttribut != undefined) {
-          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, choice, line, couleur, options);
+          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, cluster, options);
         } else {
-          globe.loadPoint(link, undefined, name, image, billboard, choice, line, couleur, options);
+          globe.loadPoint(link, name, image, billboard, point3D, cluster, options);
         }
 
         this.viewer.scene.requestRender();
@@ -2007,17 +2057,17 @@ class Globe {
     *
     * @param  {String} link Le lien vers le fichier
     * @param  {String} name Le nom qu'on donne au json
-    * @param  {Array} line Le tableau d'entités où stocker les contours des polygones
     * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
     * @param  {Object} options facultatif - Les options pour le chargement
     * @param  {Boolean} options.classification true si la donnée doit être classifiée
     * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
     * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
     * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
+    * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones
     * @param  {String} options.nameLigne La nom des lignes de contour
     * @return  {GeoJsonDataSource} le json une fois que tout est chargé
     */
-    loadTimeJson(link, name, line, choice, options = {}){
+    loadTimeJson(link, name, choice, options = {}){
       let promisse = Cesium.GeoJsonDataSource.load(link, {
         clampToGround: true
       });
@@ -2091,8 +2141,20 @@ class Globe {
             }
 
             entity.name = choice;
-            // on trace les contours des entités
-            line.push(this.drawLine(entity.polygon.hierarchy._value.positions, 3, '#FFFFFF', 1, true, options.nameLigne));
+
+            if(options.choiceTableau !== undefined) {
+              var tabl = new TableauAttribut();
+
+              var tablEntity = 'tabl.createTableau' + options.choiceTableau + '(entity);';
+              eval(tablEntity);
+
+            }
+
+            if(options.nameLigne !== undefined) {
+              // on trace les contours des entités
+              options.line.push(this.drawLine(entity.polygon.hierarchy._value.positions, 3, '#FFFFFF', 1, true, options.nameLigne));
+            }
+
           }
         }
 
@@ -2109,7 +2171,6 @@ class Globe {
     * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
     * @param  {String} link Le lien vers le fichier
     * @param  {String} name Le nom qu'on donne au json
-    * @param  {Array} line Le tableau d'entités où stocker les contours des polygones
     * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
     * @param  {JulianDate} start La date de début de l'intervalle de temps qu'on souhaite afficher dans la timeline
     * @param  {JulianDate} end La date de fin de l'intervalle de temps qu'on souhaite afficher dans la timeline
@@ -2118,22 +2179,26 @@ class Globe {
     * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
     * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
     * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
+    * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones
+    * @param  {String} options.nameLigne La nom des lignes de contour
     */
-    showTimeJson(show, name, link, line, choice, start, end, options = {}){
+    showTimeJson(show, name, link, choice, start, end, options = {}){
       var today = Cesium.JulianDate.now();
       var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
 
       if(show){
         if(this.dataSources[name] === undefined){
-          globe.loadTimeJson(link, name, line, choice, options);
+          globe.loadTimeJson(link, name, choice, options);
           // on zoome la timeline sur l'intervalle souhaité
           globe.viewer.timeline.zoomTo(start, end);
 
         } else{
           globe.viewer.timeline.zoomTo(start, end);
           this.dataSources[name].show = true;
-          for(var i = 0; i < line.length; i++){
-            line[i].show = true;
+          if(options.nameLigne !== undefined) {
+            for(var i = 0; i < options.line.length; i++){
+              options.line[i].show = true;
+            }
           }
           this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
         }
@@ -2150,8 +2215,10 @@ class Globe {
           globe.viewer.timeline.zoomTo(today, demain);
 
           this.dataSources[name].show = false;
-          for(var i = 0; i < line.length; i++){
-            line[i].show = false;
+          if(options.nameLigne !== undefined) {
+            for(var i = 0; i < options.line.length; i++){
+              options.line[i].show = false;
+            }
           }
           this.viewer.scene.requestRender();
         }
@@ -2262,7 +2329,7 @@ class Globe {
                   var tablBillboard = 'tabl.createTableau' + options.choiceTableau + '(entity, jsonAttribut, billboard[i], position, dataSource);';
                   eval(tablBillboard);
                 }
-                
+
               }
 
 
@@ -2299,8 +2366,10 @@ class Globe {
         lng: Cesium.Math.toDegrees(cartographic.longitude)
       }
 
+      // on récupère la tuile qui correspond aux coordonnées du centre de l'écran
       var coordTile = tuile.getCoord(latlong, zoom);
 
+      // puis on récupère les 8 tuiles autour
       var coord1 = {
         x: coordTile.x - 1,
         y: coordTile.y - 1,
@@ -2345,15 +2414,17 @@ class Globe {
       var coords = [coordTile, coord1, coord2, coord3, coord4, coord5, coord6, coord7, coord8];
       var coordLine = [];
 
+      // on récupère les tuiles aux coordonnées tuiles qu'on a définies
       for (var i = 0; i < 9; i++) {
         var temp = coords[i];
         var latlon = tuile.getTile(temp, zoom);
         coordLine.push(latlon);
 
+        // on ajoute le polygone texturé
         var pludetaille = this.viewer.entities.add({
           polygon: {
             hierarchy: Cesium.Cartesian3.fromDegreesArray([latlon[3], latlon[2], latlon[1], latlon[2], latlon[1], latlon[0], latlon[3], latlon[0]]),
-            material: "src/img/plu/"+ zoom + "/" + temp.x + "/" + temp.y + ".png",
+            material: "data/plu/"+ zoom + "/" + temp.x + "/" + temp.y + ".png",
             classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
           },
         });
@@ -2362,6 +2433,7 @@ class Globe {
 
       }
 
+      // on trace le contour des 9 tuiles
       var coordContour = [coordLine[1][1], coordLine[1][2], coordLine[3][3], coordLine[3][2], coordLine[8][3], coordLine[8][0], coordLine[6][1], coordLine[6][0], coordLine[1][1], coordLine[1][2]];
       linePLUdetaille. push(this.drawLine(Cesium.Cartesian3.fromDegreesArray(coordContour), 2, "#FFFFFF", 1, true, 'Visibilité PLU détaillé'));
 

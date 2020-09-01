@@ -922,125 +922,12 @@ class Menu {
       globe.viewer.scene.requestRender();
     });
 
-
-    //document.querySelector('#ODPLUdetailleTransparent').addEventListener('change', (e) => {
-      // problème de CORS
-      /*var imageryLayers = globe.viewer.imageryLayers;
-      imageryLayers.addImageryProvider(
-        new Cesium.TileMapServiceImageryProvider({
-          url: "http://adict-preprod.strasbourg.eu/adictwms/?VERSION=1.3.0&MAP=/opt/wms/projects/dev_styles_plu.qgs",
-          proxy : new Cesium.DefaultProxy('/proxy/')
-          //fileExtension: 'xml'
-        })
-      );*/
-
-      // problème de CORS ? ou de proxy, n'affiche pas la couche
-      /*var imageryLayers = globe.viewer.imageryLayers;
-      imageryLayers.addImageryProvider(
-        new Cesium.WebMapServiceImageryProvider({
-          url : 'http://adict-preprod.strasbourg.eu/mapproxy/service',
-          layers: 'PLU_V2',
-          //proxy : new Cesium.DefaultProxy('/proxy/')
-        })
-      );*/
-
-        /*var latnord = 48.58251785890363;
-        var latsud = 48.566377216517914;
-        var lonouest= 7.734799244658492;
-        var lonest = 7.770381472835122;
-
-        var pludetaille = globe.viewer.entities.add({
-          polygon: {
-            hierarchy: Cesium.Cartesian3.fromDegreesArray([lonouest, latnord, lonest, latnord, lonest, latsud, lonouest, latsud]),
-            material: "src/img/plu4326_transparent.png",
-            classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
-          },
-        });
-
-        globe.viewer.scene.requestRender();
-
-    });
-
-    document.querySelector('#ODPLUdetaille').addEventListener('change', (e) => {
-        var latnord = 48.58251785890363;
-        var latsud = 48.566377216517914;
-        var lonouest= 7.734799244658492;
-        var lonest = 7.770381472835122;
-
-
-        var pludetaille = globe.viewer.entities.add({
-          polygon: {
-          hierarchy: Cesium.Cartesian3.fromDegreesArray([lonouest, latnord, lonest, latnord, lonest, latsud, lonouest, latsud]),
-          /*material: new Cesium.ImageMaterialProperty({
-                         image: "src/img/plu4326_png.png",
-                         transparent: true
-                     }),
-          material: "src/img/plu4326_png.png",
-          classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
-          },
-        });
-        globe.viewer.scene.requestRender();
-
-        // afficher la couche des ER en transparent par dessus
-        var lineER = [];
-        let colors = {
-          'Emplacement_réservé': '#F32525'
-        }
-        globe.showPolygon(true, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', lineER , '#FFFFFF', 0, '#708090', 0.001, {
-          classification: true,
-          classificationField: 'type_prescription',
-          colors: colors,
-          alpha: 0.001
-        });
-
-    });
-
-    document.querySelector('#ODPLUPetit').addEventListener('change', (e) => {
-        var latnord = 48.5847230127768412;
-        var latsud = 48.5834954665894969;
-        var lonouest= 7.7647821622436402;
-        var lonest = 7.7607339535004183;
-
-        var pludetaille = globe.viewer.entities.add({
-          polygon: {
-          hierarchy: Cesium.Cartesian3.fromDegreesArray([lonouest, latnord, lonest, latnord, lonest, latsud, lonouest, latsud]),
-          material: "src/img/petit_png.png",
-          classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
-          },
-        });
-        globe.viewer.scene.requestRender();
-
-    });
-
-    document.querySelector('#ODPLUPetitTrans').addEventListener('change', (e) => {
-        var latnord = 48.5847230127768412;
-        var latsud = 48.5834954665894969;
-        var lonouest= 7.7647821622436402;
-        var lonest = 7.7607339535004183;
-
-        var pludetaille = globe.viewer.entities.add({
-          polygon: {
-          hierarchy: Cesium.Cartesian3.fromDegreesArray([lonouest, latnord, lonest, latnord, lonest, latsud, lonouest, latsud]),
-          material: "src/img/petit_transparent.png",
-          classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
-          },
-        });
-        globe.viewer.scene.requestRender();
-
-    });*/
-
     document.querySelector('#ODPLUdetaille').addEventListener('change', (e) => {
       // afficher la couche des ER et du zonage PLU en transparent par dessus
       var linetemp = [];
       var legend = {
         '    ': '#fcba03'
       };
-
-      /*globe.showPolygon(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_zone_urba&format=geojson', 'PLUi Plan de Zonage', linetemp, {
-        classification: true,
-        classificationField: 'type',
-        alpha: 0.001
-      });*/
 
       globe.showPolygon(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', {
         classification: true,
@@ -1056,15 +943,12 @@ class Menu {
         globe.viewer.scene.requestRender();
 
       } else {
-        // Enlever les entités
         for(var i = 0; i < pluTiles.length+10; i++){
           globe.viewer.entities.remove(pluTiles[i]);
         }
-        // Vider le tableau
         for(var j = 0; j <= pluTiles.length+1; j++){
           pluTiles.pop();
         }
-
         for(var i = 0; i < linePLUdetaille.length+10; i++){
           globe.viewer.entities.remove(linePLUdetaille[i]);
         }
@@ -1097,6 +981,21 @@ class Menu {
       globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
       globe.viewer.scene.requestRender();
 
+    });
+
+    document.querySelector('#VitaBoucle3D').addEventListener('change', (e) => {
+      var couleur = {
+        "facile": "#15780c",
+        "moyenne": "#097db8",
+        "difficile": "#fc0000"
+      };
+
+      globe.showPolyline(e.target.checked, 'VitaBoucle3D', 'data/test/vitaboucle3D.json', false, 'VitaBoucle', {
+        classification: true,
+        classificationField: 'difficulte',
+        colors: couleur,
+        alpha: 0.7
+      });
     });
 
   }

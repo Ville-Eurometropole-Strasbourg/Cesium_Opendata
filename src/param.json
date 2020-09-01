@@ -1,0 +1,1265 @@
+{ "param": "Cesium_Opendata",
+  "menu": [
+    { "name": "REGLEMENTATION URBAINE",
+      "couches": [
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODPLUiZonage",
+          "name": "PLU - Règlement graphique et écrit",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_zone_urba&format=geojson",
+          "champ_classif": "type",
+          "couleur_classif" : {
+            "A1": "#FFDC00",
+            "A2": "#FFDC00",
+            "A3": "#FFDC00",
+            "A4": "#FFDC00",
+            "A5": "#FFDC00",
+            "A6": "#FFDC00",
+            "A7": "#FFDC00",
+            "A8": "#FFDC00",
+            "IAUA1": "#FF6500",
+            "IAUA2": "#FF6500",
+            "IAUB": "#FF6500",
+            "IAUB1": "#FF6500",
+            "IAUE1" : "#F105FF",
+            "IAUE2" : "#F105FF",
+            "IAUXb1" : "#1F97E1",
+            "IAUXb2" : "#1F97E1",
+            "IAUXd" : "#1F97E1",
+            "IAUXe" : "#1F97E1",
+            "IAUZ" : "#1F97E1",
+            "IIAU" : "#F1B39B",
+            "IIAUE" : "#7400FB",
+            "IIAUX" : "#21FFEE",
+            "N1" : "#00B610",
+            "N2" : "#00B610",
+            "N3" : "#00B610",
+            "N3z1" : "#00B610",
+            "N4" : "#00B610",
+            "N5" : "#00B610",
+            "N6" : "#00B610",
+            "N7" : "#00B610",
+            "N8" : "#00B610",
+            "PSMV" : "#F3001D",
+            "UAA1" : "#F3001D",
+            "UAA2" : "#F3001D",
+            "UAA3" : "#F3001D",
+            "UAB1" : "#F3001D",
+            "UAB2" : "#F3001D",
+            "UB1" : "#F3001D",
+            "UB2" : "#F3001D",
+            "UB2a" : "#F3001D",
+            "UB3" : "#F3001D",
+            "UB4" : "#F3001D",
+            "UB5" : "#F3001D",
+            "UCA1" : "#F3001D",
+            "UCA2" : "#F3001D",
+            "UCA3" : "#F3001D",
+            "UCA4" : "#F3001D",
+            "UCA5" : "#F3001D",
+            "UCA6" : "#F3001D",
+            "UCB1" : "#F3001D",
+            "UCB2" : "#F3001D",
+            "UD1" : "#F3001D",
+            "UD2" : "#F3001D",
+            "UD2a" : "#F3001D",
+            "UDz1" : "#F3001D",
+            "UDz2" : "#F3001D",
+            "UDz3" : "#F3001D",
+            "UDz4" : "#F3001D",
+            "UDz5" : "#F3001D",
+            "UE1": "#98104E",
+            "UE2": "#98104E",
+            "UE3": "#98104E",
+            "UF": "#001B92",
+            "UG": "#001B92",
+            "UXa1": "#001B92",
+            "UXa2": "#001B92",
+            "UXb1": "#001B92",
+            "UXb2": "#001B92",
+            "UXb3": "#001B92",
+            "UXb4": "#001B92",
+            "UXb5": "#001B92",
+            "UXc": "#001B92",
+            "UXcz1": "#001B92",
+            "UXcz2": "#001B92",
+            "UXcz3": "#001B92",
+            "UXd1": "#001B92",
+            "UXd2": "#001B92",
+            "UXd3a": "#001B92",
+            "UXd3b": "#001B92",
+            "UXd4": "#001B92",
+            "UXe1": "#001B92",
+            "UXe2": "#001B92",
+            "UXf": "#001B92",
+            "UXg": "#001B92",
+            "UYa": "#001B92",
+            "UYb": "#001B92",
+            "UZ1": "#001B92",
+            "UZ2": "#001B92"
+          },
+          "alpha": 0.3,
+          "name_contour": "PLUi Plan de Zonage",
+          "couleur_contour": "#FFFFFF",
+          "taille_contour": 1,
+          "couleur_highlight": "#708090",
+          "alpha_highlight": 0.5,
+          "nom_legende": "PLUi_Plan_de_zonage",
+          "couleur_legende": {
+            "A": "#FFDC00",
+            "IAUA,IAUB": "#FF6500",
+            "IAUE" : "#F105FF",
+            "IAUX,IAUZ" : "#1F97E1",
+            "IIAU" : "#F1B39B",
+            "IIAUE" : "#7400FB",
+            "IIAUX" : "#21FFEE",
+            "N" : "#00B610",
+            "UAA,UAB,UB,UCA,UCB,UD,PSMV" : "#F3001D",
+            "UE" : "#98104E",
+            "UF,UG,UX,UY,UZ" : "#001B92"
+          },
+          "choice": "PLUi Plan de Zonage",
+          "choiceTableau": "PLU"
+        },
+
+        {
+          "type_donnee": "plu_detaille",
+          "temps_reel": "oui",
+          "id_data": "ODPLUdetaille",
+          "name": "PLU détaillé",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/"
+        },
+
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODTerrasses",
+          "name": "Terrasses autorisées en 2019",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2019/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "ville",
+          "couleur_classif" : {
+            "STRASBOURG": "#D7146E"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Terrasses_autorisées_en_2019",
+          "couleur_legende": {
+            "Terrasses_autorisées_2019": "#D7146E"
+          },
+          "choice": "Terrasses 2019"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODTerrasses2020",
+          "name": "Terrasses autorisées en 2020",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2020/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2020&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "ville",
+          "couleur_classif" : {
+            "STRASBOURG": "#076b2c"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Terrasses_autorisées_en_2020",
+          "couleur_legende": {
+            "Terrasses_autorisées_2020": "#076b2c"
+          },
+          "choice": "Terrasses 2020"
+        }
+      ]
+    },
+
+    { "name": "INFORMATIONS CADASTRALES",
+      "couches": [
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODLimitesCommunes",
+          "name": "LIMITES DE COMMUNES",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/limites_de_communes/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=limites_de_communes&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&timezone=Europe/Berlin",
+          "champ_classif": "num_dept",
+          "couleur_classif" : {
+            "67": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de communes",
+          "couleur_contour": "#FFFFFF",
+          "taille_contour": 3.0,
+          "couleur_highlight": "#D3D3D3",
+          "alpha_highlight": 0.2,
+          "choice": "Limites de communes",
+          "choiceTableau": "Communes"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODLimitesSections",
+          "name": "LIMITES DE SECTIONS",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/sections_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=sections_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&timezone=Europe/Berlin",
+          "champ_classif": "licence",
+          "couleur_classif" : {
+            "licence ouverte etalab v2": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de sections",
+          "couleur_contour": "#FF0000",
+          "taille_contour": 3.0,
+          "couleur_highlight": "#D3D3D3",
+          "alpha_highlight": 0.2,
+          "choice": "Limites de sections",
+          "choiceTableau": "Sections"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreAchenheim",
+          "name": "ACHENHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=001&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "001": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreBischheim",
+          "name": "BISCHHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=043&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "043": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreBlaesheim",
+          "name": "BLAESHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=049&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "049": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreBreuschwickersheim",
+          "name": "BREUSCHWICKERSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=065&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "065": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreEckbolsheim",
+          "name": "ECKBOLSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=118&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "118": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreEckwersheim",
+          "name": "ECKWERSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=119&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "119": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreEntzheim",
+          "name": "ENTZHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=124&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "124": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreEschau",
+          "name": "ESCHAU",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=131&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "131": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreFegersheim",
+          "name": "FEGERSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=137&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "137": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreGeispolsheim",
+          "name": "GEISPOLSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=152&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "152": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreHangenbieten",
+          "name": "HANGENBIETEN",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=182&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "182": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreHoenheim",
+          "name": "HOENHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=204&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "204": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreHoltzheim",
+          "name": "HOLTZHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=212&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "212": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreIllkirch",
+          "name": "ILLKIRCH-GRAFFENSTADEN",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=218&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "218": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreKolbsheim",
+          "name": "KOLBSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=247&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "247": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreLampertheim",
+          "name": "LAMPERTHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=256&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "256": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreLingolsheim",
+          "name": "LINGOLSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=267&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "267": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreLipsheim",
+          "name": "LIPSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=268&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "268": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreMittelhausbergen",
+          "name": "MITTELHAUSBERGEN",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=296&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "296": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreMundolsheim",
+          "name": "MUNDOLSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=309&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "309": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreNiederhausbergen",
+          "name": "NIEDERHAUSBERGEN",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=326&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "326": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreOberhausbergen",
+          "name": "OBERHAUSBERGEN",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=343&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "343": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreOberschaeffolsheim",
+          "name": "OBERSCHAEFFOLSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=350&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "350": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreOsthoffen",
+          "name": "OSTHOFFEN",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=363&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "363": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreOstwald",
+          "name": "OSTWALD",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=365&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "365": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastrePlobsheim",
+          "name": "PLOBSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=378&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "378": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreReichstett",
+          "name": "REICHSTETT",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=389&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "389": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreSchiltigheim",
+          "name": "SCHILTIGHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=447&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "447": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreSouffelweyersheim",
+          "name": "SOUFFELWEYERSHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=471&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "471": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgCentre",
+          "name": "STRASBOURG Centre",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Centre&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgGareKleber",
+          "name": "STRASBOURG Gare-Kléber",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Gare-Kléber&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgEsplaBourseKrut",
+          "name": "STRASBOURG Esplanade-Bourse-Krutenau",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Esplanade-Bourse-Krutenau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgNeudorf",
+          "name": "STRASBOURG Neudorf-Schluthfeld-Port du Rhin-Musau",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neudorf-Schluthfeld-Port du Rhin-Musau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgMeinau",
+          "name": "STRASBOURG Meinau",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Meinau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgNeuhof",
+          "name": "STRASBOURG Neuhof",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Neuhof&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgKoenigsMV",
+          "name": "STRASBOURG Koenigshoffen-Montagne Verte",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Koenigshoffen-Montagne Verte&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgCroHautPotHohberg",
+          "name": "STRASBOURG Cronenbourg-Hautepierre-Poteries-Hohberg",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Cronenbourg-Hautepierre-Poteries-Hohberg&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreStrasbourgRobertsau",
+          "name": "STRASBOURG Robertsau",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&q=Strasbourg Robertsau&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=482&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "482": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreVendenheim",
+          "name": "VENDENHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=506&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "506": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreLaWantzenau",
+          "name": "LA WANTZENAU",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=519&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "519": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODCadastreWolfisheim",
+          "name": "WOLFISHEIM",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parcelles_cadastrales&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.num_com=true&disjunctive.n_section=true&disjunctive.n_parcelle=true&refine.num_com=551&timezone=Europe/Berlin",
+          "champ_classif": "num_com",
+          "couleur_classif" : {
+            "551": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de parcelle",
+          "couleur_contour": "#F0E68C",
+          "taille_contour": 2.0,
+          "couleur_highlight": "#FF0000",
+          "alpha_highlight": 0.5,
+          "choice": "Parcellaire cadastral",
+          "choiceTableau": "Cadastre"
+        }
+      ]
+
+    },
+    { "name": "TRANSPORTS ET DEPLACEMENTS",
+      "couches": [
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODStationPayant",
+          "name": "Stationnement payant",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/stationnement-payant/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "libelle",
+          "couleur_classif" : {
+            "0.5€/h ou 1€/3h": "#C7F79A",
+            "1,7€/h": "#EBF975",
+            "2,1€/h": "#F378B5"
+          },
+          "alpha": 0.5,
+          "nom_legende": "Stationnement_payant",
+          "couleur_legende": {
+            "0.5€/h_ou_1€/3h": "#C7F79A",
+            "1,7€/h": "#EBF975",
+            "2,1€/h": "#F378B5"
+          },
+          "choice": "Stationnement payant"
+
+        },
+        {
+          "type_donnee": "ligne",
+          "temps_reel": "oui",
+          "id_data": "ODTraffic",
+          "name": "Traffic routier",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "ligne_2D": true,
+          "champ_classif": "etat",
+          "couleur_classif" : {
+            "1": "#15780c",
+            "2": "#de8b1f",
+            "3": "#fc0000"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Traffic_routier_Eurométropole",
+          "couleur_legende": {
+            "Fluide": "#15780c",
+            "Dense": "#de8b1f",
+            "Saturé": "#e80707"
+          },
+          "choice": "Traffic routier SIRAC",
+          "choiceTableau": "Traffic"
+
+        }
+      ]
+
+    },
+
+    { "name": "SPORTS ET LOISIRS ",
+      "couches": [
+        {
+          "type_donnee": "point",
+          "temps_reel": "oui",
+          "couche_attributaire": "oui",
+          "url_attribut": "https://data.strasbourg.eu/api/records/1.0/download?dataset=frequentation-en-temps-reel-des-piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json",
+          "id_data": "ODPiscine",
+          "name": "Fréquentation des piscines",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/frequentation-en-temps-reel-des-piscines/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "point_3D": false,
+          "cluster": false,
+          "image": "src/img/billboard/pool.png",
+          "couleur_ligne": "#4287f5",
+          "nom_legende": "Fréquentation_piscine",
+          "couleur_legende": {
+            "Piscine        ": "#fcba03"
+          },
+          "billboard_legende": "'<img src='src/img/billboard/pool_legend.png'>'",
+          "choiceTableau": "Piscine"
+        },
+        {
+          "type_donnee": "ligne",
+          "temps_reel": "non",
+          "id_data": "ODVitaBoucle",
+          "name": "Boucles sportives : Vitaboucle",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=boucles_sportives_vitaboucle&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "ligne_2D": true,
+          "champ_classif": "difficulte",
+          "couleur_classif" : {
+            "facile": "#15780c",
+            "moyenne": "#097db8",
+            "difficile": "#fc0000"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Boucle_sportive_Vitaboucle",
+          "couleur_legende": {
+            "facile": "#15780c",
+            "moyenne": "#097db8",
+            "difficile": "#fc0000"
+          },
+          "choice": "Boucle sportive VitaBoucle",
+          "choiceTableau": "Vitaboucle"
+
+        }
+      ]
+
+    },
+
+    { "name": "ENVIRONNEMENT",
+      "couches": [
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "oui",
+          "id_data": "ODQualiteAir",
+          "name": "Qualité de l'air Eurométropole (sur 7 jours)",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "valeur",
+          "couleur_classif" : {
+            "1": "#3b8019",
+            "2": "#47991f",
+            "3": "#589917",
+            "4": "#9EE01A",
+            "5": "#e8e823",
+            "6": "#e3a112",
+            "7": "#f07a13",
+            "8": "#f04a13",
+            "9": "#c91a0a",
+            "10": "#850b0b"
+          },
+          "alpha": 0.7,
+          "name_contour": "Limites de communes",
+          "nom_legende": "Qualite_Air_Eurométropole",
+          "couleur_legende": {
+            "1_Très_Bon": "#3b8019",
+            "2_Très_Bon": "#47991f",
+            "3_Bon": "#589917",
+            "4_Bon": "#9EE01A",
+            "5_Moyen": "#e8e823",
+            "6_Médiocre": "#e3a112",
+            "7_Médiocre": "#f07a13",
+            "8_Mauvais": "#f04a13",
+            "9_Mauvais": "#c91a0a",
+            "10_Très_Mauvais": "#850b0b"
+          },
+          "choice": "Qualité air communes Eurométropole",
+          "start": "-8",
+          "end": "-1",
+          "name_contour" : "Limites de communes",
+          "choiceTableau" : "QualiteAir"
+        }
+      ]
+    },
+
+    { "name": "CULTURE",
+      "couches": [
+        {
+          "type_donnee": "point",
+          "temps_reel": "non",
+          "couche_attributaire": "non",
+          "id_data": "ODPatrimoine",
+          "name": "Patrimoine de mon quartier",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "point_3D": false,
+          "cluster": true,
+          "image": "src/img/billboard/marker_red.png",
+          "couleur_ligne": "#cf1204",
+          "nom_legende": "Patrimoine_quartier",
+          "couleur_legende": {
+            "Patrimoine     ": "#fcba03"
+          },
+          "billboard_legende": "'<img src='src/img/billboard/marker_red.png'>'",
+          "choiceTableau": "Patrimoine"
+        }
+      ]
+    }
+
+
+  ]
+
+}
