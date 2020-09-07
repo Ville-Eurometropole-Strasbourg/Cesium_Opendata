@@ -82,10 +82,9 @@
             <option value="building">Maison</option>
             <option value="industrial">Usine</option>
           </select></p>
-          <button id="envoyerpoint">Ajouter</button>
           <button id="annulerpoint">Annuler</button>
           <button id="supprimerpoint">Supprimer</button>
-          <p>Cliquez sur 'ajouter' pour commencer à dessiner</p>
+          <br/>
         </div>
 
         <div class="backdrop hidden" id="ligneList">
@@ -106,10 +105,9 @@
                   <option value="noncolle">Non</option>
                 </select></p>
               </form>
-              <button id="envoyerligne">Ajouter</button>
               <button id="annulerligne">Annuler</button>
               <button id="supprimerligne">Supprimer</button>
-              <p>Cliquez sur 'ajouter' pour commencer à dessiner</p>
+              <br/>
             </div>
 
             <div class="backdrop hidden" id="surfaceList">
@@ -119,10 +117,9 @@
                 <p>Transparence :</p>
                 <span>0</span><input type="range" id="transparencesurf"  min="0" max="1" value="0.5" step="0.1"><span>1</span> <br/>
               </form>
-              <button id="envoyersurf">Ajouter</button>
               <button id="annulersurf">Annuler</button>
               <button id="supprimersurf">Supprimer</button>
-              <p>Cliquez sur 'ajouter' pour commencer à dessiner</p>
+              <br/>
             </div>
 
             <div class="backdrop hidden" id="volumeList">
@@ -133,10 +130,9 @@
                 <p>Transparence :</p>
                 <span>0</span><input type="range" id="transparencevol"  min="0" max="1" value="1" step="0.1"><span>1</span> <br/>
               </form>
-              <button id="envoyervol">Ajouter</button>
               <button id="annulervol">Annuler</button>
               <button id="supprimervol">Supprimer</button>
-              <p>Cliquez sur 'ajouter' pour commencer à dessiner</p>
+              <br/>
             </div>
 
             <div class="backdrop hidden" id="planList">
@@ -276,6 +272,11 @@
               <div id="menu">
                 <div class="panel">
                   <div id="menu-content"> MENU </div>
+                  <br/>
+
+                  <a href="https://3d.strasbourg.eu/CESIUM/Cesium_utilisateur_debutant.pdf" target="_blank"><button class="button" id="guide" title="Afficher le guide utilisateur"><img src="src/img/icons8-help.png"></button></a>
+                  <a href="https://3d.strasbourg.eu/TEST/CESIUM_OPENDATA/documentation/" target="_blank"><button class="button" id="doc" title="Afficher la documentation technique "><img src="src/img/icons8-maintenance.png"></button></a>
+                  <br/> <br/><br/>
 
                   <div class="nowrap" id="photo">
                     <input id="photoMaillage" type="checkbox" checked/>
@@ -291,7 +292,7 @@
                   <!--          <button id="reset">Réinitialiser</button>   -->
 
                   <!--          <button class="button" id="boutonfile"><img src="src/img/icons8-add-file-50.png"></button>  -->
-                  <br/><br/>
+                  <br/>
 
                   <!------------------------------------------------------------->
                   <button class="panel-title">PARAMETRES    <i class="arrow"></i></button>
@@ -317,16 +318,20 @@
                   <button class="panel-title">Test    <i class="arrow"></i>
                   </button>
 
+
                   <div class="panel-content">
 
                     <div class="nowrap show" id="VitaBoucle3DDiv">
                       <input id="VitaBoucle3D" type="checkbox" />
                       <label for="VitaBoucle3D">VitaBoucle 3D</label>
                     </div>
+
                   </div>
+
 
                 </div>
               </div>
+            </div>
 
             <!-- Boutons de la boîte à outils -->
             <div class= "menuClic" id="mesures">

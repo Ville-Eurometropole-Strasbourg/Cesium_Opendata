@@ -262,9 +262,12 @@ class Menu {
 
       var choice = 'line';
       var choice2 = 'mesure';
-      var hauteurVol;
-      var url;
-      globe.updateShape(choice, choice2, 3, '#FF0000', 1, hauteurVol, url, billboard, line, surface, volume, dline, dsurface);
+      globe.updateShape(choice, choice2, '#FF0000', {
+        largeur: 3,
+        transparence: 1,
+        dline: dline
+      });
+
       $("#distanceList").removeClass('hidden');
       this.aideCheckbox.classList.remove('hidden');
       globe.viewer.scene.requestRender();
@@ -278,9 +281,11 @@ class Menu {
 
       var choice = 'polygon';
       var choice2 = 'mesure';
-      var hauteurVol;
-      var url;
-      globe.updateShape(choice, choice2, 3, '#1ABFD0', 0.4, hauteurVol, url, billboard, line, surface, volume, dline, dsurface);
+
+      globe.updateShape(choice, choice2, '#1ABFD0', {
+        transparence: 0.4,
+        dsurface: dsurface
+      });
       this.aireList.classList.remove('hidden');
       this.aideCheckbox.classList.remove('hidden');
       globe.viewer.scene.requestRender();
@@ -292,48 +297,58 @@ class Menu {
     *
     */
     //Evenements pour l'ajout de l'entité
-    document.querySelector("#envoyerpoint").addEventListener('click', (e) => {
+    document.querySelector("#pointList").addEventListener("input", function () {
       var choice = 'point';
       var choice2 = 'dessin';
-      var transparence;
       var couleur = $('#couleurpoint').val();
-      var largeur;
       var hauteurVol = $('#hauteurpoint').val();
       var url = 'Assets/Textures/maki/' + $('#makisymbol').val() + '.png';
-      globe.updateShape(choice, choice2, largeur, couleur, transparence, hauteurVol, url, billboard, line, surface, volume, dline, dsurface);
+
+      globe.updateShape(choice, choice2, couleur, {
+        hauteurVol: hauteurVol,
+        url: url,
+        billboard: billboard
+      });
+
     });
 
-    document.querySelector("#envoyerligne").addEventListener('click', (e) => {
+    document.querySelector('#ligneList').addEventListener("input", function () {
       var choice = 'line';
       var choice2 = 'dessin';
-      var hauteurVol;
-      var url;
       var largeur = $('#largeur').val();
       var couleur = $('#couleur').val();
       var transparence = $('#transparence').val();
-      globe.updateShape(choice, choice2, largeur, couleur, transparence, hauteurVol, url, billboard, line, surface, volume, dline, dsurface);
+
+      globe.updateShape(choice, choice2, couleur, {
+        largeur: largeur,
+        transparence: transparence,
+        line: line
+      });
     });
 
-    document.querySelector("#envoyersurf").addEventListener('click', (e) => {
+    document.querySelector("#surfaceList").addEventListener("input", function () {
       var choice = 'polygon';
       var choice2 = 'dessin';
-      var hauteurVol;
-      var url;
-      var largeur = 3;
       var couleur = $('#couleursurf').val();
       var transparence = $('#transparencesurf').val();
-      globe.updateShape(choice, choice2, largeur, couleur, transparence, hauteurVol, url, billboard, line, surface, volume, dline, dsurface);
+
+      globe.updateShape(choice, choice2, couleur, {
+        transparence: transparence,
+        surface: surface
+      });
     });
 
-    document.querySelector("#envoyervol").addEventListener('click', (e) => {
+    document.querySelector("#volumeList").addEventListener("input", function () {
       var choice = 'volume';
       var choice2 = 'dessin';
-      var largeur = 3;
-      var url;
       var hauteurVol = $('#hauteurvol').val();
       var couleur = $('#couleurvol').val();
       var transparence = $('#transparencevol').val();
-      globe.updateShape(choice, choice2, largeur, couleur, transparence, hauteurVol, url, billboard, line, surface, volume, dline, dsurface);
+      globe.updateShape(choice, choice2, couleur, {
+        transparence: transparence,
+        hauteurVol: hauteurVol,
+        volume: volume
+      });
     });
 
     //Evenements pour la suppression / anunulation des dessins
@@ -357,6 +372,18 @@ class Menu {
     });
 
     document.querySelector('#cpoint').addEventListener('click', (e) => {
+      var choice = 'point';
+      var choice2 = 'dessin';
+      var couleur = $('#couleurpoint').val();
+      var hauteurVol = $('#hauteurpoint').val();
+      var url = 'Assets/Textures/maki/' + $('#makisymbol').val() + '.png';
+
+      globe.updateShape(choice, choice2, couleur, {
+        hauteurVol: hauteurVol,
+        url: url,
+        billboard: billboard
+      });
+
       //globe.supprSouris();
       this.aideCheckbox.classList.add('hidden');
       this.ligneList.classList.add('hidden');
@@ -367,6 +394,17 @@ class Menu {
     });
 
     document.querySelector('#cligne').addEventListener('click', (e) => {
+      var choice = 'line';
+      var choice2 = 'dessin';
+      var largeur = $('#largeur').val();
+      var couleur = $('#couleur').val();
+      var transparence = $('#transparence').val();
+      globe.updateShape(choice, choice2, couleur, {
+        largeur: largeur,
+        transparence: transparence,
+        line: line
+      });
+
       //globe.supprSouris();
       this.pointList.classList.add('hidden');
       this.surfaceList.classList.add('hidden');
@@ -377,6 +415,16 @@ class Menu {
     });
 
     document.querySelector('#csurface').addEventListener('click', (e) => {
+      var choice = 'polygon';
+      var choice2 = 'dessin';
+      var couleur = $('#couleursurf').val();
+      var transparence = $('#transparencesurf').val();
+
+      globe.updateShape(choice, choice2, couleur, {
+        transparence: transparence,
+        surface: surface
+      });
+
       //globe.supprSouris();
       this.pointList.classList.add('hidden');
       this.ligneList.classList.add('hidden');
@@ -387,6 +435,17 @@ class Menu {
     });
 
     document.querySelector('#volume').addEventListener('click', (e) => {
+      var choice = 'volume';
+      var choice2 = 'dessin';
+      var hauteurVol = $('#hauteurvol').val();
+      var couleur = $('#couleurvol').val();
+      var transparence = $('#transparencevol').val();
+      globe.updateShape(choice, choice2, couleur, {
+        transparence: transparence,
+        hauteurVol: hauteurVol,
+        volume: volume
+      });
+
       //globe.supprSouris();
       this.pointList.classList.add('hidden');
       this.ligneList.classList.add('hidden');
@@ -398,19 +457,24 @@ class Menu {
 
     // supprime toutes les entités
     document.querySelector('#suppr').addEventListener('click', function() {
+      console.log(line);
+      console.log(surface);
+      console.log(volume);
       for(var i = 0; i <= billboard.length+10; i++){
         globe.viewer.entities.remove(billboard[i]);
         billboard.pop();
       }
-      for(var i = 0; i <= line.length+1; i++){
+      for(var i = 0; i <= line.length+10; i++){
         globe.viewer.entities.remove(line[i]);
         line.pop();
       }
-      for(var i = 0; i <= surface.length+1; i++){
+      for(var i = 0; i <= surface.length+10; i++){
+        console.log(surface);
         globe.viewer.entities.remove(surface[i]);
         surface.pop();
+        console.log(surface);
       }
-      for(var i = 0; i <= volume.length+1; i++){
+      for(var i = 0; i <= volume.length+10; i++){
         globe.viewer.entities.remove(volume[i]);
         volume.pop();
       }
@@ -920,67 +984,6 @@ class Menu {
     document.querySelector('#poubelle').addEventListener('click', function() {
       globe.viewer.entities.removeAll();
       globe.viewer.scene.requestRender();
-    });
-
-    document.querySelector('#ODPLUdetaille').addEventListener('change', (e) => {
-      // afficher la couche des ER et du zonage PLU en transparent par dessus
-      var linetemp = [];
-      var legend = {
-        '    ': '#fcba03'
-      };
-
-      globe.showPolygon(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', {
-        classification: true,
-        classificationField: 'type_prescription',
-        colors: legend,
-        alpha: 0.001,
-        choiceTableau: 'ER'
-      });
-
-      if(e.target.checked){
-        globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
-        globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point', "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>");
-        globe.viewer.scene.requestRender();
-
-      } else {
-        for(var i = 0; i < pluTiles.length+10; i++){
-          globe.viewer.entities.remove(pluTiles[i]);
-        }
-        for(var j = 0; j <= pluTiles.length+1; j++){
-          pluTiles.pop();
-        }
-        for(var i = 0; i < linePLUdetaille.length+10; i++){
-          globe.viewer.entities.remove(linePLUdetaille[i]);
-        }
-        for(var j = 0; j <= linePLUdetaille.length+1; j++){
-          linePLUdetaille.pop();
-        }
-
-        globe.legendManager.removeLegend('ODPLUdetailleLegend');
-        globe.viewer.scene.requestRender();
-      }
-
-    });
-
-    document.querySelector('#refreshPLU').addEventListener('click', (e) => {
-      // Enlever les entités
-      for(var i = 0; i < pluTiles.length+10; i++){
-        globe.viewer.entities.remove(pluTiles[i]);
-      }
-      // Vider le tableau
-      for(var j = 0; j <= pluTiles.length+1; j++){
-        pluTiles.pop();
-      }
-      for(var i = 0; i < linePLUdetaille.length+10; i++){
-        globe.viewer.entities.remove(linePLUdetaille[i]);
-      }
-      for(var j = 0; j <= linePLUdetaille.length+1; j++){
-        linePLUdetaille.pop();
-      }
-
-      globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
-      globe.viewer.scene.requestRender();
-
     });
 
     document.querySelector('#VitaBoucle3D').addEventListener('change', (e) => {

@@ -884,19 +884,20 @@ class Globe {
     *
     * @param  {String} choice prend la valeur 'dessin' ou 'mesure'
     * @param  {String} choice2 le type d'entités à dessiner: 'point', 'line', 'polygon' ou 'volume'
-    * @param  {Number} largeur la transparence de l'entité
     * @param  {String} couleur le couleur de l'entité
-    * @param  {Number} transparence la transparence de l'entité
-    * @param  {Number} hauteurVol la hauteur de l'entité
-    * @param  {String} url le lien vers les images pour les entités billboard
-    * @param  {Array} billboard le tableau où stocker les entités billboard
-    * @param  {Array} line le tableau où stocker les entités lignes
-    * @param  {Array} surface le tableau où stocker les entités surface
-    * @param  {Array} volume le tableau où stocker les entités boîte
-    * @param  {Array} dline le tableau où stocker les entités lignes pour les mesures
-    * @param  {Array} dsurface tableau où stocker les entités surface pour les mesures
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {Number} options.largeur la largeur de l'entité
+    * @param  {Number} options.transparence la transparence de l'entité
+    * @param  {Number} options.hauteurVol la hauteur de l'entité
+    * @param  {String} options.url le lien vers les images pour les entités billboard
+    * @param  {Array} options.billboard le tableau où stocker les entités billboard
+    * @param  {Array} options.line le tableau où stocker les entités lignes
+    * @param  {Array} options.surface le tableau où stocker les entités surface
+    * @param  {Array} options.volume le tableau où stocker les entités boîte
+    * @param  {Array} options.dline le tableau où stocker les entités lignes pour les mesures
+    * @param  {Array} options.dsurface tableau où stocker les entités surface pour les mesures
     */
-    updateShape(choice, choice2, largeur, couleur, transparence, hauteurVol, url, billboard, line, surface, volume, dline, dsurface) {
+    updateShape(choice, choice2, couleur, options = {}) {
       var activeShapePoints = [];
       var activeShape;
       var floatingPoint;
@@ -922,43 +923,43 @@ class Globe {
               }
               return activeShapePoints;
             }, false);
-            largeur = parseFloat(largeur);
-            transparence = parseFloat(transparence);
+            options.largeur = parseFloat(options.largeur);
+            options.transparence = parseFloat(options.transparence);
             if(choice === 'point') {
               activeShape = globe.createPoint(dynamicPositions);
               if($('#taille').val() === 'metre') {
-                floatingPoint = globe.createPinBillboard(billboard, earthPosition, url, couleur, hauteurVol, true);
-                billboard.pop();
+                floatingPoint = globe.createPinBillboard(options.billboard, earthPosition, options.url, couleur, options.hauteurVol, true);
+                options.billboard.pop();
               } else if($('#taille').val() === 'pixel') {
-                floatingPoint = globe.createPinBillboard(billboard, earthPosition, url, couleur, hauteurVol, false);
+                floatingPoint = globe.createPinBillboard(options.billboard, earthPosition, options.url, couleur, options.hauteurVol, false);
               }
             } else if(choice === 'polygon') {
-              activeShape = globe.drawPolygon(dynamicPositions, couleur, transparence);
+              activeShape = globe.drawPolygon(dynamicPositions, couleur, options.transparence);
             } else if(choice === 'volume') {
-              z = globe.getHauteur(activeShapePoints, hauteurVol);
-              activeShape = globe.drawVolume(dynamicPositions, couleur, transparence, z);
+              z = globe.getHauteur(activeShapePoints, options.hauteurVol);
+              activeShape = globe.drawVolume(dynamicPositions, couleur, options.transparence, z);
             } else if(choice === 'line') {
               if(choice2 === 'mesure') {
-                activeShape = globe.drawLine(dynamicPositions, largeur, couleur, transparence, false); // 1ère ligne non collée au sol pour la distance inclinée
-                largeur = parseFloat(largeur);
-                activeShape = globe.drawLine(dynamicPositions, largeur, '#000000', '0.5', true); // 2ème collée au sol pour distance horizontale
+                activeShape = globe.drawLine(dynamicPositions, options.largeur, couleur, options.transparence, false); // 1ère ligne non collée au sol pour la distance inclinée
+                options.largeur = parseFloat(options.largeur);
+                activeShape = globe.drawLine(dynamicPositions, options.largeur, '#000000', '0.5', true); // 2ème collée au sol pour distance horizontale
               } else if(choice2 === 'dessin') {
                 couleur = couleur.toString();
                 if($('#clampligne').val() === 'colle') { // clamp to ground ou pas
                   if($('#styleligne').val() === 'simple') { // style normal
-                    activeShape = globe.drawLine(dynamicPositions, largeur, couleur, transparence, true);
+                    activeShape = globe.drawLine(dynamicPositions, options.largeur, couleur, options.transparence, true);
                   } else if($('#styleligne').val() === 'pointille') { // style pointillé
-                    activeShape = globe.drawDashLine(dynamicPositions, largeur, couleur, transparence, true);
+                    activeShape = globe.drawDashLine(dynamicPositions, options.largeur, couleur, options.transparence, true);
                   } else if($('#styleligne').val() === 'fleche') { // avec une flèche à la fin
-                    activeShape = globe.drawArrowLine(dynamicPositions, largeur, couleur, transparence, true);
+                    activeShape = globe.drawArrowLine(dynamicPositions, options.largeur, couleur, options.transparence, true);
                   }
                 } else if($('#clampligne').val() === 'noncolle'){ // mêmes instructions avec la ligne non collée au sol
                   if($('#styleligne').val() === 'simple') {
-                    activeShape = globe.drawLine(dynamicPositions, largeur, couleur, transparence, false);
+                    activeShape = globe.drawLine(dynamicPositions, options.largeur, couleur, options.transparence, false);
                   } else if($('#styleligne').val() === 'pointille') {
-                    activeShape = globe.drawDashLine(dynamicPositions, largeur, couleur, transparence, false);
+                    activeShape = globe.drawDashLine(dynamicPositions, options.largeur, couleur, options.transparence, false);
                   } else if($('#styleligne').val() === 'fleche') {
-                    activeShape = globe.drawArrowLine(dynamicPositions, largeur, couleur, transparence, false);
+                    activeShape = globe.drawArrowLine(dynamicPositions, options.largeur, couleur, options.transparence, false);
                   }
                 }
               }
@@ -968,9 +969,9 @@ class Globe {
             if(choice === 'point'){
               globe.createPoint(earthPosition);
               if($('#taille').val() === 'metre') {
-                globe.createPinBillboard(billboard, earthPosition, url, couleur, hauteurVol, true);
+                globe.createPinBillboard(options.billboard, earthPosition, options.url, couleur, options.hauteurVol, true);
               } else if($('#taille').val() === 'pixel') {
-                globe.createPinBillboard(billboard, earthPosition, url, couleur, hauteurVol, false);
+                globe.createPinBillboard(options.billboard, earthPosition, options.url, couleur, options.hauteurVol, false);
               }
             } else {
               globe.createPoint(earthPosition);
@@ -1000,8 +1001,8 @@ class Globe {
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
       this.handler.setInputAction(function(event) {
-        largeur = parseFloat(largeur);
-        transparence = parseFloat(transparence);
+        options.largeur = parseFloat(options.largeur);
+        options.transparence = parseFloat(options.transparence);
         // on supprime le dernier point flottant
         activeShapePoints.pop();
 
@@ -1010,40 +1011,40 @@ class Globe {
           if(choice === 'point') {
             globe.createPoint(activeShapePoints);
             if($('#taille').val() === 'metre') {
-              globe.createPinBillboard(billboard, activeShapePoints, url, couleur, hauteurVol, true);
+              globe.createPinBillboard(options.billboard, activeShapePoints, options.url, couleur, options.hauteurVol, true);
             } else if($('#taille').val() === 'pixel') {
-              globe.createPinBillboard(billboard, activeShapePoints, url, couleur, hauteurVol, false);
+              globe.createPinBillboard(options.billboard, activeShapePoints, options.url, couleur, options.hauteurVol, false);
             }
           } else if(choice === 'line') {
             if($('#clampligne').val() === 'colle') {
               if($('#styleligne').val() === 'simple') {
-                line.push(globe.drawLine(activeShapePoints, largeur, couleur, transparence, true));
+                options.line.push(globe.drawLine(activeShapePoints, options.largeur, couleur, options.transparence, true));
               } else if($('#styleligne').val() === 'pointille') {
-                line.push(globe.drawDashLine(activeShapePoints, largeur, couleur, transparence, true));
+                options.line.push(globe.drawDashLine(activeShapePoints, options.largeur, couleur, options.transparence, true));
               } else if($('#styleligne').val() === 'fleche') {
-                line.push(globe.drawArrowLine(activeShapePoints, largeur, couleur, transparence, true));
+                options.line.push(globe.drawArrowLine(activeShapePoints, options.largeur, couleur, options.transparence, true));
               }
             } else if($('#clampligne').val() === 'noncolle') {
               if($('#styleligne').val() === 'simple') {
-                line.push(globe.drawLine(activeShapePoints, largeur, couleur, transparence, false));
+                options.line.push(globe.drawLine(activeShapePoints, options.largeur, couleur, options.transparence, false));
               } else if($('#styleligne').val() === 'pointille') {
-                line.push(globe.drawDashLine(activeShapePoints, largeur, couleur, transparence, false));
+                options.line.push(globe.drawDashLine(activeShapePoints, options.largeur, couleur, options.transparence, false));
               } else if($('#styleligne').val() === 'fleche') {
-                line.push(globe.drawArrowLine(activeShapePoints, largeur, couleur, transparence, false));
+                options.line.push(globe.drawArrowLine(activeShapePoints, options.largeur, couleur, options.transparence, false));
               }
             }
 
           } else if( choice === 'polygon') {
-            surface.push(globe.drawPolygon(activeShapePoints, couleur, transparence));
+            options.surface.push(globe.drawPolygon(activeShapePoints, couleur, options.transparence));
           } else if( choice === 'volume') {
-            volume.push(globe.drawVolume(activeShapePoints, couleur, transparence, z));
+            options.volume.push(globe.drawVolume(activeShapePoints, couleur, options.transparence, z));
           }
         } else if(choice2 === 'mesure'){
           if(choice === 'line') {
-            dline.push(globe.drawLine(activeShapePoints, largeur, couleur, transparence, false));
-            dline.push(globe.drawLine(activeShapePoints, largeur, '#000000', '0.5', true));
+            options.dline.push(globe.drawLine(activeShapePoints, options.largeur, couleur, options.transparence, false));
+            options.dline.push(globe.drawLine(activeShapePoints, options.largeur, '#000000', '0.5', true));
           } else if( choice === 'polygon') {
-            dsurface.push(globe.drawPolygon(activeShapePoints, couleur, transparence));
+            options.dsurface.push(globe.drawPolygon(activeShapePoints, couleur, options.transparence));
           }
         }
         globe.viewer.entities.remove(floatingPoint);
@@ -1058,7 +1059,7 @@ class Globe {
         }
 
         globe.viewer.scene.requestRender();
-        //billboard.pop(); // quand on clique droit avec le billboard Cesium ajoute un billboard à la position (0,0,0)
+        //options.billboard.pop(); // quand on clique droit avec le billboard Cesium ajoute un billboard à la position (0,0,0)
       }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 
     }
@@ -1615,7 +1616,6 @@ class Globe {
     }
   }
 
->>>>>>> Stashed changes
   /**
   * permet de charger des fichiers geojson linéaires <br/>
   * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
@@ -2438,6 +2438,21 @@ class Globe {
       linePLUdetaille. push(this.drawLine(Cesium.Cartesian3.fromDegreesArray(coordContour), 2, "#FFFFFF", 1, true, 'Visibilité PLU détaillé'));
 
       this.viewer.scene.requestRender();
+
+    }
+
+    supprEntity(entity) {
+      console.log('test');
+      var handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
+      handler.setInputAction(function (movement) {
+        var pickedObject = globe.viewer.scene.pick(movement.endPosition);
+        if (Cesium.defined(pickedObject) && pickedObject.id === entity) {
+          if (e.shiftKey === 46) {
+            console.log('test1');
+            globe.viewer.entities.remove(entity);
+          }
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
     }
 

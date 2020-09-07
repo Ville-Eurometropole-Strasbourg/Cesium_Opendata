@@ -60,9 +60,6 @@ class Data {
           boutonMenu.classList.add('panel-title');
           boutonMenu.innerHTML = paramJson.menu[i].name;
 
-          var space = document.createTextNode("     ");
-          boutonMenu.appendChild(space);
-
           // et la flèche pour le dérouler
           let fleche = document.createElement('i');
           fleche.classList.add('arrow');
@@ -105,15 +102,17 @@ class Data {
             couche.appendChild(spaceBouton);
 
             // on créé le bouton info et le lien vers la donnée correspondante
-            let lienInfo = document.createElement("a");
-            lienInfo.href = paramJson.menu[i].couches[j].url_info;
-            lienInfo.target = "_blank";
-            let boutonInfo = document.createElement('BUTTON');
-            boutonInfo.classList.add('button');
-            boutonInfo.title = "Informations sur les données"
-            boutonInfo.innerHTML = '<img src="src/img/icons8-info.png">';
-            lienInfo.appendChild(boutonInfo);
-            couche.appendChild(lienInfo);
+            if(paramJson.menu[i].couches[j].url_info !== undefined) {
+              let lienInfo = document.createElement("a");
+              lienInfo.href = paramJson.menu[i].couches[j].url_info;
+              lienInfo.target = "_blank";
+              let boutonInfo = document.createElement('BUTTON');
+              boutonInfo.classList.add('button');
+              boutonInfo.title = "Informations sur les données"
+              boutonInfo.innerHTML = '<img src="src/img/icons8-info.png">';
+              lienInfo.appendChild(boutonInfo);
+              couche.appendChild(lienInfo);
+            }
 
             // Si la donnée est en temps réel, on créé un bouton actualiser
             if(paramJson.menu[i].couches[j].temps_reel === 'oui') {
@@ -145,7 +144,6 @@ class Data {
 
 
             couchesDiv.appendChild(couche);
-
 
             // on créé une variable différente unique pour chaque array de ligne de contour et de billboard
             window['line'+i+j] = [];
@@ -285,8 +283,7 @@ class Data {
 
               }
 
-              /*if(paramJson.menu[i].couches[j].type_donnee === 'plu_detaille') {
-                console.log('test');
+              if(paramJson.menu[i].couches[j].type_donnee === 'plu_detaille') {
                 var linetemp = [];
                 var legend = {
                   '    ': '#fcba03'
@@ -300,33 +297,32 @@ class Data {
                   choiceTableau: 'ER'
                 });
 
-                console.log('test1');
+
 
                 if(e.target.checked){
-                  console.log('test2');
                   globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
                   globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point', "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>");
                   globe.viewer.scene.requestRender();
-                  console.log('test3');
 
-                } else {
-                  for(var i = 0; i < pluTiles.length+10; i++){
-                    globe.viewer.entities.remove(pluTiles[i]);
+                } else{
+                  globe.legendManager.removeLegend('ODPLUdetailleLegend');
+
+                  for(var k = 0; k < pluTiles.length+10; k++){
+                    globe.viewer.entities.remove(pluTiles[k]);
                   }
-                  for(var j = 0; j <= pluTiles.length+1; j++){
+                  for(var l = 0; l <= pluTiles.length+1; l++){
                     pluTiles.pop();
                   }
-                  for(var i = 0; i < linePLUdetaille.length+10; i++){
-                    globe.viewer.entities.remove(linePLUdetaille[i]);
+                  for(var k = 0; k < linePLUdetaille.length+10; k++){
+                    globe.viewer.entities.remove(linePLUdetaille[k]);
                   }
-                  for(var j = 0; j <= linePLUdetaille.length+1; j++){
+                  for(var l = 0; l <= linePLUdetaille.length+1; l++){
                     linePLUdetaille.pop();
                   }
-                  console.log('test4');
-                  globe.legendManager.removeLegend('ODPLUdetailleLegend');
+
                   globe.viewer.scene.requestRender();
                 }
-              }*/
+              }
 
             }); // fin de l'évènement change
 
@@ -345,7 +341,7 @@ class Data {
                   choiceTableau: paramJson.menu[i].couches[j].choiceTableau,
                   line: window['line'+i+j],
                   nameLigne: paramJson.menu[i].couches[j].name_contour,
-                  couleurLigne: paramJson.menu[i].couches[j].couleur_contour,
+                  couleurLigne: cloneBis,
                   tailleLigne: paramJson.menu[i].couches[j].taille_contour,
                   nameLigne: paramJson.menu[i].couches[j].name_contour,
                   couleurSurf:  paramJson.menu[i].couches[j].couleur_highlight,
@@ -366,7 +362,7 @@ class Data {
                 globe.showPolyline(true, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].ligne_2D, paramJson.menu[i].couches[j].choice, {
                   classification: true,
                   classificationField: paramJson.menu[i].couches[j].champ_classif,
-                  colors: cloneColor,
+                  colors: cloneBis,
                   alpha: paramJson.menu[i].couches[j].alpha,
                   epaisseur: paramJson.menu[i].couches[j].epaisseur,
                   choiceTableau: paramJson.menu[i].couches[j].choiceTableau
@@ -412,6 +408,19 @@ class Data {
                   globe.viewer.entities.remove(linePLUdetaille[i]);
                 }
                 for(var j = 0; j <= linePLUdetaille.length+1; j++){
+                  linePLUdetaille.pop();
+                }
+
+                for(var k = 0; k < pluTiles.length+10; k++){
+                  globe.viewer.entities.remove(pluTiles[k]);
+                }
+                for(var l = 0; l <= pluTiles.length+1; l++){
+                  pluTiles.pop();
+                }
+                for(var k = 0; k < linePLUdetaille.length+10; k++){
+                  globe.viewer.entities.remove(linePLUdetaille[k]);
+                }
+                for(var l = 0; l <= linePLUdetaille.length+1; l++){
                   linePLUdetaille.pop();
                 }
 

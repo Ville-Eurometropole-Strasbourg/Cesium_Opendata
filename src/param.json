@@ -124,15 +124,20 @@
           "choice": "PLUi Plan de Zonage",
           "choiceTableau": "PLU"
         },
-
         {
           "type_donnee": "plu_detaille",
           "temps_reel": "oui",
           "id_data": "ODPLUdetaille",
           "name": "PLU détaillé",
-          "url_info": "https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/"
+          "url_info": "https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "ville",
+          "couleur_classif" : {
+            "STRASBOURG": "#D7146E"
+          },
+          "alpha": 0.7,
+          "choice": "PLU détaillé"
         },
-
         {
           "type_donnee": "surface",
           "temps_reel": "non",
@@ -1182,7 +1187,6 @@
           },
           "choice": "Boucle sportive VitaBoucle",
           "choiceTableau": "Vitaboucle"
-
         }
       ]
 
@@ -1231,6 +1235,100 @@
           "end": "-1",
           "name_contour" : "Limites de communes",
           "choiceTableau" : "QualiteAir"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODLCZadapte",
+          "name": "LCZ adapté localement",
+          "url_data": "data/LCZ/LCZ_local.json",
+          "champ_classif": "Classe",
+          "couleur_classif" : {
+            "LCZ A": "#006a00",
+            "LCZ B": "#47991f",
+            "LCZ D": "#b9db79",
+            "LCZ E": "#000000",
+            "LCZ F": "#fbf7ae",
+            "LCZ G": "#6a6aff",
+            "LCZ 2": "#d10000",
+            "LCZ 3": "#ff0000",
+            "LCZ 4": "#bf4d00",
+            "LCZ 5": "#ff6600",
+            "LCZ 6": "#ff9955",
+            "LCZ 8": "#bcbcbc",
+            "LCZ 9": "#ffccaa"
+          },
+          "alpha": 0.7,
+          "name_contour": "Limites des zones LCZ",
+          "couleur_contour": "#FFFFFF",
+          "taille_contour": 1,
+          "couleur_highlight": "#708090",
+          "alpha_highlight": 0.5,
+          "nom_legende": "LCZ_adapte_localement",
+          "couleur_legende": {
+            "LCZ_A_Dense_trees": "#006a00",
+            "LCZ_B_Scattered_trees": "#00aa00",
+            "LCZ_D_Low_plants": "#b9db79",
+            "LCZ_E_Bare_rock_or_paved": "#000000",
+            "LCZ_F_Bare_soil_or_sand": "#fbf7ae",
+            "LCZ_G_Water": "#6a6aff",
+            "LCZ_2_Compact_midrise": "#d10000",
+            "LCZ_3_Compact_low_rise": "#ff0000",
+            "LCZ_4_Open_high_rise": "#bf4d00",
+            "LCZ_5_Open_midrise": "#ff6600",
+            "LCZ_6_Open_low_rise": "#ff9955",
+            "LCZ_8_Large_low_rise": "#bcbcbc",
+            "LCZ_9_Sparsely_built": "#ffccaa"
+          },
+          "choice": "LCZ adapte"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODLCZinter",
+          "name": "LCZ norme internationale",
+          "url_data": "data/LCZ/LCZ_international.json",
+          "champ_classif": "Classe",
+          "couleur_classif" : {
+            "LCZ A": "#006a00",
+            "LCZ B": "#47991f",
+            "LCZ D": "#b9db79",
+            "LCZ E": "#000000",
+            "LCZ F": "#fbf7ae",
+            "LCZ G": "#6a6aff",
+            "LCZ 2": "#d10000",
+            "LCZ 3": "#ff0000",
+            "LCZ 4": "#bf4d00",
+            "LCZ 5": "#ff6600",
+            "LCZ 6": "#ff9955",
+            "LCZ 8": "#bcbcbc",
+            "LCZ 9": "#ffccaa"
+          },
+          "alpha": 0.7,
+          "name_contour": "Limites des zones LCZ",
+          "couleur_contour": "#FFFFFF",
+          "taille_contour": 1,
+          "couleur_highlight": "#708090",
+          "alpha_highlight": 0.5,
+          "nom_legende": "LCZ_norme_internationale",
+          "couleur_legende": {
+            "LCZ_A_Dense_trees": "#006a00",
+            "LCZ_B_Scattered_trees": "#00aa00",
+            "LCZ_D_Low_plants": "#b9db79",
+            "LCZ_E_Bare_rock_or_paved": "#000000",
+            "LCZ_F_Bare_soil_or_sand": "#fbf7ae",
+            "LCZ_G_Water": "#6a6aff",
+            "LCZ_2_Compact_midrise": "#d10000",
+            "LCZ_3_Compact_low_rise": "#ff0000",
+            "LCZ_4_Open_high_rise": "#bf4d00",
+            "LCZ_5_Open_midrise": "#ff6600",
+            "LCZ_6_Open_low_rise": "#ff9955",
+            "LCZ_8_Large_low_rise": "#bcbcbc",
+            "LCZ_9_Sparsely_built": "#ffccaa"
+          },
+          "choice": "LCZ norme internationale"
         }
       ]
     },

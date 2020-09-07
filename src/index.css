@@ -39,12 +39,13 @@ html, body {
 #menu-content {
   display: block;
   width: 100%;
-  background-color: #B7C3D3;
+  background-image: linear-gradient(90deg, #020024 0%, #434d53 35%, #d7dcdd 100%);
   font-family: Arial, Gadget, sans-serif;
   font-size: 1.6em;
   font-weight: bold;
   padding: 1px;
-  border-radius: 5px 5px 0 0;
+  border-style: solid;
+  border-radius: 5px 5px 5px 5px;
   text-align: center;
   color: black;
 }
@@ -136,7 +137,7 @@ html, body {
   background-color: #909499;
   font-size: large;
   padding: 5px;
-  border-radius: 5px 5px 0 0;
+  border-radius: 5px 5px 5px 5px;
   text-align: center;
   color: white;
   cursor: pointer;
@@ -180,8 +181,8 @@ html, body {
   overflow-x: none;
 }
 
-/* boutons config et ajout de fichier interactif */
-#boutonfile {
+/* boutons en haut du menu */
+/*#boutonfile {
   display: block;
   position: absolute;
   left: 340px;
@@ -206,7 +207,20 @@ html, body {
   color: black;
   width: 25%;
   cursor: pointer;
+}*/
+
+#doc {
+  display: block;
+  position: absolute;
+  right: 140px;
 }
+
+#guide {
+  display: block;
+  position: absolute;
+  left: 130px;
+}
+
 
 /*
  *
@@ -312,9 +326,13 @@ i {
   border-width: 0 3px 3px 0;
   display: inline-block;
   padding: 3px;
-  left: 400px;
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
+}
+
+.arrow {
+  position: absolute;
+  right: 15px;
 }
 
 
@@ -411,12 +429,6 @@ i {
 #link.menu-open {
   left:740px;
   transition: left 0.5s;
-}
-
-.aide {
-  display: none;
-  background-color: #FFFFFF;
-  font-size: small;
 }
 
 /* ouverture du contenu en dessous des boutons de la boîte à outils */
