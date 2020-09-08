@@ -438,6 +438,14 @@ i {
   border-radius: 3px;
 }
 
+#camera-content {
+  display: none;
+  position: absolute;
+  max-height: 450px;
+  overflow-y: scroll;
+  overflow-x: none;
+}
+
 /*
  *
  * Partie en bas à droite de l'écran

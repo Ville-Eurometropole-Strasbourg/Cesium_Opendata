@@ -4,7 +4,6 @@
       "couches": [
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODPLUiZonage",
           "name": "PLU - Règlement graphique et écrit",
@@ -140,7 +139,6 @@
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODTerrasses",
           "name": "Terrasses autorisées en 2019",
@@ -159,7 +157,6 @@
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODTerrasses2020",
           "name": "Terrasses autorisées en 2020",
@@ -183,7 +180,6 @@
       "couches": [
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODLimitesCommunes",
           "name": "LIMITES DE COMMUNES",
@@ -204,7 +200,6 @@
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODLimitesSections",
           "name": "LIMITES DE SECTIONS",
@@ -225,7 +220,6 @@
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreAchenheim",
           "name": "ACHENHEIM",
@@ -241,12 +235,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral ACHENHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreBischheim",
           "name": "BISCHHEIM",
@@ -262,12 +255,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral BISCHHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreBlaesheim",
           "name": "BLAESHEIM",
@@ -283,12 +275,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral BLAESHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreBreuschwickersheim",
           "name": "BREUSCHWICKERSHEIM",
@@ -304,12 +295,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral BREUSCHWICKERSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreEckbolsheim",
           "name": "ECKBOLSHEIM",
@@ -325,12 +315,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral ECKBOLSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreEckwersheim",
           "name": "ECKWERSHEIM",
@@ -346,12 +335,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral ECKWERSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreEntzheim",
           "name": "ENTZHEIM",
@@ -367,12 +355,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral ENTZHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreEschau",
           "name": "ESCHAU",
@@ -388,12 +375,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral ESCHAU",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreFegersheim",
           "name": "FEGERSHEIM",
@@ -409,12 +395,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral FEGERSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreGeispolsheim",
           "name": "GEISPOLSHEIM",
@@ -430,12 +415,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral GEISPOLSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreHangenbieten",
           "name": "HANGENBIETEN",
@@ -451,12 +435,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral HANGENBIETEN",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreHoenheim",
           "name": "HOENHEIM",
@@ -472,12 +455,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral HOENHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreHoltzheim",
           "name": "HOLTZHEIM",
@@ -493,12 +475,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral HOLTZHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreIllkirch",
           "name": "ILLKIRCH-GRAFFENSTADEN",
@@ -514,12 +495,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral ILLKIRCH-GRAFFENSTADEN",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreKolbsheim",
           "name": "KOLBSHEIM",
@@ -535,12 +515,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral KOLBSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreLampertheim",
           "name": "LAMPERTHEIM",
@@ -556,12 +535,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral LAMPERTHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreLingolsheim",
           "name": "LINGOLSHEIM",
@@ -577,12 +555,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral LINGOLSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreLipsheim",
           "name": "LIPSHEIM",
@@ -598,12 +575,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral LIPSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreMittelhausbergen",
           "name": "MITTELHAUSBERGEN",
@@ -619,12 +595,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral MITTELHAUSBERGEN",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreMundolsheim",
           "name": "MUNDOLSHEIM",
@@ -640,12 +615,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral MUNDOLSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreNiederhausbergen",
           "name": "NIEDERHAUSBERGEN",
@@ -661,12 +635,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral NIEDERHAUSBERGEN",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreOberhausbergen",
           "name": "OBERHAUSBERGEN",
@@ -682,12 +655,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral OBERHAUSBERGEN",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreOberschaeffolsheim",
           "name": "OBERSCHAEFFOLSHEIM",
@@ -703,12 +675,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral OBERSCHAEFFOLSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreOsthoffen",
           "name": "OSTHOFFEN",
@@ -724,12 +695,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral OSTHOFFEN",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreOstwald",
           "name": "OSTWALD",
@@ -745,12 +715,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral OSTWALD",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastrePlobsheim",
           "name": "PLOBSHEIM",
@@ -766,12 +735,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral PLOBSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreReichstett",
           "name": "REICHSTETT",
@@ -787,12 +755,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral REICHSTETT",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreSchiltigheim",
           "name": "SCHILTIGHEIM",
@@ -808,12 +775,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral SCHILTIGHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreSouffelweyersheim",
           "name": "SOUFFELWEYERSHEIM",
@@ -829,12 +795,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral SOUFFELWEYERSHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgCentre",
           "name": "STRASBOURG Centre",
@@ -850,12 +815,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Centre",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgGareKleber",
           "name": "STRASBOURG Gare-Kléber",
@@ -871,12 +835,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Gare-Kléber",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgEsplaBourseKrut",
           "name": "STRASBOURG Esplanade-Bourse-Krutenau",
@@ -892,12 +855,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Esplanade-Bourse-Krutenau",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgNeudorf",
           "name": "STRASBOURG Neudorf-Schluthfeld-Port du Rhin-Musau",
@@ -913,12 +875,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Neudorf-Schluthfeld-Port du Rhin-Musau",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgMeinau",
           "name": "STRASBOURG Meinau",
@@ -934,12 +895,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Meinau",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgNeuhof",
           "name": "STRASBOURG Neuhof",
@@ -955,12 +915,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Neuhof",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgKoenigsMV",
           "name": "STRASBOURG Koenigshoffen-Montagne Verte",
@@ -976,12 +935,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Koenigshoffen-Montagne Verte",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgCroHautPotHohberg",
           "name": "STRASBOURG Cronenbourg-Hautepierre-Poteries-Hohberg",
@@ -997,12 +955,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Cronenbourg-Hautepierre-Poteries-Hohberg",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreStrasbourgRobertsau",
           "name": "STRASBOURG Robertsau",
@@ -1018,12 +975,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral STRASBOURG Robertsau",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreVendenheim",
           "name": "VENDENHEIM",
@@ -1039,12 +995,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral VENDENHEIM",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreLaWantzenau",
           "name": "LA WANTZENAU",
@@ -1060,12 +1015,11 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral LA WANTZENAU",
           "choiceTableau": "Cadastre"
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODCadastreWolfisheim",
           "name": "WOLFISHEIM",
@@ -1081,7 +1035,7 @@
           "taille_contour": 2.0,
           "couleur_highlight": "#FF0000",
           "alpha_highlight": 0.5,
-          "choice": "Parcellaire cadastral",
+          "choice": "Parcellaire cadastral WOLFISHEIM",
           "choiceTableau": "Cadastre"
         }
       ]
@@ -1091,7 +1045,6 @@
       "couches": [
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODStationPayant",
           "name": "Stationnement payant",
@@ -1166,7 +1119,6 @@
         },
         {
           "type_donnee": "ligne",
-          "temps_reel": "non",
           "id_data": "ODVitaBoucle",
           "name": "Boucles sportives : Vitaboucle",
           "url_info": "https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/",
@@ -1196,7 +1148,6 @@
       "couches": [
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "oui",
           "id_data": "ODQualiteAir",
           "name": "Qualité de l'air Eurométropole (sur 7 jours)",
@@ -1238,7 +1189,6 @@
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODLCZadapte",
           "name": "LCZ adapté localement",
@@ -1285,7 +1235,6 @@
         },
         {
           "type_donnee": "surface",
-          "temps_reel": "non",
           "animation": "non",
           "id_data": "ODLCZinter",
           "name": "LCZ norme internationale",
@@ -1337,7 +1286,6 @@
       "couches": [
         {
           "type_donnee": "point",
-          "temps_reel": "non",
           "couche_attributaire": "non",
           "id_data": "ODPatrimoine",
           "name": "Patrimoine de mon quartier",

@@ -1,0 +1,172 @@
+{ "param": "Cesium_Opendata",
+  "menu": [
+    { "name": "REGLEMENTATION URBAINE",
+      "couches": [
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODTerrasses",
+          "name": "Terrasses autorisées en 2019",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2019/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "ville",
+          "couleur_classif" : {
+            "STRASBOURG": "#D7146E"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Terrasses_autorisées_en_2019",
+          "couleur_legende": {
+            "Terrasses_autorisées_2019": "#D7146E"
+          },
+          "choice": "Terrasses 2019"
+        },
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "non",
+          "id_data": "ODLimitesCommunes",
+          "name": "LIMITES DE COMMUNES",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/limites_de_communes/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=limites_de_communes&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&timezone=Europe/Berlin",
+          "champ_classif": "num_dept",
+          "couleur_classif" : {
+            "67": "#AAAAAA"
+          },
+          "alpha": 0.01,
+          "name_contour": "Limite de communes",
+          "couleur_contour": "#FFFFFF",
+          "taille_contour": 3.0,
+          "couleur_highlight": "#D3D3D3",
+          "alpha_highlight": 0.2,
+          "choice": "Limites de communes",
+          "choiceTableau": "Communes"
+        }
+      ]
+    },
+    { "name": "TRANSPORTS ET DEPLACEMENTS",
+      "couches": [
+        {
+          "type_donnee": "ligne",
+          "temps_reel": "oui",
+          "id_data": "ODTraffic",
+          "name": "Traffic routier",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "ligne_2D": true,
+          "champ_classif": "etat",
+          "couleur_classif" : {
+            "1": "#15780c",
+            "2": "#de8b1f",
+            "3": "#fc0000"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Traffic_routier_Eurométropole",
+          "couleur_legende": {
+            "Fluide": "#15780c",
+            "Dense": "#de8b1f",
+            "Saturé": "#e80707"
+          },
+          "choice": "Traffic routier SIRAC",
+          "choiceTableau": "Traffic"
+
+        }
+      ]
+
+    },
+
+    { "name": "SPORTS ET LOISIRS ",
+      "couches": [
+        {
+          "type_donnee": "point",
+          "temps_reel": "non",
+          "couche_attributaire": "non",
+          "id_data": "ODPatrimoine",
+          "name": "Patrimoine de mon quartier",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=patrimoine_quartier&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "point_3D": false,
+          "cluster": true,
+          "image": "src/img/billboard/marker_red.png",
+          "couleur_ligne": "#cf1204",
+          "nom_legende": "Patrimoine_quartier",
+          "couleur_legende": {
+            "Patrimoine     ": "#fcba03"
+          },
+          "billboard_legende": "'<img src='src/img/billboard/marker_red.png'>'",
+          "choiceTableau": "Patrimoine"
+        },
+        {
+          "type_donnee": "point",
+          "temps_reel": "oui",
+          "couche_attributaire": "oui",
+          "url_attribut": "https://data.strasbourg.eu/api/records/1.0/download?dataset=frequentation-en-temps-reel-des-piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json",
+          "id_data": "ODPiscine",
+          "name": "Fréquentation des piscines",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/frequentation-en-temps-reel-des-piscines/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_piscines&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "point_3D": false,
+          "cluster": false,
+          "image": "src/img/billboard/pool.png",
+          "couleur_ligne": "#4287f5",
+          "nom_legende": "Fréquentation_piscine",
+          "couleur_legende": {
+            "Piscine        ": "#fcba03"
+          },
+          "billboard_legende": "'<img src='src/img/billboard/pool_legend.png'>'",
+          "choiceTableau": "Piscine"
+        }
+      ]
+
+    },
+
+    { "name": "ENVIRONNEMENT",
+      "couches": [
+        {
+          "type_donnee": "surface",
+          "temps_reel": "non",
+          "animation": "oui",
+          "id_data": "ODQualiteAir",
+          "name": "Qualité de l'air Eurométropole (sur 7 jours)",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=qualite-de-lair-communes-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "valeur",
+          "couleur_classif" : {
+            "1": "#3b8019",
+            "2": "#47991f",
+            "3": "#589917",
+            "4": "#9EE01A",
+            "5": "#e8e823",
+            "6": "#e3a112",
+            "7": "#f07a13",
+            "8": "#f04a13",
+            "9": "#c91a0a",
+            "10": "#850b0b"
+          },
+          "alpha": 0.7,
+          "name_contour": "Limites de communes",
+          "nom_legende": "Qualite_Air_Eurométropole",
+          "couleur_legende": {
+            "1_Très_Bon": "#3b8019",
+            "2_Très_Bon": "#47991f",
+            "3_Bon": "#589917",
+            "4_Bon": "#9EE01A",
+            "5_Moyen": "#e8e823",
+            "6_Médiocre": "#e3a112",
+            "7_Médiocre": "#f07a13",
+            "8_Mauvais": "#f04a13",
+            "9_Mauvais": "#c91a0a",
+            "10_Très_Mauvais": "#850b0b"
+          },
+          "choice": "Qualité air communes Eurométropole",
+          "start": "-8",
+          "end": "-1",
+          "name_contour" : "Limites de communes",
+          "choiceTableau" : "QualiteAir"
+        }
+      ]
+    }
+
+  ]
+
+}

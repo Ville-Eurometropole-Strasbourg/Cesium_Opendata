@@ -1502,9 +1502,10 @@ class Globe {
 
             if(options.choiceTableau !== undefined) {
               var tabl = new TableauAttribut();
+
               // l'attribut choiceTableau permet de classifier entre les différentes données et de charger le tableau d'attributs au bon format
-              var tablAttribut = 'tabl.createTableau' + options.choiceTableau + '(entity, dataSource);';
-              eval(tablAttribut);
+              var tablAttribut = 'createTableau' + options.choiceTableau;
+              tabl[tablAttribut](entity, dataSource);
             }
 
             //Dessine le contour des limites des entités
@@ -1568,7 +1569,6 @@ class Globe {
           }
           // If a feature was previously highlighted, undo the highlight
           if (Cesium.defined(highlighted.feature)) {
-            console.log(highlighted.originalMaterial);
             highlighted.feature.id.polygon.material = highlighted.originalMaterial;
             highlighted.feature = undefined;
             globe.viewer.scene.requestRender();
@@ -1674,8 +1674,8 @@ class Globe {
             if(options.choiceTableau !== undefined) {
               var tabl = new TableauAttribut();
               // l'attribut choiceTableau permet de classifier entre les différentes données et de charger le tableau d'attributs au bon format
-              var tablAttribut = 'tabl.createTableau' + options.choiceTableau + '(entity, dataSource);';
-              eval(tablAttribut);
+              var tablAttribut = 'createTableau' + options.choiceTableau;
+              tabl[tablAttribut](entity, dataSource);
             }
 
             entity.polyline.material = color;
@@ -1856,13 +1856,13 @@ class Globe {
           var tabl = new TableauAttribut();
           // on lie les attributs des points au nouvelles entités billboard et lignes
           // l'attribut choiceTableau permet de classifier entre les différentes données
-          var tablBillboard = 'tabl.createTableau' + options.choiceTableau + '(billboardEntity, entity);';
-          eval(tablBillboard);
+          var tablBillboard = 'createTableau' + options.choiceTableau;
+          tabl[tablBillboard](billboardEntity, entity);
 
           // si on a tracé une ligne depuis le billboard jusqu'au sol on ajoute les attributs sur la ligne aussi
           if(point3D === false) {
-            var tablLine = 'tabl.createTableau' + options.choiceTableau + '(lineEntity, entity);';
-            eval(tablLine);
+            var tablLine = 'createTableau' + options.choiceTableau;
+            tabl[tablLine](lineEntity, entity);
           }
         }
 
@@ -2145,8 +2145,8 @@ class Globe {
             if(options.choiceTableau !== undefined) {
               var tabl = new TableauAttribut();
 
-              var tablEntity = 'tabl.createTableau' + options.choiceTableau + '(entity);';
-              eval(tablEntity);
+              var tablEntity = 'createTableau' + options.choiceTableau;
+              tabl[tablEntity](entity);
 
             }
 
@@ -2315,10 +2315,12 @@ class Globe {
                 if(options.choiceTableau !== undefined){
                   // on lie les attributs des points au nouvelles entités billboard et lignes
                   // l'attribut choiceTableau permet de classifier entre les différentes données
-                  var tablBillboard = 'tabl.createTableau' + options.choiceTableau + '(entity, jsonAttribut, billboard[i], coordLabel, dataSource);';
-                  eval(tablBillboard);
-                  var tablLine = 'tabl.createTableau' + options.choiceTableau + '(entity, jsonAttribut, lineEntity, coordLabel, dataSource);';
-                  eval(tablLine);
+                  var tablBillboard = 'createTableau' + options.choiceTableau;
+                  tabl[tablBillboard](entity, jsonAttribut, billboard[i], coordLabel, dataSource);
+
+                  var tablLine = 'createTableau' + options.choiceTableau;
+                  tabl[tablLine](entity, jsonAttribut, billboard[i], coordLabel, dataSource);
+
                 }
 
 
@@ -2326,8 +2328,8 @@ class Globe {
                 billboard.push(globe.createBillboard(position, image, false));
 
                 if(options.choiceTableau !== undefined) {
-                  var tablBillboard = 'tabl.createTableau' + options.choiceTableau + '(entity, jsonAttribut, billboard[i], position, dataSource);';
-                  eval(tablBillboard);
+                  var tablBillboard = 'createTableau' + options.choiceTableau;
+                  tabl[tablBillboard](entity, jsonAttribut, billboard[i], coordLabel, dataSource);
                 }
 
               }

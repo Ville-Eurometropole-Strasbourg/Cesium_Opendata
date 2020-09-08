@@ -60,6 +60,9 @@ class Data {
           boutonMenu.classList.add('panel-title');
           boutonMenu.innerHTML = paramJson.menu[i].name;
 
+          var space = document.createTextNode("     ");
+          boutonMenu.appendChild(space);
+
           // et la flèche pour le dérouler
           let fleche = document.createElement('i');
           fleche.classList.add('arrow');
@@ -102,17 +105,15 @@ class Data {
             couche.appendChild(spaceBouton);
 
             // on créé le bouton info et le lien vers la donnée correspondante
-            if(paramJson.menu[i].couches[j].url_info !== undefined) {
-              let lienInfo = document.createElement("a");
-              lienInfo.href = paramJson.menu[i].couches[j].url_info;
-              lienInfo.target = "_blank";
-              let boutonInfo = document.createElement('BUTTON');
-              boutonInfo.classList.add('button');
-              boutonInfo.title = "Informations sur les données"
-              boutonInfo.innerHTML = '<img src="src/img/icons8-info.png">';
-              lienInfo.appendChild(boutonInfo);
-              couche.appendChild(lienInfo);
-            }
+            let lienInfo = document.createElement("a");
+            lienInfo.href = paramJson.menu[i].couches[j].url_info;
+            lienInfo.target = "_blank";
+            let boutonInfo = document.createElement('BUTTON');
+            boutonInfo.classList.add('button');
+            boutonInfo.title = "Informations sur les données"
+            boutonInfo.innerHTML = '<img src="src/img/icons8-info.png">';
+            lienInfo.appendChild(boutonInfo);
+            couche.appendChild(lienInfo);
 
             // Si la donnée est en temps réel, on créé un bouton actualiser
             if(paramJson.menu[i].couches[j].temps_reel === 'oui') {
@@ -144,6 +145,7 @@ class Data {
 
 
             couchesDiv.appendChild(couche);
+
 
             // on créé une variable différente unique pour chaque array de ligne de contour et de billboard
             window['line'+i+j] = [];
@@ -297,14 +299,11 @@ class Data {
                   choiceTableau: 'ER'
                 });
 
-
-
                 if(e.target.checked){
                   globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
                   globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point', "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>");
                   globe.viewer.scene.requestRender();
-
-                } else{
+                } else {
                   globe.legendManager.removeLegend('ODPLUdetailleLegend');
 
                   for(var k = 0; k < pluTiles.length+10; k++){
@@ -396,21 +395,6 @@ class Data {
 
             if(paramJson.menu[i].couches[j].type_donnee === 'plu_detaille' && paramJson.menu[i].couches[j].temps_reel === 'oui') {
               document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
-                // Enlever les entités
-                for(var i = 0; i < pluTiles.length+10; i++){
-                  globe.viewer.entities.remove(pluTiles[i]);
-                }
-                // Vider le tableau
-                for(var j = 0; j <= pluTiles.length+1; j++){
-                  pluTiles.pop();
-                }
-                for(var i = 0; i < linePLUdetaille.length+10; i++){
-                  globe.viewer.entities.remove(linePLUdetaille[i]);
-                }
-                for(var j = 0; j <= linePLUdetaille.length+1; j++){
-                  linePLUdetaille.pop();
-                }
-
                 for(var k = 0; k < pluTiles.length+10; k++){
                   globe.viewer.entities.remove(pluTiles[k]);
                 }

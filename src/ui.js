@@ -361,6 +361,12 @@ class Menu {
     globe.annulFigure('#annulervol', volume);
     globe.supprFigure('#supprimervol', volume);
 
+    // supprime toutes les entités
+    globe.supprFigure('#suppr', billboard);
+    globe.supprFigure('#suppr', line);
+    globe.supprFigure('#suppr', surface);
+    globe.supprFigure('#suppr', volume);
+
     // Boutons radios pour l'affichage des formulaires de dessin
     document.querySelector('#cneutre').addEventListener('click', (e) => {
       globe.supprSouris();
@@ -453,31 +459,6 @@ class Menu {
 
       this.volumeList.classList.remove('hidden');
       this.aideCheckbox.classList.remove('hidden');
-    });
-
-    // supprime toutes les entités
-    document.querySelector('#suppr').addEventListener('click', function() {
-      console.log(line);
-      console.log(surface);
-      console.log(volume);
-      for(var i = 0; i <= billboard.length+10; i++){
-        globe.viewer.entities.remove(billboard[i]);
-        billboard.pop();
-      }
-      for(var i = 0; i <= line.length+10; i++){
-        globe.viewer.entities.remove(line[i]);
-        line.pop();
-      }
-      for(var i = 0; i <= surface.length+10; i++){
-        console.log(surface);
-        globe.viewer.entities.remove(surface[i]);
-        surface.pop();
-        console.log(surface);
-      }
-      for(var i = 0; i <= volume.length+10; i++){
-        globe.viewer.entities.remove(volume[i]);
-        volume.pop();
-      }
     });
 
     /*
