@@ -105,15 +105,18 @@ class Data {
             couche.appendChild(spaceBouton);
 
             // on créé le bouton info et le lien vers la donnée correspondante
-            let lienInfo = document.createElement("a");
-            lienInfo.href = paramJson.menu[i].couches[j].url_info;
-            lienInfo.target = "_blank";
-            let boutonInfo = document.createElement('BUTTON');
-            boutonInfo.classList.add('button');
-            boutonInfo.title = "Informations sur les données"
-            boutonInfo.innerHTML = '<img src="src/img/icons8-info.png">';
-            lienInfo.appendChild(boutonInfo);
-            couche.appendChild(lienInfo);
+            if(paramJson.menu[i].couches[j].url_info != undefined) {
+              let lienInfo = document.createElement("a");
+              lienInfo.href = paramJson.menu[i].couches[j].url_info;
+              lienInfo.target = "_blank";
+              let boutonInfo = document.createElement('BUTTON');
+              boutonInfo.classList.add('button');
+              boutonInfo.title = "Informations sur les données"
+              boutonInfo.innerHTML = '<img src="src/img/icons8-info.png">';
+              lienInfo.appendChild(boutonInfo);
+              couche.appendChild(lienInfo);
+            }
+
 
             // Si la donnée est en temps réel, on créé un bouton actualiser
             if(paramJson.menu[i].couches[j].temps_reel === 'oui') {
@@ -226,13 +229,13 @@ class Data {
                 if(paramJson.menu[i].couches[j].couche_attributaire === 'oui') {
                   globe.showPoint(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].url_attribut, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                     line: window['line'+i+j],
-                    couleur: paramJson.menu[i].couches[j].couleur_ligne,
+                    couleur: paramJson.menu[i].couches[j].couleur,
                     choiceTableau: paramJson.menu[i].couches[j].choiceTableau
                   });
                 } else {
                   globe.showPoint(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, undefined, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                     line: window['line'+i+j],
-                    couleur: paramJson.menu[i].couches[j].couleur_ligne,
+                    couleur: paramJson.menu[i].couches[j].couleur,
                     choiceTableau: paramJson.menu[i].couches[j].choiceTableau
                   });
                 }
@@ -376,7 +379,7 @@ class Data {
               document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
                 globe.updatePoint(paramJson.menu[i].couches[j].url_data, undefined, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                   line: window['line'+i+j],
-                  couleur: paramJson.menu[i].couches[j].couleur_ligne,
+                  couleur: paramJson.menu[i].couches[j].couleur,
                   choiceTableau: paramJson.menu[i].couches[j].choiceTableau
                 });
               });
@@ -387,7 +390,7 @@ class Data {
               document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
                 globe.updatePoint(paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].url_attribut, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                   line: window['line'+i+j],
-                  couleur: paramJson.menu[i].couches[j].couleur_ligne,
+                  couleur: paramJson.menu[i].couches[j].couleur,
                   choiceTableau: paramJson.menu[i].couches[j].choiceTableau
                 });
               });

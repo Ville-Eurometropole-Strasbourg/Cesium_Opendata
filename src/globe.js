@@ -1777,7 +1777,7 @@ class Globe {
   * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
   * @param  {Object} options facultatif - Les options pour le chargement
   * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
-  * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
+  * @param  {String} options.couleur La couleur de la ligne et de la puce pour le cluster au format '#FFFFFF'
   * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
   * @return  {GeoJsonDataSource} le json une fois que tout est chargé
   */
@@ -1888,17 +1888,17 @@ class Globe {
         billboardData.clustering.pixelRange = 80;
         billboardData.clustering.minimumClusterSize = 5;
 
-        // on créé les puces pour l'affichage
+        // on créé les puces pour l'affichage du cluster
         var pinBuilder = new Cesium.PinBuilder();
-        var pin50 = pinBuilder.fromText("50+", Cesium.Color.RED, 48).toDataURL();
-        var pin40 = pinBuilder.fromText("40+", Cesium.Color.RED, 48).toDataURL();
-        var pin30 = pinBuilder.fromText("30+", Cesium.Color.RED, 48).toDataURL();
-        var pin20 = pinBuilder.fromText("20+", Cesium.Color.RED, 48).toDataURL();
-        var pin10 = pinBuilder.fromText("10+", Cesium.Color.RED, 48).toDataURL();
+        var pin50 = pinBuilder.fromText("50+", Cesium.Color.fromCssColorString(options.couleur), 80).toDataURL();
+        var pin40 = pinBuilder.fromText("40+", Cesium.Color.fromCssColorString(options.couleur), 70).toDataURL();
+        var pin30 = pinBuilder.fromText("30+", Cesium.Color.fromCssColorString(options.couleur), 60).toDataURL();
+        var pin20 = pinBuilder.fromText("20+", Cesium.Color.fromCssColorString(options.couleur), 50).toDataURL();
+        var pin10 = pinBuilder.fromText("10+", Cesium.Color.fromCssColorString(options.couleur), 40).toDataURL();
 
         var singleDigitPins = new Array(8);
         for (var i = 0; i < singleDigitPins.length; ++i) {
-          singleDigitPins[i] = pinBuilder.fromText("" + (i), Cesium.Color.RED, 48).toDataURL();
+          singleDigitPins[i] = pinBuilder.fromText("" + (i), Cesium.Color.fromCssColorString(options.couleur), 30).toDataURL();
         }
 
         billboardData.clustering.clusterEvent.addEventListener(
@@ -1976,7 +1976,7 @@ class Globe {
     * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
     * @param  {Object} options facultatif - Les options pour le chargement
     * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
-    * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
+    * @param  {String} options.couleur La couleur de la ligne et de la puce pour le cluster au format '#FFFFFF'
     * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
     */
     showPoint(show, name, link, linkAttribut, image, billboard, point3D, cluster, options = {}){

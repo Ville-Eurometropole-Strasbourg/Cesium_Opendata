@@ -967,7 +967,7 @@ class Menu {
       globe.viewer.scene.requestRender();
     });
 
-    document.querySelector('#VitaBoucle3D').addEventListener('change', (e) => {
+    /*document.querySelector('#VitaBoucle3D').addEventListener('change', (e) => {
       var couleur = {
         "facile": "#15780c",
         "moyenne": "#097db8",
@@ -980,7 +980,7 @@ class Menu {
         colors: couleur,
         alpha: 0.7
       });
-    });
+    });*/
 
   }
   /*

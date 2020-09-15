@@ -497,6 +497,7 @@ createTableauQualiteAir(entity){
 
     // on rentre dans le fichier json chargé pour récupérer les attributs
     for(let j = 0; j < jsonAttribut.length; j++) {
+      // on fait le lien entre les deux tables en trouvant un attribut commun
       if(entity.name == jsonAttribut[j].fields.name) {
         billboard.description += '<tr><td>Statut</td><td>' + String(jsonAttribut[j].fields.realtimestatus) + '</td></tr>';
         billboard.description += '<tr><td>Occupation </td><td>' + String(jsonAttribut[j].fields.occupation) + '</td></tr>';
