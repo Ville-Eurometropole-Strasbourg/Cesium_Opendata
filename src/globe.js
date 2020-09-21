@@ -2426,7 +2426,7 @@ class Globe {
         var pludetaille = this.viewer.entities.add({
           polygon: {
             hierarchy: Cesium.Cartesian3.fromDegreesArray([latlon[3], latlon[2], latlon[1], latlon[2], latlon[1], latlon[0], latlon[3], latlon[0]]),
-            material: "data/plu/"+ zoom + "/" + temp.x + "/" + temp.y + ".png",
+            material: "https://3d.strasbourg.eu/CESIUM_OPENDATA/data/plu/"+ zoom + "/" + temp.x + "/" + temp.y + ".png",
             classificationType: Cesium.ClassificationType.CESIUM_3D_TILE
           },
         });

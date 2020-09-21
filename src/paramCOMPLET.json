@@ -124,6 +124,20 @@
           "choiceTableau": "PLU"
         },
         {
+          "type_donnee": "plu_detaille",
+          "temps_reel": "oui",
+          "id_data": "ODPLUdetaille",
+          "name": "PLU détaillé",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/carte_plu_detaille/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=terrasses-autorisees-en-2019&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "ville",
+          "couleur_classif" : {
+            "STRASBOURG": "#D7146E"
+          },
+          "alpha": 0.7,
+          "choice": "PLU détaillé"
+        },
+        {
           "type_donnee": "surface",
           "animation": "non",
           "id_data": "ODTerrasses",
@@ -1050,7 +1064,6 @@
             "2,1€/h": "#F378B5"
           },
           "choice": "Stationnement payant"
-
         },
         {
           "type_donnee": "ligne",
@@ -1075,12 +1088,10 @@
           },
           "choice": "Traffic routier SIRAC",
           "choiceTableau": "Traffic"
-
         }
       ]
 
     },
-
     { "name": "SPORTS ET LOISIRS ",
       "couches": [
         {
@@ -1127,9 +1138,7 @@
           "choiceTableau": "Vitaboucle"
         }
       ]
-
     },
-
     { "name": "ENVIRONNEMENT",
       "couches": [
         {
@@ -1267,7 +1276,6 @@
         }
       ]
     },
-
     { "name": "CULTURE",
       "couches": [
         {
@@ -1290,7 +1298,6 @@
         }
       ]
     }
-
 
   ]
 
