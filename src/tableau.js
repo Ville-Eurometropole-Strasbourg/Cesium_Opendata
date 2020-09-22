@@ -25,7 +25,7 @@ class TableauAttribut {
   */
   createTableauPLU(entity, dataSource) {
     //Renseignement des éléments de la boite d'information
-    entity.description ='<br/><table class="cesium-infoBox-defaultTable"><tbody>';
+    entity.description ='<br/><table class="cesium-infoBox-defaultTable"><tbody>'; // créé le tableau d'attributs
     if (Cesium.defined(entity.properties['photo'])) {
       entity.description += '<img src="https://sig.strasbourg.eu/datastrasbourg/plu_media/ims_zone/' + String(entity.properties['photo']) + '" align="center" width="99%">';
     }
@@ -299,7 +299,7 @@ class TableauAttribut {
     entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
   }
 
-
+  
     //--------------------------------------------------------------------------------------------------------------------------
     // Les fonctions appelées dans la fonction loadPolyline
 

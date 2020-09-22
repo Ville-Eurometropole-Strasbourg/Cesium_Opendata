@@ -207,6 +207,8 @@ class Data {
                   colors: cloneColor,
                   alpha: paramJson.menu[i].couches[j].alpha,
                   epaisseur: paramJson.menu[i].couches[j].epaisseur,
+                  couleurHighlight:  paramJson.menu[i].couches[j].couleur_highlight,
+                  alphaHighlight: paramJson.menu[i].couches[j].alpha_highlight,
                   choiceTableau: paramJson.menu[i].couches[j].choiceTableau
                 });
 

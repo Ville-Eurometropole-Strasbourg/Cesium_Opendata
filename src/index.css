@@ -249,7 +249,7 @@ html, body {
 
 
 /* Style de la legende */
-.legend .legend-color, .legend .legend-text{
+.legend .legend-color {
   display: inline-block;
   height: 25px;
   line-height: 25px;
@@ -261,6 +261,12 @@ html, body {
 }
 
 .legend .legend-text{
+  display: inline-block;
+  height: auto;
+  line-height: 25px;
+  width: 70%;
+  float: left;
+  margin-bottom: 5px;
   padding-left: 5px;
   text-align: left;
 }

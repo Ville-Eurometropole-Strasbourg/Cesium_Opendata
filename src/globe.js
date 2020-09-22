@@ -1711,40 +1711,45 @@ class Globe {
   * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
   * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
   * @param  {Number} options.epaisseur L'épaisseur de la ligne
+  * @param  {String} options.couleurHighlight La couleur du highlight quand on clique à l'intérieur du polygone au format '#FFFFFF'
+  * @param  {Number} options.alphaHighlight La transparence du highlight
   * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
   * @return  {GeoJsonDataSource} le json une fois que tout est chargé
   */
   showPolyline(show, name, link, clamp, choice, options = {}) {
     var handler = new Cesium.ScreenSpaceEventHandler(globe.viewer.canvas);
-    if(this.dataSources[name] == undefined){
-      // Information about the currently highlighted feature
-      var highlighted = {
-        feature : undefined,
-        originalMaterial : new Cesium.Color()
-      };
-      // when we click on the entity change its scale and color
 
-      handler.setInputAction(function(movement) {
-        var pickedObject = globe.viewer.scene.pick(movement.position);
-        if (!Cesium.defined(pickedObject)) {
-          return;
-        }
-        // If a feature was previously highlighted, undo the highlight
-        if (Cesium.defined(highlighted.feature)) {
-          highlighted.feature.id.polyline.material = highlighted.originalMaterial;
-          highlighted.feature = undefined;
-          globe.viewer.scene.requestRender();
-        }
-        // colorer la zone cliquée dans une couleur précise
-        if (Cesium.defined(pickedObject)) {
-          if (pickedObject.id.name === choice ) {
-            highlighted.feature = pickedObject;
-            highlighted.originalMaterial = pickedObject.id.polyline.material;
-            pickedObject.id.polyline.material = Cesium.Color.fromCssColorString('#ffe100').withAlpha(0.8);
+    if(this.dataSources[name] == undefined){
+      if(options.couleurSurf !== undefined) {
+        // Information about the currently highlighted feature
+        var highlighted = {
+          feature : undefined,
+          originalMaterial : new Cesium.Color()
+        };
+        // when we click on the entity change its scale and color
+
+        handler.setInputAction(function(movement) {
+          var pickedObject = globe.viewer.scene.pick(movement.position);
+          if (!Cesium.defined(pickedObject)) {
+            return;
+          }
+          // If a feature was previously highlighted, undo the highlight
+          if (Cesium.defined(highlighted.feature)) {
+            highlighted.feature.id.polyline.material = highlighted.originalMaterial;
+            highlighted.feature = undefined;
             globe.viewer.scene.requestRender();
           }
-        }
-      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+          // colorer la zone cliquée dans une couleur précise
+          if (Cesium.defined(pickedObject)) {
+            if (pickedObject.id.name === choice ) {
+              highlighted.feature = pickedObject;
+              highlighted.originalMaterial = pickedObject.id.polyline.material;
+              pickedObject.id.polyline.material = Cesium.Color.fromCssColorString(couleurHighlight).withAlpha(transparenceHighlight);
+              globe.viewer.scene.requestRender();
+            }
+          }
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+      }
     }
 
     if(show){

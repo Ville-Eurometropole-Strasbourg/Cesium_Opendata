@@ -29,7 +29,7 @@ class LegendManager {
     legend.classList.add('legend');
     legend.classList.add('backdrop');
 
-    let textTitre = document.createElement('span');
+    let textTitre = document.createElement('div');
     textTitre.classList.add('legend-text');
     textTitre.innerHTML = titre;
 
@@ -87,7 +87,7 @@ class LegendManager {
       legendColor.innerHTML = symbol;
     }
 
-    let legendText = document.createElement('span');
+    let legendText = document.createElement('div');
     legendText.classList.add('legend-text');
     legendText.innerHTML = label;
 

@@ -5,6 +5,7 @@
         {
           "type_donnee": "surface",
           "animation": "non",
+          "temps_reel": "oui",
           "id_data": "ODTerrasses",
           "name": "Terrasses autorisées en 2019",
           "url_info": "https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2019/information/",
@@ -37,6 +38,46 @@
         {
           "type_donnee": "surface",
           "animation": "non",
+          "id_data": "ODPLUbatiexceptionnel",
+          "name": "PLU Bâti exceptionnel",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.type_prescription=07&refine.sous_type=07_bati_exceptionnel&timezone=Europe/Berlin",
+          "champ_classif": "sous_type",
+          "couleur_classif" : {
+            "07_bati_exceptionnel": "#bd7169"
+          },
+          "alpha": 0.7,
+          "couleur_contour": "#FFFFFF",
+          "taille_contour": 3.0,
+          "nom_legende": "PLU_Prescriptions_Surfaciques",
+          "couleur_legende": {
+            "Bâti_exceptionnel": "#bd7169"
+          },
+          "choice": "PLU Bâti exceptionnel"
+        },
+        {
+          "type_donnee": "surface",
+          "animation": "non",
+          "id_data": "ODPLUbatiexcepinteret",
+          "name": "PLU Bâti exceptionnel et intéressant",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.sous_type=07_bati_exceptionnel&refine.sous_type=07_bati_interessant&timezone=Europe/Berlin",
+          "champ_classif": "sous_type",
+          "couleur_classif" : {
+            "07_bati_exceptionnel": "#bd7169",
+            "07_bati_interessant": "#bd7239"
+          },
+          "alpha": 0.7,
+          "nom_legende": "PLU_Prescriptions_Surfaciques",
+          "couleur_legende": {
+            "Bâti_exceptionnel": "#bd7169",
+            "Bâti_interessant": "#bd7239"
+          },
+          "choice": "PLU Bâti exceptionnel et intéressant"
+        },
+        {
+          "type_donnee": "surface",
+          "animation": "non",
           "id_data": "ODLimitesCommunes",
           "name": "Limites de communes",
           "url_info": "https://data.strasbourg.eu/explore/dataset/limites_de_communes/information/",
@@ -53,6 +94,25 @@
           "alpha_highlight": 0.2,
           "choice": "Limites de communes",
           "choiceTableau": "Communes"
+        },
+        {
+          "type_donnee": "surface",
+          "animation": "non",
+          "id_data": "ODLimitesCommunesArnaud",
+          "name": "Limites Communes Arnaud",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/limites_de_communes/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=limites_de_communes&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "num_dept",
+          "couleur_classif" : {
+            "67": "#CD8179"
+          },
+          "alpha": 0.4,
+          "couleur_contour": "#FFFFFF",
+          "taille_contour": 3,
+          "couleur_highlight": "#377357",
+          "alpha_highlight": 0.7,
+          "choice": "Limite de commune Arnaud"
+
         }
       ]
     },
@@ -114,6 +174,29 @@
           "choice": "Zone de stationnement résidant",
           "choiceTableau": "Parkres"
 
+        },
+        {
+          "type_donnee": "surface",
+          "animation": "non",
+          "id_data": "ODZonesStationnementPayant",
+          "name": "Zones de stationnement payant",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/stationnement-payant/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=stationnement-payant&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "libelle",
+          "couleur_classif" : {
+            "0.5€/h ou 1€/3h": "#C4E7A1",
+            "1,7€/h": "#FCE486",
+            "2,1€/h": "#F79FA3"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Tarifs_de_la_1ère_heure",
+          "couleur_legende": {
+            "0.5€/h_ou_1€/3h": "#C4E7A1",
+            "1,7€/h": "#FCE486",
+            "2,1€/h": "#F79FA3"
+          },
+          "choice": "Zone de stationnement payant",
+          "choiceTableau": "Statpayant"
         }
       ]
 
@@ -152,7 +235,7 @@
           "cluster": false,
           "image": "src/img/billboard/pool.png",
           "couleur": "#4287f5",
-          "nom_legende": "Fréquentation_piscine",
+          "nom_legende": "Fréquentation piscine",
           "couleur_legende": {
             "Piscine        ": "#fcba03"
           },
@@ -162,6 +245,7 @@
         {
           "type_donnee": "ligne",
           "ligne_2D" : true,
+          "temps_reel": "oui",
           "id_data": "ODBouclesSportivesVitaboucle",
           "name": "Boucles sportives : Vitaboucle",
           "url_info": "https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/",
@@ -173,7 +257,8 @@
             "difficile": "#dc1e20"
           },
           "alpha": 0.7,
-          "nom_legende": "Boucles_sportives_Niveaux_de_difficultés",
+          "epaisseur": 3,
+          "nom_legende": "Boucles_sportives Niveaux_de_difficultés",
           "couleur_legende": {
             "Facile": "#43b84d",
             "Moyen": "#1486c4",
@@ -181,6 +266,24 @@
           },
           "choice": "Niveau de difficulté"
 
+        },
+        {
+          "type_donnee": "point",
+          "couche_attributaire": "non",
+          "id_data": "ODParcs",
+          "name": "Parcs",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/lieux_parcs/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_parcs&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "point_3D": false,
+          "cluster": false,
+          "image": "src/img/billboard/Park1.png",
+          "couleur": "#2A6D64",
+          "nom_legende": "Parcs",
+          "couleur_legende": {
+            "Parcs     ": "#2A6D64"
+          },
+          "billboard_legende": "'<img src='src/img/billboard/Park1.png'>'",
+          "choice": "Parc"
         }
       ]
 
@@ -210,18 +313,18 @@
           },
           "alpha": 0.7,
           "name_contour": "Limites de communes",
-          "nom_legende": "Qualite_Air_Eurométropole",
+          "nom_legende": "Qualite Air Eurométropole",
           "couleur_legende": {
-            "1_Très_Bon": "#3b8019",
-            "2_Très_Bon": "#47991f",
-            "3_Bon": "#589917",
-            "4_Bon": "#9EE01A",
-            "5_Moyen": "#e8e823",
-            "6_Médiocre": "#e3a112",
-            "7_Médiocre": "#f07a13",
-            "8_Mauvais": "#f04a13",
-            "9_Mauvais": "#c91a0a",
-            "10_Très_Mauvais": "#850b0b"
+            "1-Très Bon": "#3b8019",
+            "2-Très Bon": "#47991f",
+            "3-Bon": "#589917",
+            "4-Bon": "#9EE01A",
+            "5-Moyen": "#e8e823",
+            "6-Médiocre": "#e3a112",
+            "7-Médiocre": "#f07a13",
+            "8-Mauvais": "#f04a13",
+            "9-Mauvais": "#c91a0a",
+            "10-Très Mauvais": "#850b0b"
           },
           "choice": "Qualité air communes Eurométropole",
           "start": "-8",
@@ -241,7 +344,7 @@
           "image": "src/img/billboard/marker_green.png",
           "couleur": "#19630A",
           "billboard_legende": "'<img src='src/img/billboard/marker_green.png'>'",
-          "nom_legende": "Arbres_Remarquables",
+          "nom_legende": "Arbres Remarquables",
           "couleur_legende": {
             "Arbres": "#19630A"
           },
@@ -257,7 +360,7 @@
           "id_data": "ODPropInstitAchenheim",
           "name": "Propriétaires institutionnels Achenheim",
           "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",
-          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=proprietaires_institutionnels&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.nom_com=Achenheim&timezone=Europe/Berlin",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=proprietaires_institutionnels&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.nom_com=Achenheim&refine.nom_com=Bischheim&timezone=Europe/Berlin",
           "champ_classif": "libelle",
           "couleur_classif" : {
             "Eurométropole de Strasbourg": "#DEB41F",
@@ -265,11 +368,11 @@
             "NON_CADASTRE": "#F3AFE5"
           },
           "alpha": 0.7,
-          "nom_legende": "Propriétaires_institutionnels_Achenheim",
+          "nom_legende": "Propriétaires institutionnels Achenheim",
           "couleur_legende": {
-            "Eurométropole_de_Strasbourg": "#DEB41F",
-            "Ville_de_Strasbourg" : "#F5EC81",
-            "Non_Cadastré": "#F3AFE5"
+            "Eurométropole de Strasbourg": "#DEB41F",
+            "Ville de Strasbourg" : "#F5EC81",
+            "Non Cadastré": "#F3AFE5"
           },
           "choice": "Propriétaire instutionnel Achenheim"
 
