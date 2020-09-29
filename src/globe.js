@@ -1490,12 +1490,15 @@ class Globe {
 
         for (let i = 0; i < entities.length; i++) {
           let entity = entities[i];
+          console.log(entity.properties);
+          console.log(entity.properties[options.classificationField]);
           if (Cesium.defined(entity.polygon)) {
             let color = colors[entity.properties[options.classificationField]];
             if(!color){
               color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
               colors[entity.properties[options.classificationField]] = color;
             }
+            console.log(color);
 
             // si la donnée n'a pas de tableau d'attributs particulier, on change juste le nom des entités
             entity.name = choice;
@@ -1805,8 +1808,23 @@ class Globe {
       this.hideLoader();
       let entities = dataSource.entities.values;
 
+      if(options.colors != undefined){
+        Object.keys(options.colors).forEach(function(c){
+          options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
+          options.colors[c].alpha = options.alpha || 0.8;
+        })
+      }
+      let colors = options.colors || {};
+
       for(let i = 0; i < entities.length; i++) {
         let entity = entities[i];
+
+        if (Cesium.defined(entity.polygon)) {
+          let color = colors[entity.properties[options.classificationField]];
+          if(!color){
+            color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
+            colors[entity.properties[options.classificationField]] = color;
+          }
 
         // on récupère les coordonnées des points importés
         var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
