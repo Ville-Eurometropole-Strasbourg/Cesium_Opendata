@@ -15,9 +15,9 @@
             "STRASBOURG": "#D7146E"
           },
           "alpha": 0.7,
-          "nom_legende": "Terrasses_autorisées_en_2019",
+          "nom_legende": "Terrasses autorisées en 2019",
           "couleur_legende": {
-            "Terrasses_autorisées_2019": "#D7146E"
+            "Terrasses autorisées 2019": "#D7146E"
           },
           "choice": "Terrasses 2019"
         },
@@ -49,9 +49,9 @@
           "alpha": 0.7,
           "couleur_contour": "#FFFFFF",
           "taille_contour": 3.0,
-          "nom_legende": "PLU_Prescriptions_Surfaciques",
+          "nom_legende": "PLU Prescriptions Surfaciques",
           "couleur_legende": {
-            "Bâti_exceptionnel": "#bd7169"
+            "Bâti exceptionnel": "#bd7169"
           },
           "choice": "PLU Bâti exceptionnel"
         },
@@ -133,7 +133,9 @@
             "3": "#fc0000"
           },
           "alpha": 0.7,
-          "nom_legende": "Traffic_routier_Eurométropole",
+          "couleur_highlight": "#D3D3D3",
+          "alpha_highlight": 0.7,
+          "nom_legende": "Traffic routier Eurométropole",
           "couleur_legende": {
             "Fluide": "#15780c",
             "Dense": "#de8b1f",
@@ -166,10 +168,11 @@
           },
           "alpha": 0.7,
           "couleur_contour": "#4D4FF0",
-          "nom_legende": "Zone_de_stationnement_résidant",
+          "nom_legende": "Zone de stationnement résidant",
           "couleur_legende": {
             "Zone": "#E7AAE8"
           },
+          "couleur_border": "#4D4FF0",
           "taille_contour": 3,
           "choice": "Zone de stationnement résidant",
           "choiceTableau": "Parkres"
@@ -189,9 +192,9 @@
             "2,1€/h": "#F79FA3"
           },
           "alpha": 0.7,
-          "nom_legende": "Tarifs_de_la_1ère_heure",
+          "nom_legende": "Tarifs de la 1ère heure",
           "couleur_legende": {
-            "0.5€/h_ou_1€/3h": "#C4E7A1",
+            "0.5€/h ou 1€/3h": "#C4E7A1",
             "1,7€/h": "#FCE486",
             "2,1€/h": "#F79FA3"
           },
@@ -215,7 +218,7 @@
           "cluster": true,
           "image": "src/img/billboard/marker_red.png",
           "couleur": "#cf1204",
-          "nom_legende": "Patrimoine_quartier",
+          "nom_legende": "Patrimoine quartier",
           "couleur_legende": {
             "Patrimoine     ": "#fcba03"
           },
@@ -257,6 +260,8 @@
             "difficile": "#dc1e20"
           },
           "alpha": 0.7,
+          "couleur_highlight": "#D3D3D3",
+          "alpha_highlight": 0.7,
           "epaisseur": 3,
           "nom_legende": "Boucles_sportives Niveaux_de_difficultés",
           "couleur_legende": {
@@ -276,14 +281,29 @@
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_parcs&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
           "point_3D": false,
           "cluster": false,
-          "image": "src/img/billboard/Park1.png",
-          "couleur": "#2A6D64",
+          "image": "src/img/billboard/Park.png",
+          "couleur": "#607075",
           "nom_legende": "Parcs",
           "couleur_legende": {
-            "Parcs     ": "#2A6D64"
+            "Parcs      ": "#607075"
           },
-          "billboard_legende": "'<img src='src/img/billboard/Park1.png'>'",
-          "choice": "Parc"
+          "billboard_legende": "'<img src='src/img/billboard/Park.png'>'",
+          "choice": "Parc",
+          "choiceTableau": "Parc"
+        },
+        {
+          "type_donnee": "point",
+          "couche_attributaire": "non",
+          "id_data": "ODLieuxculturels",
+          "name": "Lieux culturels",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/lieux_culture/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_culture&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "point_3D": false,
+          "cluster": true,
+          "image": "src/img/billboard/Culture.png",
+          "couleur": "#607075",
+          "choice": "Lieu culturel",
+          "choiceTableau": "LieuCulturel"
         }
       ]
 
@@ -391,11 +411,11 @@
             "NON_CADASTRE": "#F3AFE5"
           },
           "alpha": 0.7,
-          "nom_legende": "Propriétaires_institutionnels_Eckbolsheim",
+          "nom_legende": "Propriétaires institutionnels Eckbolsheim",
           "couleur_legende": {
-            "Eurométropole_de_Strasbourg": "#DEB41F",
-            "Ville_de_Strasbourg" : "#F5EC81",
-            "Non_Cadastré": "#F3AFE5"
+            "Eurométropole de Strasbourg": "#DEB41F",
+            "Ville de Strasbourg" : "#F5EC81",
+            "Non Cadastré": "#F3AFE5"
           },
           "choice": "Propriétaire instutionnel Achenheim"
 
@@ -417,9 +437,9 @@
             "62": "#59188b"
           },
           "alpha": 0.7,
-          "nom_legende": "Bruit_routier_Indicateur_Ln_(Nuit)",
+          "nom_legende": "Bruit routier Indicateur Ln (Nuit)",
           "couleur_legende": {
-            "Supérieur_à_62_dB(A)": "#59188b"
+            "Supérieur à 62 dB(A)": "#59188b"
           },
           "choice": "Bruit routier"
 

@@ -25,7 +25,7 @@ class TableauAttribut {
   */
   createTableauPLU(entity, dataSource) {
     //Renseignement des éléments de la boite d'information
-    entity.description ='<br/><table class="cesium-infoBox-defaultTable"><tbody>'; // créé le tableau d'attributs
+    entity.description ='<br/><table class="cesium-infoBox-defaultTable"><tbody>';
     if (Cesium.defined(entity.properties['photo'])) {
       entity.description += '<img src="https://sig.strasbourg.eu/datastrasbourg/plu_media/ims_zone/' + String(entity.properties['photo']) + '" align="center" width="99%">';
     }
@@ -62,7 +62,7 @@ class TableauAttribut {
     if (Cesium.defined(entity.properties['commune'])) {
       entity.description += '<a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/pdf_commune/' + String(entity.properties['commune']) + '.pdf" target="_blank">Lien vers la présentation de la commune</a><br/><br/>';
     }
-    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Informations sur les données</a><br/><br/>';
   }
 
   /**
@@ -112,6 +112,7 @@ class TableauAttribut {
     entity.description += '<tr><td>Code précision </td><td>' + String(entity.properties['code_preci']) + '</td></tr>';
     entity.description += '<tr><td>Licence </td><td>' + String(entity.properties['licence']) + '</td></tr>';
     entity.description +='</tbody></table>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/limites_de_communes/information/" target="_blank" rel="noopener">Informations sur les données</a><br/><br/>';
   }
 
   /**
@@ -296,10 +297,26 @@ class TableauAttribut {
     entity.description += '<tr><td>Commune</td><td>' + String(entity.properties['commune']) + '</td></tr>';
     entity.description += '<tr><td>Surface (m²)</td><td>' + String(entity.properties['surf_m2']) + '</td></tr>';
     entity.description +='</tbody></table><br/>';
-    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/" target="_blank" rel="noopener">Informations sur les données</a><br/><br/>';
   }
 
-  
+  createTableauParkres(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    entity.description += '<tr><td>Zone</td><td>' + String(entity.properties['numero']) + '</td></tr>';
+    entity.description += '<tr><td>Détails</td><td>' + '<a href= "' + String(entity.properties['url_pdf']) + '" target="_blank"> zone ' + String(entity.properties['numero']) +' </a></td></tr>';
+    entity.description +='</tbody></table><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/stationnement_residant/information/" target="_blank" rel="noopener">Informations sur les données</a><br/>';
+  }
+
+  createTableauStatpayant(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    entity.description += '<tr><td>Tarif</td><td>' + String(entity.properties['libelle']) + '</td></tr>';
+    entity.description +='</tbody></table><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/stationnement-payant/information/" target="_blank" rel="noopener">Informations sur les données</a><br/>';
+  }
+
     //--------------------------------------------------------------------------------------------------------------------------
     // Les fonctions appelées dans la fonction loadPolyline
 
@@ -324,7 +341,7 @@ class TableauAttribut {
     entity.description += '<tr><td>debit</td><td>' + String(entity.properties['debit']) + '</td></tr>';
     entity.description += '<tr><td>ident</td><td>' + String(entity.properties['ident']) + '</td></tr>';
     entity.description +='</tbody></table><br/>';
-    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/" target="_blank" rel="noopener">Information sur les données</a><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/" target="_blank" rel="noopener">Informations sur les données</a><br/>';
   }
 
   /**
@@ -346,7 +363,7 @@ class TableauAttribut {
     entity.description += '<tr><td>Nom</td><td>' + String(entity.properties['nom']) + '</td></tr>';
     entity.description += '<tr><td>Identifiant</td><td>' + String(entity.properties['id']) + '</td></tr>';
     entity.description +='</tbody></table><br/>';
-    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/" target="_blank" rel="noopener">Information sur les données</a><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/" target="_blank" rel="noopener">Informations sur les données</a><br/>';
   }
 
 
@@ -396,7 +413,141 @@ class TableauAttribut {
     billboard.description += '<tr><td>Source donnée </td><td>' + String(entity.properties['source']) + '</td></tr>';
     billboard.description +='</tbody></table><br/>';
 
-    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank" rel="noopener">Informations sur les données</a><br/><br/>';
+  }
+
+  createTableauParc(billboard, entity){
+    //console.log('salut');
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+    var images = String(entity.properties['images']);
+    images = images.replace('[{"imageURL": "', '');
+    images = images.replace(/, "imageCopyright":/g,'');
+    images = images.substring(0, images.indexOf('"'));
+    var description = String(entity.properties['description']);
+    description = description.replace('{"de_DE": "', '');
+    description = description.replace('", "en_US": "', '');
+    description = description.replace('{"fr_FR": "', '');
+    description = description.replace('", "fr_FR": "', '');
+    description = description.replace(/\\n/g,'');
+    description = description.replace('"}','');
+    description = description.replace('{}','');
+    description = description.replace(/\\"/g,'"');
+    var acces = String(entity.properties['access']);
+    acces = acces.replace('{"de_DE": "', '');
+    acces = acces.replace('", "en_US": "', '');
+    acces = acces.replace('", "fr_FR": "', '');
+    acces = acces.replace('{"fr_FR": "', '');
+    acces = acces.replace(/\\n/g,'');
+    acces = acces.replace(/\\t/g,'');
+    acces = acces.replace('"}','');
+    var serviceandactivities = String(entity.properties['serviceandactivities']);
+    serviceandactivities = serviceandactivities.replace('{"de_DE": "', '');
+    serviceandactivities = serviceandactivities.replace('", "en_US": "', '');
+    serviceandactivities = serviceandactivities.replace('", "fr_FR": "', '');
+    serviceandactivities = serviceandactivities.replace('{"fr_FR": "', '');
+    serviceandactivities = serviceandactivities.replace(/\\n/g,'');
+    serviceandactivities = serviceandactivities.replace(/\\t/g,'');
+    serviceandactivities = serviceandactivities.replace('"}','');
+
+    //Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['name']);
+    billboard.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    if (Cesium.defined(entity.properties['images'])) {
+      billboard.description += '<img src="' + images + '" align="center" width="99%">';
+    }
+    billboard.description += '<p>' + description + '</p>';
+    billboard.description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '<tr><td>Adresse</td><td>' + String(entity.properties['address']) + '</td></tr>';
+    }
+    if (Cesium.defined(entity.properties['access'])) {
+      billboard.description += '<tr><td>Accès</td><td>' + acces + '</td></tr>';
+    }
+    if (Cesium.defined(entity.properties['friendlyurl'])) {
+      console.log(String(entity.properties['friendlyurl']));
+      billboard.description += '<tr><td>Lien vers le site du parc</td><td> <a href="' + String(entity.properties['friendlyurl']) + '"target="_blank">Lien</a></td></tr>';
+    }
+    if (Cesium.defined(entity.properties['serviceandactivities'])) {
+      billboard.description += '<tr><td>Services et activités</td><td>' + serviceandactivities + '</td></tr>';
+    }
+    if (Cesium.defined(entity.properties['documents'])) {
+      billboard.description += '<tr><td>Documents</td><td> <a href="' + String(entity.properties['documents']) + '"target="_blank">Lien vers la présentation</a></td></tr>';
+    }
+    billboard.description +='</tbody></table><br/>';
+    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_parcs/information/" target="_blank">Informations sur les données</a><br/><br/>';
+  }
+
+  createTableauLieuCulturel(billboard, entity){
+    //console.log('salut');
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+    /*var images = String(entity.properties['images']);
+    images = images.replace('[{"imageURL": "', '');
+    images = images.replace(/, "imageCopyright":/g,'');
+    images = images.substring(0, images.indexOf('"'));*/
+    var description = String(entity.properties['description']);
+    description = description.replace('{"de_DE": "', '');
+    description = description.replace('", "en_US": "', '');
+    description = description.replace('{"fr_FR": "', '');
+    description = description.replace('", "fr_FR": "', '');
+    description = description.replace(/\\n/g,'');
+    description = description.replace(/\\t/g,'');
+    description = description.replace('"}','');
+    description = description.replace('{}','');
+    description = description.replace(/\\"/g,'"');
+    var typelieu = String(entity.properties['types']);
+    typelieu = typelieu.replace('Cat_08_01;', '');
+    var accesslieu = String(entity.properties['access']);
+    accesslieu = accesslieu.replace('{"de_DE": "', '');
+    accesslieu = accesslieu.replace('", "en_US": "', '');
+    accesslieu = accesslieu.replace('{"fr_FR": "', '');
+    accesslieu = accesslieu.replace('", "fr_FR": "', '');
+    accesslieu = accesslieu.replace(/\\n/g,'');
+    accesslieu = accesslieu.replace(/\\t/g,'');
+    accesslieu = accesslieu.replace('"}','');
+    accesslieu = accesslieu.replace('{}','');
+    accesslieu = accesslieu.replace(/\\"/g,'"');
+    /*var acces = String(entity.properties['access']);
+    acces = acces.replace('{"de_DE": "', '');
+    acces = acces.replace('", "en_US": "', '');
+    acces = acces.replace('", "fr_FR": "', '');
+    acces = acces.replace('{"fr_FR": "', '');
+    acces = acces.replace(/\\n/g,'');
+    acces = acces.replace(/\\t/g,'');
+    acces = acces.replace('"}','');
+    var serviceandactivities = String(entity.properties['serviceandactivities']);
+    serviceandactivities = serviceandactivities.replace('{"de_DE": "', '');
+    serviceandactivities = serviceandactivities.replace('", "en_US": "', '');
+    serviceandactivities = serviceandactivities.replace('", "fr_FR": "', '');
+    serviceandactivities = serviceandactivities.replace('{"fr_FR": "', '');
+    serviceandactivities = serviceandactivities.replace(/\\n/g,'');
+    serviceandactivities = serviceandactivities.replace(/\\t/g,'');
+    serviceandactivities = serviceandactivities.replace('"}','');*/
+
+    //Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['name']);
+    billboard.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    billboard.description += '<p>' + description + '</p>';
+    billboard.description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
+    if (Cesium.defined(entity.properties['types'])) {
+      billboard.description += '<tr><td>Type de lieu</td><td>' + typelieu + '</td></tr>';
+    }
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '<tr><td>Adresse</td><td>' + String(entity.properties['address']) + '</td></tr>';
+    }
+    if (Cesium.defined(entity.properties['access'])) {
+      billboard.description += '<tr><td>Accès</td><td>' + accesslieu + '</td></tr>';
+    }
+    if (Cesium.defined(entity.properties['friendlyurl'])) {
+      billboard.description += '<tr><td>Lien vers le site du lieu</td><td> <a href="' + String(entity.properties['friendlyurl']) + '"target="_blank">Lien</a></td></tr>';
+    }
+    if (Cesium.defined(entity.properties['mail'])) {
+      billboard.description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';
+    }
+    if (Cesium.defined(entity.properties['characteristics'])) {
+      billboard.description += '<p>' + String(entity.properties['characteristics']) + '</p>';
+    }
+    billboard.description +='</tbody></table><br/>';
+    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_culture/information/" target="_blank">Informations sur les données</a><br/><br/>';
   }
 
   //--------------------------------------------------------------------------------------------------------------------------
@@ -420,7 +571,7 @@ createTableauQualiteAir(entity){
     entity.description += '<tr><td>Commune</td><td>' + String(entity.properties['lib_zone']) + '</td></tr>';
     entity.description += '<tr><td>Code zone</td><td>' + String(entity.properties['code_zone']) + '</td></tr>';
     entity.description +='</tbody></table><br/>';
-    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Information sur les données</a><br/><br/>';
+    entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Informations sur les données</a><br/><br/>';
   }
 
 
@@ -440,7 +591,7 @@ createTableauQualiteAir(entity){
   *
   */
   createTableauPiscine(entity, jsonAttribut, billboard, coordLabel, dataSource) {
-    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasite)
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
     var acces = String(entity.properties['access']);
     acces = acces.replace('{"fr_FR": "', '');
     acces = acces.replace(/\\n/g,'');
@@ -497,7 +648,6 @@ createTableauQualiteAir(entity){
 
     // on rentre dans le fichier json chargé pour récupérer les attributs
     for(let j = 0; j < jsonAttribut.length; j++) {
-      // on fait le lien entre les deux tables en trouvant un attribut commun
       if(entity.name == jsonAttribut[j].fields.name) {
         billboard.description += '<tr><td>Statut</td><td>' + String(jsonAttribut[j].fields.realtimestatus) + '</td></tr>';
         billboard.description += '<tr><td>Occupation </td><td>' + String(jsonAttribut[j].fields.occupation) + '</td></tr>';
@@ -558,8 +708,10 @@ createTableauQualiteAir(entity){
 
     billboard.description +='</tbody></table><br/>';
     billboard.description += '<p>' + description + '</p>';
-    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Information sur les données</a><br/><br/>';
+    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Informations sur les données</a><br/><br/>';
 
   }
+
+
 
 }

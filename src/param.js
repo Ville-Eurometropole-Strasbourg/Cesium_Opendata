@@ -186,7 +186,9 @@ class Data {
 
                 if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
                   if(e.target.checked){
-                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee);
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {
+                      couleurContour: paramJson.menu[i].couches[j].couleur_border
+                    });
                   } else{
                     globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
                   }
@@ -217,7 +219,7 @@ class Data {
 
                 if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
                   if(e.target.checked){
-                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee);
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee , {});
                   } else{
                     globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
                   }
@@ -244,7 +246,9 @@ class Data {
 
                 if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
                   if(e.target.checked){
-                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, paramJson.menu[i].couches[j].billboard_legende);
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {
+                      symbol: paramJson.menu[i].couches[j].billboard_legende
+                    } );
                   } else{
                     globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
                   }
@@ -280,7 +284,9 @@ class Data {
 
                 if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
                   if(e.target.checked){
-                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee);
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {
+                      couleurContour: paramJson.menu[i].couches[j].couleur_border
+                    });
                   } else{
                     globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
                   }
@@ -306,7 +312,9 @@ class Data {
 
                 if(e.target.checked){
                   globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
-                  globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point', "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>");
+                  globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point',{
+                    symbol: "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>"
+                  });
                   globe.viewer.scene.requestRender();
                 } else {
                   globe.legendManager.removeLegend('ODPLUdetailleLegend');

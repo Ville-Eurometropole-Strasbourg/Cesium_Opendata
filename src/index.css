@@ -271,6 +271,16 @@ html, body {
   text-align: left;
 }
 
+.legend .legend-symbol {
+  display: inline-block;
+  height: auto;
+  line-height: 25px;
+  width: 30%;
+  float: left;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
 .legend .legend-element:first-child{
   margin-top: 5px;
   text-align: left;

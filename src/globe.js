@@ -1510,7 +1510,7 @@ class Globe {
 
             //Dessine le contour des limites des entités
             if(options.couleurLigne !== undefined) {
-              options.line.push(this.drawLine(entity.polygon.hierarchy._value.positions, options.tailleLigne, options.couleurLigne, 0.7, true, options.nameLigne));
+              options.line.push(this.drawLine(entity.polygon.hierarchy._value.positions, options.tailleLigne, options.couleurLigne, 1, true, options.nameLigne));
             }
 
             // on classifie les entités par couleur
@@ -1711,7 +1711,7 @@ class Globe {
   * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
   * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
   * @param  {Number} options.epaisseur L'épaisseur de la ligne
-  * @param  {String} options.couleurHighlight La couleur du highlight quand on clique à l'intérieur du polygone au format '#FFFFFF'
+  * @param  {String} options.couleurHighlight La couleur du highlight quand on clique sur la ligne au format '#FFFFFF'
   * @param  {Number} options.alphaHighlight La transparence du highlight
   * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
   * @return  {GeoJsonDataSource} le json une fois que tout est chargé
@@ -1720,7 +1720,7 @@ class Globe {
     var handler = new Cesium.ScreenSpaceEventHandler(globe.viewer.canvas);
 
     if(this.dataSources[name] == undefined){
-      if(options.couleurSurf !== undefined) {
+      if(options.couleurHighlight !== undefined) {
         // Information about the currently highlighted feature
         var highlighted = {
           feature : undefined,
@@ -1744,7 +1744,7 @@ class Globe {
             if (pickedObject.id.name === choice ) {
               highlighted.feature = pickedObject;
               highlighted.originalMaterial = pickedObject.id.polyline.material;
-              pickedObject.id.polyline.material = Cesium.Color.fromCssColorString(couleurHighlight).withAlpha(transparenceHighlight);
+              pickedObject.id.polyline.material = Cesium.Color.fromCssColorString(options.couleurHighlight).withAlpha(options.alphaHighlight);
               globe.viewer.scene.requestRender();
             }
           }
