@@ -480,14 +480,43 @@ class TableauAttribut {
   createTableauLieuCulturel(billboard, entity){
     //console.log('salut');
     // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
-    /*var images = String(entity.properties['images']);
-    images = images.replace('[{"imageURL": "', '');
-    images = images.replace(/, "imageCopyright":/g,'');
-    images = images.substring(0, images.indexOf('"'));*/
+    var name = String(entity.properties['name']);
+    name = name.replace('"en_US": "Le Vaisseau", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Museum Le Vaisseau','');
+    name = name.replace('"en_US": "Église réformée Saint-Paul – St.Paul’s Reformed Church", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Die reformierte Kirche Saint-Paul (Paulskirche)','');
+    name = name.replace('"en_US": "Stimultania", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Stimultania','');
+    name = name.replace('"en_US": "European Centre for Contemporary Art Projects (CEAAC)", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Europäisches Zentrum für zeitgenössische künstlerische Aktionen (CEAAC)','');
+    name = name.replace('"en_US": "La Maison de la Radio - France 3", "fr_FR": "','');
+    name = name.replace('", "de_DE": "La Maison de la Radio - France 3','');
+    name = name.replace('"en_US": "La Manufacture des Tabacs (tobacco factory)", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Die Tabakmanufaktur','');
+    name = name.replace('"en_US": "University and Palais universitaire", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Universität und Palais universitaire','');
+    name = name.replace('"en_US": "Observatory", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Observatorium','');
+    name = name.replace('"en_US": "Law faculty", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Rechtswissenschaftliche Fakultät','');
+    name = name.replace('"en_US": "Stockfeld garden city", "fr_FR": "','');
+    name = name.replace('"en_US": "Stockfeld garden city", "fr_FR": "','');
+    name = name.replace('"en_US": "Cité Rotterdam", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Cité Rotterdam','');
+    name = name.replace('"en_US": "Haras National (national stud)", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Haras National (Nationales Pferdegestüt)','');
+    name = name.replace('"en_US": "The Palais de Justice, or courthouse", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Palais de Justice','');
+    name = name.replace('"en_US": "Cité de la Canardière", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Cité de la Canardière','');
+    name = name.replace('"en_US": "Hôtel du gouverneur militaire (military governor’s mansion)", "fr_FR": "','');
+    name = name.replace('", "de_DE": "Hôtel du Gouverneur militaire','');
     var description = String(entity.properties['description']);
-    description = description.replace('{"de_DE": "', '');
-    description = description.replace('", "en_US": "', '');
-    description = description.replace('{"fr_FR": "', '');
+    description = description.replace(/{"de_DE": "/g, '');
+    description = description.replace(/{"fr_FR": "/g, '');
+    description = description.replace(/{"en_US": "/g, 'Bonjour');
+    description = description.replace(/", "en_US": "/g, '');
+    description = description.replace(/", "de_DE": "/g, '');
     description = description.replace('", "fr_FR": "', '');
     description = description.replace(/\\n/g,'');
     description = description.replace(/\\t/g,'');
@@ -498,36 +527,22 @@ class TableauAttribut {
     typelieu = typelieu.replace('Cat_08_01;', '');
     var accesslieu = String(entity.properties['access']);
     accesslieu = accesslieu.replace('{"de_DE": "', '');
-    accesslieu = accesslieu.replace('", "en_US": "', '');
     accesslieu = accesslieu.replace('{"fr_FR": "', '');
+    accesslieu = accesslieu.replace('{"en_US": "', '');
+    accesslieu = accesslieu.replace('", "en_US": "', '');
+    accesslieu = accesslieu.replace('", "de_DE": "', '');
     accesslieu = accesslieu.replace('", "fr_FR": "', '');
     accesslieu = accesslieu.replace(/\\n/g,'');
     accesslieu = accesslieu.replace(/\\t/g,'');
     accesslieu = accesslieu.replace('"}','');
     accesslieu = accesslieu.replace('{}','');
     accesslieu = accesslieu.replace(/\\"/g,'"');
-    /*var acces = String(entity.properties['access']);
-    acces = acces.replace('{"de_DE": "', '');
-    acces = acces.replace('", "en_US": "', '');
-    acces = acces.replace('", "fr_FR": "', '');
-    acces = acces.replace('{"fr_FR": "', '');
-    acces = acces.replace(/\\n/g,'');
-    acces = acces.replace(/\\t/g,'');
-    acces = acces.replace('"}','');
-    var serviceandactivities = String(entity.properties['serviceandactivities']);
-    serviceandactivities = serviceandactivities.replace('{"de_DE": "', '');
-    serviceandactivities = serviceandactivities.replace('", "en_US": "', '');
-    serviceandactivities = serviceandactivities.replace('", "fr_FR": "', '');
-    serviceandactivities = serviceandactivities.replace('{"fr_FR": "', '');
-    serviceandactivities = serviceandactivities.replace(/\\n/g,'');
-    serviceandactivities = serviceandactivities.replace(/\\t/g,'');
-    serviceandactivities = serviceandactivities.replace('"}','');*/
 
     //Renseignement des éléments de la boite d'information
-    billboard.name = String(entity.properties['name']);
+    billboard.name = name ;
     billboard.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
     billboard.description += '<p>' + description + '</p>';
-    billboard.description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
+    billboard.description += '<tr><td>Nom</td><td>' + name + '</td></tr>';
     if (Cesium.defined(entity.properties['types'])) {
       billboard.description += '<tr><td>Type de lieu</td><td>' + typelieu + '</td></tr>';
     }
@@ -538,7 +553,7 @@ class TableauAttribut {
       billboard.description += '<tr><td>Accès</td><td>' + accesslieu + '</td></tr>';
     }
     if (Cesium.defined(entity.properties['friendlyurl'])) {
-      billboard.description += '<tr><td>Lien vers le site du lieu</td><td> <a href="' + String(entity.properties['friendlyurl']) + '"target="_blank">Lien</a></td></tr>';
+      billboard.description += '<tr><td>Lien vers la page de présentation du lieu</td><td> <a href="' + String(entity.properties['friendlyurl']) + '"target="_blank">Lien</a></td></tr>';
     }
     if (Cesium.defined(entity.properties['mail'])) {
       billboard.description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';

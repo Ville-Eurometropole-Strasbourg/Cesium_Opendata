@@ -978,6 +978,18 @@ class Globe {
             }
           }
         }
+        if(choice === 'line' && choice2 === 'mesure') {
+          var labeldistance = $("#distance").text();
+          var label = globe.viewer.entities.add({
+            position: earthPosition,
+            label: {
+              // This callback updates the length to print each frame.
+              text: labeldistance,
+              font: "20px sans-serif"
+            },
+          });
+        }
+
         if(choice === 'polygon'&& choice2 === 'mesure') {
           globe.measureSurface(activeShapePoints); // mesure l'aire du polygone à chaque clic gauche
         }
@@ -994,8 +1006,24 @@ class Globe {
           }
         }
         if(choice === 'line' && choice2 === 'mesure') {
-          globe.measureDistance(activeShapePoints); // mesure la distance à chaque mouvement de souris
+          var tabldistance = {};
+          tabldistance = globe.measureDistance(activeShapePoints); // mesure la distance à chaque mouvement de souris
+          if(tabldistance.distance != undefined) {
+            $("#distance").text((tabldistance.distance.toFixed(2).toString()));
+            $("#distanceinclinee").text((tabldistance.distanceIncl.toFixed(2).toString()));
+            $("#hauteur").text((tabldistance.difference.toString()));
+            $("#distancecumulee").text(tabldistance.distCumul);
+            $("#distanceinclineecum").text(tabldistance.distInclCumul);
+
+            tabldistance.distance = 0;
+            tabldistance.distanceIncl = 0;
+            tabldistance.difference = 0;
+            tabldistance.distCumul = 0;
+            tabldistance.distInclCumul = 0;
+          }
+
           distanceList = $("#distanceList").clone();
+
         }
         globe.viewer.scene.requestRender();
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
@@ -1141,15 +1169,18 @@ class Globe {
         distanceIncl = Number(Math.sqrt(a+b+c).toFixed(3));
         difference = Number(coordsZ[i+1]-coordsZ[i]).toFixed(2);
 
+
+
         if(distance !== undefined) {
           distCumul = Number((distCumul + distance).toFixed(2));
-          $("#distancecumulee").text(distCumul);
+          //$("#distancecumulee").text(distCumul);
           distInclCumul = Number((distInclCumul + distanceIncl).toFixed(2));
-          $("#distanceinclineecum").text(distInclCumul);
+          //$("#distanceinclineecum").text(distInclCumul);
         }
       }
+      return {distance, distCumul, distanceIncl, distInclCumul, difference};
 
-      if(distance !== undefined) {
+      /*if(distance !== undefined) {
         $("#distance").text((distance.toFixed(2).toString()));
         $("#distanceinclinee").text((distanceIncl.toFixed(2).toString()));
         $("#hauteur").text((difference.toString()));
@@ -1158,7 +1189,36 @@ class Globe {
         difference = 0;
         distCumul = 0;
         distInclCumul = 0;
+      }*/
+    }
+
+    getDistance(activeShapePoints) {
+      var coordsX = [];
+      var coordsY = [];
+      var coordsZ = [];
+      var distance;
+
+      for (let i=0; i < activeShapePoints.length; i+=1) {
+        // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
+        var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z);
+        let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7);
+        let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7);
+
+        var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
+        // on stocke chque coordonnée dans un tableau séparé pour faliciter le calcul
+        coordsX.push(coords[0]);
+        coordsY.push(coords[1]);
       }
+
+      for (let i=0; i < coordsX.length-1; i+=1) {
+        // calcul de distances et différences d'alti
+        var a = (coordsX[i+1]-coordsX[i])*(coordsX[i+1]-coordsX[i]);
+        var b = (coordsY[i+1]-coordsY[i])*(coordsY[i+1]-coordsY[i]);
+
+        distance = Number(Math.sqrt(a+b).toFixed(3));
+      }
+      return distance + "m";
     }
 
     /**
@@ -1490,15 +1550,12 @@ class Globe {
 
         for (let i = 0; i < entities.length; i++) {
           let entity = entities[i];
-          console.log(entity.properties);
-          console.log(entity.properties[options.classificationField]);
           if (Cesium.defined(entity.polygon)) {
             let color = colors[entity.properties[options.classificationField]];
             if(!color){
               color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
               colors[entity.properties[options.classificationField]] = color;
             }
-            console.log(color);
 
             // si la donnée n'a pas de tableau d'attributs particulier, on change juste le nom des entités
             entity.name = choice;
@@ -1825,6 +1882,7 @@ class Globe {
             color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
             colors[entity.properties[options.classificationField]] = color;
           }
+        }
 
         // on récupère les coordonnées des points importés
         var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
@@ -1859,7 +1917,7 @@ class Globe {
               image : image,
               verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
               sizeInMeters: false,
-              scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0)
+              scaleByDistance : new Cesium.NearFarScalar(1000, 2, 150000, 0)
             }
           });
 
@@ -1870,7 +1928,7 @@ class Globe {
               image : image,
               verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
               sizeInMeters: false,
-              scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0)
+              scaleByDistance : new Cesium.NearFarScalar(1000, 2, 150000, 0)
             }
           });
         }
@@ -2006,7 +2064,7 @@ class Globe {
       if(show){
         if(this.dataSources[name] === undefined){
           if(linkAttribut != undefined) {
-            globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, cluster, options);
+            globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options);
             this.viewer.scene.requestRender();
           } else {
             globe.loadPoint(link, name, image, billboard, point3D, cluster, options);
@@ -2258,14 +2316,13 @@ class Globe {
     * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
     * @param  {Array} billboard Le tableau d'entités où stocker les billboards
     * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
-    * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
     * @param  {Object} options facultatif - Les options pour le chargement
     * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
     * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
     * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
     * @return  {GeoJsonDataSource} le json une fois que tout est chargé
     */
-    loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, cluster, options = {}){
+    loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options = {}){
       let promisse = Cesium.GeoJsonDataSource.load(link, {
         markerSize: 0 //pour que l'épingle n'apparaisse pas
       });

@@ -69,14 +69,17 @@ class Data {
           boutonMenu.appendChild(fleche);
 
           // on l'ajoute à la div panel = contient tout le menu
-          var panel = document.getElementsByClassName("panel");
-          panel[0].appendChild(boutonMenu);
+          var panel = document.getElementById("bouton-param");
+          console.log(panel);
+          panel.parentNode.insertBefore(boutonMenu, panel);
+          //panel[0].appendChild(boutonMenu);
 
           // on créé la div sous le bouton (cachée par défaut) et qui va contenir les couches de données
           let couchesDiv = document.createElement('div');
           couchesDiv.classList.add('panel-content');
           couchesDiv.style.display = "none";
-          panel[0].appendChild(couchesDiv);
+          panel.parentNode.insertBefore(couchesDiv, panel);
+          //panel[0].appendChild(couchesDiv);
 
 
           for(let j=0;j<paramJson.menu[i].couches.length;j++) {
