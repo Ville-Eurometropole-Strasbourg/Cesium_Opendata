@@ -37,6 +37,7 @@ class Data {
     var pluTiles = [];
     var linePLUdetaille = [];
 
+
     var params = globe.getAllUrlParams(window.location.href);
     //var lectureURL = params[Object.keys(params)[0]];
 
@@ -46,7 +47,6 @@ class Data {
     xmlhttp.open('GET', filePath);
     xmlhttp.responseType = 'json';
     xmlhttp.send();
-
 
     xmlhttp.onreadystatechange = function () {
       if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
@@ -70,17 +70,17 @@ class Data {
 
           // on l'ajoute à la div panel = contient tout le menu
           var panel = document.getElementById("bouton-param");
-          console.log(panel);
           panel.parentNode.insertBefore(boutonMenu, panel);
-          //panel[0].appendChild(boutonMenu);
 
           // on créé la div sous le bouton (cachée par défaut) et qui va contenir les couches de données
           let couchesDiv = document.createElement('div');
-          couchesDiv.classList.add('panel-content');
+          if(!paramJson.menu[i].private) {
+            couchesDiv.classList.add('panel-content');
+          } else if(paramJson.menu[i].private) {
+            couchesDiv.classList.add('private-content');
+          }
           couchesDiv.style.display = "none";
           panel.parentNode.insertBefore(couchesDiv, panel);
-          //panel[0].appendChild(couchesDiv);
-
 
           for(let j=0;j<paramJson.menu[i].couches.length;j++) {
 
@@ -149,9 +149,7 @@ class Data {
               couche.appendChild(boutonTime);
             }
 
-
             couchesDiv.appendChild(couche);
-
 
             // on créé une variable différente unique pour chaque array de ligne de contour et de billboard
             window['line'+i+j] = [];
@@ -473,8 +471,6 @@ class Data {
               }
             }
 
-
-
           } // fin du for j
 
           // la fonction pour ouvrir la div caché sous le menu déroulant
@@ -486,6 +482,30 @@ class Data {
               couchesDiv.style.display = "block";
             }
           });
+
+
+
+
+          /*boutonMenu.addEventListener('click', function() {
+            boutonMenu.classList.toggle("active");
+            for(let k=0;k<paramJson.menu[i].couches.length;k++) {
+              if(paramJson.menu[i].couches[k].private === undefined ) {
+                if (couche.style.display === "block") {
+                  couche.classList.remove('show');
+                  couche.style.display === "none";
+                  coucheCheckbox.style.display === "none";
+                } else {
+                  console.log('test');
+                  //couchesDiv.style.display = "block";
+                  couche.classList.add('show');
+                  couche.style.display === "block";
+                  coucheCheckbox.style.display === "block";
+                }
+              }
+
+            }
+
+          });*/
 
 
         } // fin du for i

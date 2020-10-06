@@ -899,6 +899,9 @@ class Globe {
     */
     updateShape(choice, choice2, couleur, options = {}) {
       var activeShapePoints = [];
+      var coordsline = [];
+      var lignemesure = [];
+      var label = [];
       var activeShape;
       var floatingPoint;
       var z;
@@ -911,6 +914,7 @@ class Globe {
       this.handler.setInputAction(function(event) {
         var earthPosition = scene.pickPosition(event.position);
         if(Cesium.defined(earthPosition)) {
+          coordsline.push(earthPosition);
           if(activeShapePoints.length === 0) {
             // on ajoute 2 fois un point au début pour permettre l'affichage de la ligne/surface
             // le dernier point correspond au point flottant du mouvement de la souris
@@ -980,14 +984,22 @@ class Globe {
         }
         if(choice === 'line' && choice2 === 'mesure') {
           var labeldistance = $("#distance").text();
-          var label = globe.viewer.entities.add({
-            position: earthPosition,
+          var positiontext = globe.getMiddlePoint(coordsline);
+
+          label.push(globe.viewer.entities.add({
+            position: positiontext,
             label: {
-              // This callback updates the length to print each frame.
               text: labeldistance,
-              font: "20px sans-serif"
-            },
-          });
+              font: "20px sans-serif",
+              scaleByDistance : new Cesium.NearFarScalar(10000, 1, 120000, 0)
+            }
+          }));
+          /*var newcoords = [earthPosition, positiontext];
+          console.log(newcoords);
+          if(newcoords != undefined) {
+            lignemesure.push(globe.drawLine(newcoords, 3, '#FFFFFF', 1, false));
+          }*/
+
         }
 
         if(choice === 'polygon'&& choice2 === 'mesure') {
@@ -1021,7 +1033,6 @@ class Globe {
             tabldistance.distCumul = 0;
             tabldistance.distInclCumul = 0;
           }
-
           distanceList = $("#distanceList").clone();
 
         }
@@ -1169,8 +1180,6 @@ class Globe {
         distanceIncl = Number(Math.sqrt(a+b+c).toFixed(3));
         difference = Number(coordsZ[i+1]-coordsZ[i]).toFixed(2);
 
-
-
         if(distance !== undefined) {
           distCumul = Number((distCumul + distance).toFixed(2));
           //$("#distancecumulee").text(distCumul);
@@ -1180,45 +1189,46 @@ class Globe {
       }
       return {distance, distCumul, distanceIncl, distInclCumul, difference};
 
-      /*if(distance !== undefined) {
-        $("#distance").text((distance.toFixed(2).toString()));
+      if(distance !== undefined) {
+      /*  $("#distance").text((distance.toFixed(2).toString()));
         $("#distanceinclinee").text((distanceIncl.toFixed(2).toString()));
-        $("#hauteur").text((difference.toString()));
+        $("#hauteur").text((difference.toString()));*/
         distance = 0;
         distanceIncl = 0;
         difference = 0;
         distCumul = 0;
         distInclCumul = 0;
-      }*/
+      }
     }
 
-    getDistance(activeShapePoints) {
+    getMiddlePoint(activeShapePoints) {
       var coordsX = [];
       var coordsY = [];
       var coordsZ = [];
-      var distance;
 
       for (let i=0; i < activeShapePoints.length; i+=1) {
         // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
         var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z);
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-        let longitude = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7);
-        let latitude = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7);
+        let longitude = Cesium.Math.toDegrees(cartographic.longitude);
+        let latitude = Cesium.Math.toDegrees(cartographic.latitude);
 
-        var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
-        // on stocke chque coordonnée dans un tableau séparé pour faliciter le calcul
-        coordsX.push(coords[0]);
-        coordsY.push(coords[1]);
+        coordsX.push(longitude);
+        coordsY.push(latitude);
+        coordsZ.push(cartographic.height);
+      }
+      if(coordsX.length > 1) {
+        for (let i=0; i < coordsX.length-1; i+=1) {
+          // calcul de distances et différences d'alti
+          var a = (coordsX[i+1]+coordsX[i])/2;
+          var b = (coordsY[i+1]+coordsY[i])/2;
+          var c = (coordsZ[i+1]+coordsZ[i])/2;
+          var d = c + 100;
+
+        }
       }
 
-      for (let i=0; i < coordsX.length-1; i+=1) {
-        // calcul de distances et différences d'alti
-        var a = (coordsX[i+1]-coordsX[i])*(coordsX[i+1]-coordsX[i]);
-        var b = (coordsY[i+1]-coordsY[i])*(coordsY[i+1]-coordsY[i]);
-
-        distance = Number(Math.sqrt(a+b).toFixed(3));
-      }
-      return distance + "m";
+      return Cesium.Cartesian3.fromDegrees(a,b,d);
     }
 
     /**

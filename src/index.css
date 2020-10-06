@@ -162,6 +162,13 @@ html, body {
   overflow-x: none;
 }
 
+.panel .private-content{
+  width: 100%;
+  padding: 5px;
+  display: none;
+  overflow-x: none;
+}
+
 /* afficher le contenu des panel-content quand on clique dessus */
 .panel .panel-content-open {
   display: inline-block;
@@ -209,18 +216,28 @@ html, body {
   cursor: pointer;
 }*/
 
-#doc {
-  display: block;
-  position: absolute;
-  right: 140px;
-}
-
 #guide {
   display: block;
   position: absolute;
-  left: 130px;
+  left: 120px;
+  top: 60px;
 }
 
+#doc {
+  display: block;
+  position: absolute;
+  left: 180px;
+  top: 60px;
+}
+
+#private {
+  display: block;
+  position: absolute;
+  right: 20px;
+  top: 98px;
+  cursor: pointer;
+  z-index:1;
+}
 
 /*
  *
@@ -359,6 +376,7 @@ i {
  */
 /* style des boutons*/
 .button {
+  height: auto;
   background: #303336;
   border: 1px solid #444;
   color: #edffff;

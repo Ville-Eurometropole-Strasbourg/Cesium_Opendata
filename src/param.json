@@ -1,6 +1,7 @@
 { "param": "Cesium_Opendata",
   "menu": [
     { "name": "REGLEMENTATION URBAINE",
+      "private" : false,
       "couches": [
         {
           "type_donnee": "surface",
@@ -154,6 +155,7 @@
           "couleur_legende": {
             "Bâti exceptionnel": "#bd7169"
           },
+          "couleur_border": "#FFFFFF",
           "choice": "PLU Bâti exceptionnel"
         },
         {
@@ -196,6 +198,7 @@
     },
 
     { "name": "INFORMATIONS CADASTRALES",
+      "private" : false,
       "couches": [
         {
           "type_donnee": "surface",
@@ -1061,6 +1064,7 @@
 
     },
     { "name": "TRANSPORTS ET DEPLACEMENTS",
+      "private" : false,
       "couches": [
         {
           "type_donnee": "surface",
@@ -1148,6 +1152,7 @@
     },
 
     { "name": "SPORTS ET LOISIRS ",
+      "private" : false,
       "couches": [
         {
           "type_donnee": "point",
@@ -1216,6 +1221,7 @@
     },
 
     { "name": "ENVIRONNEMENT",
+      "private" : false,
       "couches": [
         {
           "type_donnee": "surface",
@@ -1266,7 +1272,7 @@
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_arbres-remarquables&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
           "couche_attributaire": "non",
           "point_3D": false,
-          "cluster": true,
+          "cluster": false,
           "image": "src/img/billboard/marker_green.png",
           "couleur": "#19630A",
           "billboard_legende": "'<img src='src/img/billboard/marker_green.png'>'",
@@ -1274,7 +1280,8 @@
           "couleur_legende": {
             "Arbres": "#19630A"
           },
-          "choice": "Arbres remarquables"
+          "choice": "Arbres remarquables",
+          "choiceTableau" : "ArbresRemarquables"
         },
         {
           "type_donnee": "surface",
@@ -1399,12 +1406,12 @@
           "url_info": "https://data.strasbourg.eu/explore/dataset/lieux_culture/information/",
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_culture&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
           "point_3D": false,
-          "cluster": true,
+          "cluster": false,
           "image": "src/img/billboard/marker_blue.png",
           "couleur": "#0e95e3",
           "nom_legende": "Lieux culturels",
           "couleur_legende": {
-            "Patrimoine     ": "#0e95e3"
+            "Lieu culturel": "#0e95e3"
           },
           "billboard_legende": "'<img src='src/img/billboard/marker_blue.png'>'",
           "choice": "Lieu culturel",
@@ -1413,8 +1420,10 @@
       ]
     },
     { "name": "PROPRIÉTAIRES INSTITUTIONNELS",
+      "private" : true,
       "couches": [
         {
+          "identifiant": "salut",
           "type_donnee": "surface",
           "animation": "non",
           "id_data": "ODPropInstitAchenheim",
