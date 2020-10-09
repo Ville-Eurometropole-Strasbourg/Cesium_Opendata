@@ -184,14 +184,6 @@
             </div>
 
             <!-- Ajout de couches -->
-            <div class="backdrop hidden" id="fileList">
-              <h2>Données en accès restreint</h2>
-              <form>
-                <p>Identifiant : <input id="idEMS" type="text" size="30" /> </p>
-              </form>
-              <p><button id="affichercouche">Ajouter</button> </p>
-            </div>
-
             <div class="backdrop hidden" id="classifList">
               <h2>Représentation de la couche </h2>
               <div id="choixDiv">
@@ -256,6 +248,15 @@
                   <p><button id="configSIRENE">Configuration SIRENE</button></p>
                 </div>
 
+                <!-- Données en accès restreint -->
+                <div class="backdrop hidden" id="fileList">
+                  <h2>Données en accès restreint</h2>
+                  <form>
+                    <p>Identifiant : <input id="idEMS" type="text" size="20" /> </p>
+                  </form>
+                  <p><button id="affichercouche">Ajouter</button> </p>
+                </div>
+
               </div>
 
               <!-- En bas à droite de l'écran -->
@@ -278,7 +279,7 @@
                   <a href="https://3d.strasbourg.eu/CESIUM_OPENDATA/documentation/" target="_blank"><button class="button" id="doc" title="Afficher la documentation technique "><img src="src/img/icons8-maintenance.png"></button></a>
                   <br/> <br/><br/>
 
-                  <button class="button" id="private" title="Données en accès restreint"><img id="imgprivate" src="src/img/icons8-private.png" style="align:center;"></button>
+                  <button class="button" id="private" title="Données en accès restreint"><img src="src/img/icons8-private.png" style="align:center;"></button>
 
                   <div class="nowrap" id="photo">
                     <input id="photoMaillage" type="checkbox" checked/>

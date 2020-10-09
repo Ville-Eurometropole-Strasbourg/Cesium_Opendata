@@ -896,12 +896,12 @@ class Globe {
     * @param  {Array} options.volume le tableau où stocker les entités boîte
     * @param  {Array} options.dline le tableau où stocker les entités lignes pour les mesures
     * @param  {Array} options.dsurface tableau où stocker les entités surface pour les mesures
+    * @param  {Array} options.label tableau où stocker les étiquettes pour les mesures de lignes
     */
     updateShape(choice, choice2, couleur, options = {}) {
       var activeShapePoints = [];
       var coordsline = [];
-      var lignemesure = [];
-      var label = [];
+
       var activeShape;
       var floatingPoint;
       var z;
@@ -984,21 +984,26 @@ class Globe {
         }
         if(choice === 'line' && choice2 === 'mesure') {
           var labeldistance = $("#distance").text();
-          var positiontext = globe.getMiddlePoint(coordsline);
+          var positionarray = globe.getMiddlePoint(coordsline);
+          console.log(positionarray);
 
-          label.push(globe.viewer.entities.add({
-            position: positiontext,
-            label: {
-              text: labeldistance,
-              font: "20px sans-serif",
-              scaleByDistance : new Cesium.NearFarScalar(10000, 1, 120000, 0)
-            }
-          }));
-          /*var newcoords = [earthPosition, positiontext];
-          console.log(newcoords);
-          if(newcoords != undefined) {
-            lignemesure.push(globe.drawLine(newcoords, 3, '#FFFFFF', 1, false));
-          }*/
+          if(positionarray[0] != undefined) {
+
+            options.label.push(globe.viewer.entities.add({
+              position: positionarray[1],
+              label: {
+                text: labeldistance,
+                font: "20px sans-serif",
+                scaleByDistance : new Cesium.NearFarScalar(10000, 1, 120000, 0),
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+              }
+            }));
+
+            options.dline.push(globe.drawLine(positionarray, 1, '#000000', 0.5, false));
+            globe.viewer.scene.requestRender();
+          }
+
+
 
         }
 
@@ -1091,6 +1096,7 @@ class Globe {
         floatingPoint = undefined;
         activeShape = undefined;
         activeShapePoints = [];
+        coordsline = [];
 
         if(choice === 'line' && choice2 === 'mesure') {
           // permet de garder l'affichage des mesures actif
@@ -1223,12 +1229,15 @@ class Globe {
           var a = (coordsX[i+1]+coordsX[i])/2;
           var b = (coordsY[i+1]+coordsY[i])/2;
           var c = (coordsZ[i+1]+coordsZ[i])/2;
-          var d = c + 100;
+          var d = c + 20;
+
+          var coordlabel = new Cesium.Cartesian3.fromDegrees(a,b,d);
+          var coordsol = new Cesium.Cartesian3.fromDegrees(a,b,0);
 
         }
       }
 
-      return Cesium.Cartesian3.fromDegrees(a,b,d);
+      return [coordsol, coordlabel];
     }
 
     /**
@@ -1874,7 +1883,7 @@ class Globe {
       this.dataSources[name] = dataSource;
       this.hideLoader();
       let entities = dataSource.entities.values;
-
+      console.log('test');
       if(options.colors != undefined){
         Object.keys(options.colors).forEach(function(c){
           options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
@@ -1886,13 +1895,15 @@ class Globe {
       for(let i = 0; i < entities.length; i++) {
         let entity = entities[i];
 
-        if (Cesium.defined(entity.polygon)) {
+        //if (Cesium.defined(entity.point)) {
+          console.log('test1');
           let color = colors[entity.properties[options.classificationField]];
+          console.log(color);
           if(!color){
             color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
             colors[entity.properties[options.classificationField]] = color;
           }
-        }
+        //}
 
         // on récupère les coordonnées des points importés
         var X = (dataSource._entityCollection._entities._array[i]._position._value.x);

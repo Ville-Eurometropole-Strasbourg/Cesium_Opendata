@@ -186,7 +186,6 @@ class Menu {
       globe.show3DTiles(e.target.checked, 'photoMaillage2017', 'https://3d.strasbourg.eu/CESIUM/DATA/PM3D_PSMV_OPTIM/PSMV_CESIUM.json', 2);
     });
 
-
     /*
     *
     * Boite à outils
@@ -203,6 +202,7 @@ class Menu {
     // mesures
     var dline = [];
     var dsurface = [];
+    var label = [];
     // plan de coupe horizontal
     var planeEntities = [];
     var clippingPlanes = [];
@@ -239,6 +239,13 @@ class Menu {
       for(var j = 0; j <= dsurface.length+1; j++){
         dsurface.pop();
       }
+
+      for(var i = 0; i < label.length; i++){
+        globe.viewer.entities.remove(label[i]);
+      }
+      for(var j = 0; j <= label.length+1; j++){
+        label.pop();
+      }
       globe.viewer.scene.requestRender();
     });
 
@@ -265,7 +272,8 @@ class Menu {
       globe.updateShape(choice, choice2, '#FF0000', {
         largeur: 3,
         transparence: 1,
-        dline: dline
+        dline: dline,
+        label: label
       });
 
       $("#distanceList").removeClass('hidden');

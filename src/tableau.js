@@ -534,37 +534,12 @@ class TableauAttribut {
     }
 
     var name = String(entity.properties['name']);
-    name = name.replace('"en_US": "Le Vaisseau", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Museum Le Vaisseau','');
-    name = name.replace('"en_US": "Église réformée Saint-Paul – St.Paul’s Reformed Church", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Die reformierte Kirche Saint-Paul (Paulskirche)','');
-    name = name.replace('"en_US": "Stimultania", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Stimultania','');
-    name = name.replace('"en_US": "European Centre for Contemporary Art Projects (CEAAC)", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Europäisches Zentrum für zeitgenössische künstlerische Aktionen (CEAAC)','');
-    name = name.replace('"en_US": "La Maison de la Radio - France 3", "fr_FR": "','');
-    name = name.replace('", "de_DE": "La Maison de la Radio - France 3','');
-    name = name.replace('"en_US": "La Manufacture des Tabacs (tobacco factory)", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Die Tabakmanufaktur','');
-    name = name.replace('"en_US": "University and Palais universitaire", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Universität und Palais universitaire','');
-    name = name.replace('"en_US": "Observatory", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Observatorium','');
-    name = name.replace('"en_US": "Law faculty", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Rechtswissenschaftliche Fakultät','');
-    name = name.replace('"en_US": "Stockfeld garden city", "fr_FR": "','');
-    name = name.replace('"en_US": "Stockfeld garden city", "fr_FR": "','');
-    name = name.replace('"en_US": "Cité Rotterdam", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Cité Rotterdam','');
-    name = name.replace('"en_US": "Haras National (national stud)", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Haras National (Nationales Pferdegestüt)','');
-    name = name.replace('"en_US": "The Palais de Justice, or courthouse", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Palais de Justice','');
-    name = name.replace('"en_US": "Cité de la Canardière", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Cité de la Canardière','');
-    name = name.replace('"en_US": "Hôtel du gouverneur militaire (military governor’s mansion)", "fr_FR": "','');
-    name = name.replace('", "de_DE": "Hôtel du Gouverneur militaire','');
+    if(name.includes('"fr_FR":')) {
+      name = name.substring(name.indexOf('"fr_FR": "'), name.indexOf('", "de_DE": "'));
+      name = name.replace('"fr_FR": "','');
+    }
     var description = String(entity.properties['description']);
+    description = description.replace(/<a/g,'<a target=_blank');
     description = description.replace(/{"de_DE": "/g, '');
     description = description.replace(/{"fr_FR": "/g, '');
     description = description.replace(/{"en_US": "/g, '');
@@ -591,6 +566,7 @@ class TableauAttribut {
     var typelieu = String(entity.properties['types']);
     typelieu = typelieu.replace('Cat_08_01;', '');
     var accesslieu = String(entity.properties['access']);
+    accesslieu = accesslieu.replace(/href=\\"/g, 'href="https://www.strasbourg.eu');
     accesslieu = accesslieu.replace('{"de_DE": "', '');
     accesslieu = accesslieu.replace('{"fr_FR": "', '');
     accesslieu = accesslieu.replace('{"en_US": "', '');

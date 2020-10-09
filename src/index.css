@@ -165,7 +165,6 @@ html, body {
 .panel .private-content{
   width: 100%;
   padding: 5px;
-  display: none;
   overflow-x: none;
 }
 
@@ -549,6 +548,15 @@ i {
   white-space: nowrap;
   list-style: none;
   display: block;
+  padding: 12px 16px;
+  text-decoration: none;
+  overflow-x: none;
+  position: relative;
+}
+
+.nowrap-private {
+  white-space: nowrap;
+  list-style: none;
   padding: 12px 16px;
   text-decoration: none;
   overflow-x: none;

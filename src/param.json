@@ -1407,6 +1407,7 @@
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_culture&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
           "point_3D": false,
           "cluster": false,
+          "champ_classif": "types",
           "image": "src/img/billboard/marker_blue.png",
           "couleur": "#0e95e3",
           "nom_legende": "Lieux culturels",
@@ -1418,59 +1419,6 @@
           "choiceTableau": "LieuCulturel"
         }
       ]
-    },
-    { "name": "PROPRIÉTAIRES INSTITUTIONNELS",
-      "private" : true,
-      "couches": [
-        {
-          "identifiant": "salut",
-          "type_donnee": "surface",
-          "animation": "non",
-          "id_data": "ODPropInstitAchenheim",
-          "name": "Propriétaires institutionnels Achenheim",
-          "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",
-          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=proprietaires_institutionnels&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.nom_com=Achenheim&refine.nom_com=Bischheim&timezone=Europe/Berlin",
-          "champ_classif": "libelle",
-          "couleur_classif" : {
-            "Eurométropole de Strasbourg": "#DEB41F",
-            "STRASBOURG" : "#F5EC81",
-            "NON_CADASTRE": "#F3AFE5"
-          },
-          "alpha": 0.7,
-          "nom_legende": "Propriétaires institutionnels Achenheim",
-          "couleur_legende": {
-            "Eurométropole de Strasbourg": "#DEB41F",
-            "Ville de Strasbourg" : "#F5EC81",
-            "Non Cadastré": "#F3AFE5"
-          },
-          "choice": "Propriétaire instutionnel Achenheim"
-
-        },
-        {
-          "type_donnee": "surface",
-          "animation": "non",
-          "id_data": "ODPropInstitEckbolsheim",
-          "name": "Propriétaires institutionnels Eckbolsheim",
-          "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",
-          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=proprietaires_institutionnels&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.nom_com=Eckbolsheim&timezone=Europe/Berlin",
-          "champ_classif": "libelle",
-          "couleur_classif" : {
-            "Eurométropole de Strasbourg": "#DEB41F",
-            "STRASBOURG" : "#F5EC81",
-            "NON_CADASTRE": "#F3AFE5"
-          },
-          "alpha": 0.7,
-          "nom_legende": "Propriétaires institutionnels Eckbolsheim",
-          "couleur_legende": {
-            "Eurométropole de Strasbourg": "#DEB41F",
-            "Ville de Strasbourg" : "#F5EC81",
-            "Non Cadastré": "#F3AFE5"
-          },
-          "choice": "Propriétaire instutionnel Achenheim"
-
-        }
-      ]
-
     },
     { "name": "BRUIT",
       "couches": [
@@ -1492,6 +1440,67 @@
           },
           "choice": "Bruit routier"
 
+        }
+      ]
+
+    },
+    { "name": "DONNEES EN ACCES RESTREINT",
+      "private" : true,
+      "couches": [
+        {
+          "identifiant": "salut",
+          "type_donnee": "surface",
+          "animation": "non",
+          "id_data": "ODPropInstitAchenheim",
+          "name": "Propriétaires institutionnels Achenheim",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=proprietaires_institutionnels&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.nom_com=Achenheim&timezone=Europe/Berlin",
+          "champ_classif": "libelle",
+          "couleur_classif" : {
+            "Eurométropole de Strasbourg": "#DEB41F",
+            "STRASBOURG" : "#F5EC81",
+            "NON_CADASTRE": "#F3AFE5"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Propriétaires institutionnels Achenheim",
+          "couleur_legende": {
+            "Eurométropole de Strasbourg": "#DEB41F",
+            "Ville de Strasbourg" : "#F5EC81",
+            "Non Cadastré": "#F3AFE5"
+          },
+          "choice": "Propriétaire instutionnel Achenheim"
+
+        },
+        {
+          "identifiant": "salut",
+          "type_donnee": "surface",
+          "animation": "non",
+          "id_data": "ODPropInstitEckbolsheim",
+          "name": "Propriétaires institutionnels Eckbolsheim",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=proprietaires_institutionnels&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.nom_com=Eckbolsheim&timezone=Europe/Berlin",
+          "champ_classif": "libelle",
+          "couleur_classif" : {
+            "Eurométropole de Strasbourg": "#DEB41F",
+            "STRASBOURG" : "#F5EC81",
+            "NON_CADASTRE": "#F3AFE5"
+          },
+          "alpha": 0.7,
+          "nom_legende": "Propriétaires institutionnels Eckbolsheim",
+          "couleur_legende": {
+            "Eurométropole de Strasbourg": "#DEB41F",
+            "Ville de Strasbourg" : "#F5EC81",
+            "Non Cadastré": "#F3AFE5"
+          },
+          "choice": "Propriétaire instutionnel Achenheim"
+
+        },
+        {
+          "identifiant": "danube",
+          "type_donnee": "3dtiles",
+          "id_data": "EcoleDanube",
+          "name": "Projet école Danube",
+          "url_data": "data/private/Danube/tileset.json"
         }
       ]
 

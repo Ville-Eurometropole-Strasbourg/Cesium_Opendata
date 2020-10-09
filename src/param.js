@@ -26,6 +26,8 @@ class Data {
     this.legendManager = new LegendManager(this.leftPane);
     globe.legendManager = this.legendManager;
 
+    this.fileList = document.querySelector('#fileList');
+
   }
 
   /**
@@ -37,6 +39,7 @@ class Data {
     var pluTiles = [];
     var linePLUdetaille = [];
 
+    var couchesDivTabl = [];
 
     var params = globe.getAllUrlParams(window.location.href);
     //var lectureURL = params[Object.keys(params)[0]];
@@ -82,13 +85,22 @@ class Data {
           couchesDiv.style.display = "none";
           panel.parentNode.insertBefore(couchesDiv, panel);
 
+          couchesDivTabl.push(couchesDiv);
+
           for(let j=0;j<paramJson.menu[i].couches.length;j++) {
 
             // on créé la div propre à la couche qui va contenir la checkbox et le bouton info
             let couche = document.createElement('div');
-            couche.classList.add('nowrap');
-            couche.classList.add('show');
-            couche.style.display === "block";
+            if(couchesDiv.classList.contains('private-content')) {
+              couche.setAttribute('title', paramJson.menu[i].couches[j].identifiant);
+              couche.classList.add('hidden');
+              couche.classList.add('nowrap-private');
+              couche.style.display === "none";
+            } else {
+              couche.classList.add('show');
+              couche.classList.add('nowrap');
+              couche.style.display === "block";
+            }
 
             // la checkbox
             let coucheCheckbox = document.createElement("input");
@@ -297,6 +309,23 @@ class Data {
 
               }
 
+              // modèles 3D au format 3DTiles
+              if(paramJson.menu[i].couches[j].type_donnee === '3dtiles') {
+                globe.show3DTiles(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data);
+
+                if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
+                  if(e.target.checked){
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {
+                    } );
+                  } else{
+                    globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
+                  }
+                }
+
+                globe.viewer.scene.requestRender();
+              }
+
+              // spécifique au PLU détaillé
               if(paramJson.menu[i].couches[j].type_donnee === 'plu_detaille') {
                 var linetemp = [];
                 var legend = {
@@ -476,43 +505,67 @@ class Data {
           // la fonction pour ouvrir la div caché sous le menu déroulant
           boutonMenu.addEventListener('click', function() {
             boutonMenu.classList.toggle("active");
-            if (couchesDiv.style.display === "block") {
-              couchesDiv.style.display = "none";
-            } else {
-              couchesDiv.style.display = "block";
-            }
-          });
-
-
-
-
-          /*boutonMenu.addEventListener('click', function() {
-            boutonMenu.classList.toggle("active");
-            for(let k=0;k<paramJson.menu[i].couches.length;k++) {
-              if(paramJson.menu[i].couches[k].private === undefined ) {
-                if (couche.style.display === "block") {
-                  couche.classList.remove('show');
-                  couche.style.display === "none";
-                  coucheCheckbox.style.display === "none";
-                } else {
-                  console.log('test');
-                  //couchesDiv.style.display = "block";
-                  couche.classList.add('show');
-                  couche.style.display === "block";
-                  coucheCheckbox.style.display === "block";
-                }
+            if(couchesDiv.classList.contains('panel-content')) {
+              if (couchesDiv.style.display === "block") {
+                couchesDiv.style.display = "none";
+              } else {
+                couchesDiv.style.display = "block";
               }
-
+            } else  {
+              if (couchesDiv.style.display === "block") {
+                couchesDiv.style.display = "none";
+              } else {
+                alert('Vous devez entrer un identifiant pour accéder aux données restreintes');
+                couchesDiv.style.display = "block";
+              }
             }
 
-          });*/
-
+          });
 
         } // fin du for i
 
       }
-
     }
+
+    //
+    document.querySelector('#private').addEventListener('click', (e) => {
+      this.fileList.classList.toggle('hidden');
+      /*for (var k = 0; k < couchesDivTabl.length; k++) {
+        if(couchesDivTabl[k].classList.contains('private-content')) {
+          couchesDivTabl[k].style.display = "block";
+        }
+      }*/
+    });
+
+
+    document.querySelector('#affichercouche').addEventListener('click', (e) => {
+      this.fileList.classList.add('hidden');
+      var identifiant = $('#idEMS').val();
+      if(identifiant.length == 0 ) {
+        alert('Vous devez entrer un identifiant pour accéder aux données restreintes');
+      } else  {
+        for (var k = 0; k < couchesDivTabl.length; k++) {
+          if(couchesDivTabl[k].classList.contains('private-content')) {
+            couchesDivTabl[k].style.display = "block";
+
+            var couchesprivees = couchesDivTabl[k].getElementsByTagName('div');
+            for (var l = 0; l < couchesprivees.length; l++) {
+              var titre = couchesprivees[l].getAttribute('title');
+              if(identifiant === titre) {
+                couchesprivees[l].style.display === "block";
+                couchesprivees[l].classList.remove('hidden');
+                couchesprivees[l].classList.add('show');
+
+              } else {
+                //alert('L\'identifiant que vous avez renseigné est incorrect');
+              }
+            }
+
+          }
+        }
+      }
+    });
+
   }
 
 }
