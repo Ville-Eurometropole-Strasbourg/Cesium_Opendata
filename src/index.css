@@ -218,14 +218,14 @@ html, body {
 #guide {
   display: block;
   position: absolute;
-  left: 120px;
+  left: 165px;
   top: 60px;
 }
 
 #doc {
   display: block;
   position: absolute;
-  left: 180px;
+  left: 225px;
   top: 60px;
 }
 

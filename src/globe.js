@@ -1733,18 +1733,23 @@ class Globe {
         let entities = dataSource.entities.values;
 
         if(options.colors != undefined){
+          console.log('coucou');
           Object.keys(options.colors).forEach(function(c){
+            console.log(options.colors[c]);
             options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
             options.colors[c].alpha = options.alpha || 1;
           });
         }
 
         let colors = options.colors || {};
+        console.log(colors);
         for (let i = 0; i < entities.length; i++) {
           let entity = entities[i];
 
           if (Cesium.defined(entity.polyline)) {
+            console.log(entity.properties[options.classificationField]);
             let color = colors[entity.properties[options.classificationField]];
+            console.log(color);
             if(!color){
               color = Cesium.Color.fromRandom({ alpha : options.alpha || 1 });
               colors[entity.properties[options.classificationField]] = color;
@@ -1883,27 +1888,9 @@ class Globe {
       this.dataSources[name] = dataSource;
       this.hideLoader();
       let entities = dataSource.entities.values;
-      console.log('test');
-      if(options.colors != undefined){
-        Object.keys(options.colors).forEach(function(c){
-          options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
-          options.colors[c].alpha = options.alpha || 0.8;
-        })
-      }
-      let colors = options.colors || {};
 
       for(let i = 0; i < entities.length; i++) {
         let entity = entities[i];
-
-        //if (Cesium.defined(entity.point)) {
-          console.log('test1');
-          let color = colors[entity.properties[options.classificationField]];
-          console.log(color);
-          if(!color){
-            color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
-            colors[entity.properties[options.classificationField]] = color;
-          }
-        //}
 
         // on récupère les coordonnées des points importés
         var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
@@ -1911,6 +1898,27 @@ class Globe {
         var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
 
         var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
+
+        // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
+        // l'entité billboard ne conserve pas les attributs
+        // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
+        var billboardEntity = billboardData.entities.add({
+          billboard : {
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            sizeInMeters: false,
+            scaleByDistance : new Cesium.NearFarScalar(1000, 2, 150000, 0)
+          }
+        });
+
+        if(options.classificationField !== undefined) {
+          var symbol = image[entity.properties[options.classificationField]];
+          if(symbol === undefined) {
+            var symbol = 'src/img/billboard/marker_black.png'
+          }
+          billboardEntity.billboard.image = symbol;
+        } else {
+          billboardEntity.billboard.image = image;
+        }
 
         if(point3D === false) {
           // nécessité de convertir en lon/lat car la coordonnée Z en ECEF ne correspond pas à la hauteur
@@ -1929,29 +1937,10 @@ class Globe {
           var lineEntity = this.drawLine(coordLigne, 2, options.couleur, 1, false);
           options.line.push(lineEntity);
 
-          // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
-          // l'entité billboard ne conserve pas les attributs
-          // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
-          var billboardEntity = billboardData.entities.add({
-            position : coordHauteur,
-            billboard : {
-              image : image,
-              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-              sizeInMeters: false,
-              scaleByDistance : new Cesium.NearFarScalar(1000, 2, 150000, 0)
-            }
-          });
+          billboardEntity.position = coordHauteur;
 
         } else if(point3D === true) {
-          var billboardEntity = billboardData.entities.add({
-            position : position,
-            billboard : {
-              image : image,
-              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-              sizeInMeters: false,
-              scaleByDistance : new Cesium.NearFarScalar(1000, 2, 150000, 0)
-            }
-          });
+          billboardEntity.position = position;
         }
 
         if(options.choiceTableau !== undefined) {

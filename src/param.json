@@ -1,7 +1,6 @@
 { "param": "Cesium_Opendata",
   "menu": [
-    { "name": "REGLEMENTATION URBAINE",
-      "private" : false,
+    { "name_titre": "REGLEMENTATION URBAINE",
       "couches": [
         {
           "type_donnee": "surface",
@@ -197,8 +196,7 @@
       ]
     },
 
-    { "name": "INFORMATIONS CADASTRALES",
-      "private" : false,
+    { "name_titre": "INFORMATIONS CADASTRALES",
       "couches": [
         {
           "type_donnee": "surface",
@@ -1063,8 +1061,7 @@
       ]
 
     },
-    { "name": "TRANSPORTS ET DEPLACEMENTS",
-      "private" : false,
+    { "name_titre": "TRANSPORTS ET DEPLACEMENTS",
       "couches": [
         {
           "type_donnee": "surface",
@@ -1146,13 +1143,33 @@
           "choice": "Traffic routier SIRAC",
           "choiceTableau": "Traffic"
 
+        },
+        {
+          "type_donnee": "point",
+          "temps_reel": "oui",
+          "couche_attributaire": "oui",
+          "url_attribut": "https://data.strasbourg.eu/api/records/1.0/download?dataset=occupation-parkings-temps-reel&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=json",
+          "id_data": "ODParkings",
+          "name": "Fréquentation en temps réel des parkings",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/occupation-parkings-temps-reel/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parkings&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "point_3D": false,
+          "cluster": false,
+          "image": "src/img/billboard/marker_orange.png",
+          "couleur": "#ff8c00",
+          "nom_legende": "Fréquentation en temps réel des parkings",
+          "couleur_legende": {
+            "Parking        ": "#ff8c00"
+          },
+          "billboard_legende": "'<img src='src/img/billboard/marker_orange.png'>'",
+          "choiceTableau": "Parkings"
         }
+
       ]
 
     },
 
-    { "name": "SPORTS ET LOISIRS ",
-      "private" : false,
+    { "name_titre": "SPORTS ET LOISIRS ",
       "couches": [
         {
           "type_donnee": "point",
@@ -1220,8 +1237,7 @@
 
     },
 
-    { "name": "ENVIRONNEMENT",
-      "private" : false,
+    { "name_titre": "ENVIRONNEMENT",
       "couches": [
         {
           "type_donnee": "surface",
@@ -1378,7 +1394,7 @@
       ]
     },
 
-    { "name": "CULTURE",
+    { "name_titre": "CULTURE",
       "couches": [
         {
           "type_donnee": "point",
@@ -1408,11 +1424,24 @@
           "point_3D": false,
           "cluster": false,
           "champ_classif": "types",
-          "image": "src/img/billboard/marker_blue.png",
-          "couleur": "#0e95e3",
+          "image":  {
+            "Patrimoine": "src/img/billboard/marker_blue.png",
+            "Ecole de musique": "src/img/billboard/marker_red.png",
+            "Lieu de spectacle et d'exposition": "src/img/billboard/marker_green.png",
+            "Œuvres street art": "src/img/billboard/marker_yellow.png",
+            "Musée de la ville de Strasbourg": "src/img/billboard/marker_orange.png",
+            "Institution culturelle": "src/img/billboard/marker_pink.png"
+          },
+          "couleur": "#686a6e",
           "nom_legende": "Lieux culturels",
           "couleur_legende": {
-            "Lieu culturel": "#0e95e3"
+            "Patrimoine": "'<img src='src/img/billboard/marker_blue.png'>'",
+            "Ecole de musique": "'<img src='src/img/billboard/marker_red.png'>'",
+            "Lieu de spectacle et d'exposition": "'<img src='src/img/billboard/marker_green.png'>'",
+            "Œuvres street art": "'<img src='src/img/billboard/marker_yellow.png'>'",
+            "Musée de la ville de Strasbourg": "'<img src='src/img/billboard/marker_orange.png'>'",
+            "Institution culturelle": "'<img src='src/img/billboard/marker_pink.png'>'",
+            "Autre": "'<img src='src/img/billboard/marker_black.png'>'"
           },
           "billboard_legende": "'<img src='src/img/billboard/marker_blue.png'>'",
           "choice": "Lieu culturel",
@@ -1420,7 +1449,7 @@
         }
       ]
     },
-    { "name": "BRUIT",
+    { "name_titre": "BRUIT",
       "couches": [
         {
           "type_donnee": "surface",
@@ -1444,7 +1473,7 @@
       ]
 
     },
-    { "name": "DONNEES EN ACCES RESTREINT",
+    { "name_titre": "DONNEES EN ACCES RESTREINT",
       "private" : true,
       "couches": [
         {

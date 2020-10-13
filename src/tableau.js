@@ -742,6 +742,94 @@ createTableauQualiteAir(entity){
   * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
   *
   */
+  createTableauParkings(entity, jsonAttribut, billboard, coordLabel, dataSource) {
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+
+
+    // Renseignement des éléments de la boite d'information
+    // billboard.name = String(entity.properties['name']);
+    billboard.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    // if (Cesium.defined(entity.properties['imageurl'])) {
+    //   billboard.description += '<img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
+    // }
+    //
+    // billboard.description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
+    // billboard.description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';
+    // billboard.description += '<tr><td>Téléphone </td><td>' + String(entity.properties['phone']) + '</td></tr>';
+    // billboard.description += '<tr><td>Adresse </td><td>' + String(entity.properties['address']) + '</td></tr>';
+    // billboard.description += '<tr><td>Accès </td><td>' + acces + '</td></tr>';
+    // billboard.description += '<tr><td>Lien vers le site de la piscine</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
+
+    // on rentre dans le fichier json chargé pour récupérer les attributs
+    for(let j = 0; j < jsonAttribut.length; j++) {
+      if(entity.name == jsonAttribut[j].fields.nom_parking) {
+        console.log(jsonAttribut[j]);
+        billboard.description += '<tr><td>Informations Usagers</td><td>' + String(jsonAttribut[j].fields.infousager) + '</td></tr>';
+        billboard.description += '<tr><td>Nombre total de places</td><td>' + String(jsonAttribut[j].fields.total) + '</td></tr>';
+        billboard.description += '<tr><td>Nombres de places libres</td><td>' + String(jsonAttribut[j].fields.libre) + '</td></tr>';
+
+        // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'
+        if(jsonAttribut[j].fields.etat === 1) {
+          var occupation = (jsonAttribut[j].fields.libre).toString();
+        } else if(jsonAttribut[j].fields.etat === 2) {
+          var occupation = 'FERME';
+        }
+          else if(jsonAttribut[j].fields.etat === 0) {
+          var occupation = 'NoData';
+        }
+
+        // on ajoute le label
+        var statut = dataSource.entities.add({
+          position : coordLabel,
+          label : {
+            text : occupation,
+            font : '24px Helvetica',
+            outlineColor: Cesium.Color.fromCssColorString('#666a70'),
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+            scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+            showBackground: true,
+            backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
+          }
+        });
+
+        // classification du label en différentes couleurs en fonction de la fréquentation
+        // if(jsonAttribut[j].fields.realtimestatus === 'GREEN') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'ORANGE') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'RED') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'BLACK') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'CLOSED') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
+        // }
+
+      }
+    }
+
+    // le reste du tableau d'attributs
+    // if (Cesium.defined(entity.properties['serviceandactivities'])) {
+    //   billboard.description += '<tr><td>Services et activités </td><td>' + service + '</td></tr>';
+    // }
+    // if (Cesium.defined(entity.properties['characteristics'])) {
+    //   billboard.description += '<tr><td>Caractéristiques </td><td>' + caracteristique + '</td></tr>';
+    // }
+    // if (Cesium.defined(entity.properties['exceptionalschedule'])) {
+    //   billboard.description += '<tr><td>Mesures exceptionnelles </td><td>' + exception + '</td></tr>';
+    // }
+    // if (Cesium.defined(entity.properties['additionalinformation'])) {
+    //   billboard.description += '<tr><td>Informations supplémentaires </td><td>' + info + '</td></tr>';
+    // }
+    //
+    // billboard.description +='</tbody></table><br/>';
+    // billboard.description += '<p>' + description + '</p>';
+    // billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Informations sur les données</a><br/><br/>';
+
+  }
+
   createTableauPiscine(entity, jsonAttribut, billboard, coordLabel, dataSource) {
     // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
     var acces = String(entity.properties['access']);
@@ -801,6 +889,7 @@ createTableauQualiteAir(entity){
     // on rentre dans le fichier json chargé pour récupérer les attributs
     for(let j = 0; j < jsonAttribut.length; j++) {
       if(entity.name == jsonAttribut[j].fields.name) {
+        console.log(jsonAttribut[j]);
         billboard.description += '<tr><td>Statut</td><td>' + String(jsonAttribut[j].fields.realtimestatus) + '</td></tr>';
         billboard.description += '<tr><td>Occupation </td><td>' + String(jsonAttribut[j].fields.occupation) + '</td></tr>';
         billboard.description += '<tr><td>Heure de mise à jour </td><td>' + String(jsonAttribut[j].fields.updatedate) + '</td></tr>';

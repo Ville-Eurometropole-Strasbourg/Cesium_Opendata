@@ -41,7 +41,6 @@ class LegendManager {
 
     Object.keys(values).forEach((key) => {
       legend.appendChild(this.makeLegendItem(key, values[key], choice, {
-        symbol: options.symbol,
         borderColor: options.couleurContour
       }));
     });
@@ -75,7 +74,6 @@ class LegendManager {
   * @param  {String} label le texte à mettre dans la légende
   * @param  {String} color la couleur à mettre dans légende
   * @param  {String} choice prend la valeur point, line ou polygon, permet de différencier l'affichage des légendes
-  * @param  {String} options.symbol le symbole à utiliser pour les légendes ponctuelles
   * @param  {String} options.borderColor la couleur à mettre autour de la couleur de la légende
   * @return {Object} l'objet HTML dans lequel la légende est créée
   */
@@ -95,7 +93,7 @@ class LegendManager {
 
     } else if(choice === 'point') {
       legendColor.classList.add('legend-symbol');
-      legendColor.innerHTML = options.symbol;
+      legendColor.innerHTML = color;
     }
 
     let legendText = document.createElement('div');

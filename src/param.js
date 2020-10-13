@@ -61,7 +61,7 @@ class Data {
           // ajout du menu déroulant thématique
           let boutonMenu = document.createElement('BUTTON');
           boutonMenu.classList.add('panel-title');
-          boutonMenu.innerHTML = paramJson.menu[i].name;
+          boutonMenu.innerHTML = paramJson.menu[i].name_titre;
 
           var space = document.createTextNode("     ");
           boutonMenu.appendChild(space);
@@ -253,15 +253,14 @@ class Data {
                   globe.showPoint(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, undefined, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                     line: window['line'+i+j],
                     couleur: paramJson.menu[i].couches[j].couleur,
-                    choiceTableau: paramJson.menu[i].couches[j].choiceTableau
+                    choiceTableau: paramJson.menu[i].couches[j].choiceTableau,
+                    classificationField: paramJson.menu[i].couches[j].champ_classif
                   });
                 }
 
                 if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
                   if(e.target.checked){
-                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {
-                      symbol: paramJson.menu[i].couches[j].billboard_legende
-                    } );
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {} );
                   } else{
                     globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
                   }
@@ -329,22 +328,19 @@ class Data {
               if(paramJson.menu[i].couches[j].type_donnee === 'plu_detaille') {
                 var linetemp = [];
                 var legend = {
-                  '    ': '#fcba03'
+                  '    ': "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>'"
                 };
 
                 globe.showPolygon(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', {
                   classification: true,
                   classificationField: 'type_prescription',
-                  colors: legend,
                   alpha: 0.001,
                   choiceTableau: 'ER'
                 });
 
                 if(e.target.checked){
                   globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
-                  globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point',{
-                    symbol: "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>"
-                  });
+                  globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point',{});
                   globe.viewer.scene.requestRender();
                 } else {
                   globe.legendManager.removeLegend('ODPLUdetailleLegend');
@@ -505,6 +501,7 @@ class Data {
           // la fonction pour ouvrir la div caché sous le menu déroulant
           boutonMenu.addEventListener('click', function() {
             boutonMenu.classList.toggle("active");
+            // Si les couches ne sont pas privées, on affiche simplement la div en dessous
             if(couchesDiv.classList.contains('panel-content')) {
               if (couchesDiv.style.display === "block") {
                 couchesDiv.style.display = "none";
@@ -512,6 +509,7 @@ class Data {
                 couchesDiv.style.display = "block";
               }
             } else  {
+              // Si la div est privée, on signale à l'utilisateur qu'il devra rentrer un identifiant pour voir les couches apparaître
               if (couchesDiv.style.display === "block") {
                 couchesDiv.style.display = "none";
               } else {
@@ -527,42 +525,53 @@ class Data {
       }
     }
 
-    //
+    // ouvrir l'onglet qui permet de rentrer l'identifiant
     document.querySelector('#private').addEventListener('click', (e) => {
       this.fileList.classList.toggle('hidden');
-      /*for (var k = 0; k < couchesDivTabl.length; k++) {
-        if(couchesDivTabl[k].classList.contains('private-content')) {
-          couchesDivTabl[k].style.display = "block";
-        }
-      }*/
     });
 
-
+    // l'évenement lorsqu'on appuie sur "Ajouter" depuis l'onglet en accès restreint
     document.querySelector('#affichercouche').addEventListener('click', (e) => {
-      this.fileList.classList.add('hidden');
-      var identifiant = $('#idEMS').val();
+      var idtest = [];
+      this.fileList.classList.add('hidden'); // on masque à nouveau l'onglet identifiant
+      var identifiant = $('#idEMS').val(); // on récupère la valeur rentrée dans le formulaire
+
+      // Si on n'a pas rentré d'identifiants, ie si le formulaire a une longeur de 0, on demande à l'utilisateur d'en rentrer un
       if(identifiant.length == 0 ) {
         alert('Vous devez entrer un identifiant pour accéder aux données restreintes');
       } else  {
         for (var k = 0; k < couchesDivTabl.length; k++) {
+          // on récupère tous les onglets qui contiennent la classe private-content : on peut avoir plusieurs onglets restreints
           if(couchesDivTabl[k].classList.contains('private-content')) {
             couchesDivTabl[k].style.display = "block";
 
+            // puis on récupère toutes les div à l'intérieur des onglets privés
             var couchesprivees = couchesDivTabl[k].getElementsByTagName('div');
             for (var l = 0; l < couchesprivees.length; l++) {
+              // L'identifiant est stocké dans l'attribut "title" des couches
               var titre = couchesprivees[l].getAttribute('title');
+              // Si la valeur rentrée par l'utilisateur et l'identifiant stocké dans title correspondent,
+              // on affiche la ou les checkbox correspondantes
               if(identifiant === titre) {
                 couchesprivees[l].style.display === "block";
                 couchesprivees[l].classList.remove('hidden');
                 couchesprivees[l].classList.add('show');
 
+                // Si l'identifiant rentré était correct, on stocke la valeur true dans un tableau
+                idtest.push(true);
               } else {
-                //alert('L\'identifiant que vous avez renseigné est incorrect');
+                //Sinon, on stocke la valeur false
+                idtest.push(false);
               }
             }
-
           }
         }
+      }
+      // On teste si certaines valeurs du tableau qu'on a rempli précédemment valaient true
+      let checker = arr => arr.some(Boolean);
+      // Si toutes les valeurs du tableau valent false, on signale à l'utilisateur que l'identifiant est incorrect
+      if(!checker(idtest)) {
+        alert('L\'identifiant que vous avez renseigné est incorrect');
       }
     });
 
