@@ -40,6 +40,7 @@ class Data {
     var linePLUdetaille = [];
 
     var couchesDivTabl = [];
+    var test = 1;
 
     var params = globe.getAllUrlParams(window.location.href);
     //var lectureURL = params[Object.keys(params)[0]];
@@ -169,74 +170,45 @@ class Data {
 
             // l'évenement à ajouter lorsqu'on coche la checkbox de la donnée
             coucheCheckbox.addEventListener('change', (e) => {
+              // surfaces & lignes
+              if((paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].animation === 'non') || paramJson.menu[i].couches[j].type_donnee === 'ligne') {
 
-              // surfaces
-              if(paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].animation === 'non') {
-                // pour les objets linéaires et surfaciques qui nécessitent une classification:
-                // on clone l'objet qui contient les couleurs car Cesium modifie la structure après le passage
-                // dans les fonctions show et perd ensuite la classification
-                var cloneColor = JSON.parse(JSON.stringify(paramJson.menu[i].couches[j].couleur_classif));
-                // On fait un 2ème clone qu'on garde en mémoire avant que le 1er ne soit modifié par la fonction showPolygon
-                var cloneBis = JSON.parse(JSON.stringify(cloneColor));
+                  // pour les objets linéaires et surfaciques qui nécessitent une classification:
+                  // on clone l'objet qui contient les couleurs car Cesium modifie la structure après le passage
+                  // dans les fonctions show et perd ensuite la classification
+                  var cloneColor = JSON.parse(JSON.stringify(paramJson.menu[i].couches[j].couleur_classif));
+                  // On fait un 2ème clone qu'on garde en mémoire avant que le 1er ne soit modifié par la fonction showPolygon
+                  var cloneBis = JSON.parse(JSON.stringify(cloneColor));
 
-                globe.showPolygon(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, {
-                  classification: true,
-                  classificationField: paramJson.menu[i].couches[j].champ_classif,
-                  colors: cloneColor,
-                  alpha: paramJson.menu[i].couches[j].alpha,
-                  choiceTableau: paramJson.menu[i].couches[j].choiceTableau,
-                  line: window['line'+i+j],
-                  nameLigne: paramJson.menu[i].couches[j].name_contour,
-                  couleurLigne: paramJson.menu[i].couches[j].couleur_contour,
-                  tailleLigne: paramJson.menu[i].couches[j].taille_contour,
-                  nameLigne: paramJson.menu[i].couches[j].name_contour,
-                  couleurSurf:  paramJson.menu[i].couches[j].couleur_highlight,
-                  transparence: paramJson.menu[i].couches[j].alpha_highlight
-                });
+                  globe.showJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, {
+                    typeDonnee: paramJson.menu[i].couches[j].type_donnee,
+                    classificationField: paramJson.menu[i].couches[j].champ_classif,
+                    colors: cloneColor,
+                    alpha: paramJson.menu[i].couches[j].alpha,
+                    choiceTableau: paramJson.menu[i].couches[j].choiceTableau,
+                    line: window['line'+i+j],
+                    nameLigne: paramJson.menu[i].couches[j].name_contour,
+                    couleurLigne: paramJson.menu[i].couches[j].couleur_contour,
+                    tailleLigne: paramJson.menu[i].couches[j].taille_contour,
+                    nameLigne: paramJson.menu[i].couches[j].name_contour,
+                    couleurHighlight:  paramJson.menu[i].couches[j].couleur_highlight,
+                    alphaHighlight: paramJson.menu[i].couches[j].alpha_highlight,
+                    epaisseur: paramJson.menu[i].couches[j].epaisseur,
+                    clamp: paramJson.menu[i].couches[j].ligne_2D
+                  });
 
-                // on redonne le bon format à la couleur
-                cloneColor = cloneBis;
+                  // on redonne le bon format à la couleur
+                  cloneColor = cloneBis;
 
-                if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
-                  if(e.target.checked){
-                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {
-                      couleurContour: paramJson.menu[i].couches[j].couleur_border
-                    });
-                  } else{
-                    globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
+                  if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
+                    if(e.target.checked){
+                      globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {
+                        couleurContour: paramJson.menu[i].couches[j].couleur_border
+                      });
+                    } else{
+                      globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
+                    }
                   }
-                }
-
-                globe.viewer.scene.requestRender();
-              }
-
-              // lignes
-              if(paramJson.menu[i].couches[j].type_donnee === 'ligne') {
-                var cloneColor = JSON.parse(JSON.stringify(paramJson.menu[i].couches[j].couleur_classif));
-                // On fait un 2ème clone qu'on garde en mémoire avant que le 1er ne soit modifié par la fonction showPolygon
-                var cloneBis = JSON.parse(JSON.stringify(cloneColor));
-
-                globe.showPolyline(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].ligne_2D, paramJson.menu[i].couches[j].choice, {
-                  classification: true,
-                  classificationField: paramJson.menu[i].couches[j].champ_classif,
-                  colors: cloneColor,
-                  alpha: paramJson.menu[i].couches[j].alpha,
-                  epaisseur: paramJson.menu[i].couches[j].epaisseur,
-                  couleurHighlight:  paramJson.menu[i].couches[j].couleur_highlight,
-                  alphaHighlight: paramJson.menu[i].couches[j].alpha_highlight,
-                  choiceTableau: paramJson.menu[i].couches[j].choiceTableau
-                });
-
-                // on redonne le bon format à la couleur
-                cloneColor = cloneBis;
-
-                if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
-                  if(e.target.checked){
-                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee , {});
-                  } else{
-                    globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
-                  }
-                }
 
                 globe.viewer.scene.requestRender();
               }
@@ -331,8 +303,7 @@ class Data {
                   '    ': "<a href='https://sig.strasbourg.eu/datastrasbourg/plu_media/legende_plu.png' target='_blank'>Afficher_la_légende</a>'"
                 };
 
-                globe.showPolygon(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', {
-                  classification: true,
+                globe.showJson(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', {
                   classificationField: 'type_prescription',
                   alpha: 0.001,
                   choiceTableau: 'ER'
@@ -365,50 +336,35 @@ class Data {
             }); // fin de l'évènement change
 
             // les évènements de rafraichissement de la donnée
-            if(paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].temps_reel === 'oui') {
+            // surfaces & lignes
+            if(paramJson.menu[i].couches[j].type_donnee === 'surface' || paramJson.menu[i].couches[j].type_donnee === 'ligne') {
+              if(paramJson.menu[i].couches[j].temps_reel === 'oui') {
 
-              document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
-                // On fait un 2ème clone qu'on garde en mémoire avant que le 1er ne soit modifié par la fonction
-                var cloneBis = JSON.parse(JSON.stringify(cloneRefresh));
+                document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
+                  // On fait un 2ème clone qu'on garde en mémoire avant que le 1er ne soit modifié par la fonction
+                  var cloneBis = JSON.parse(JSON.stringify(cloneRefresh));
 
-                globe.showPolygon(true, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, {
-                  classification: true,
-                  classificationField: paramJson.menu[i].couches[j].champ_classif,
-                  colors: cloneColor,
-                  alpha: paramJson.menu[i].couches[j].alpha,
-                  choiceTableau: paramJson.menu[i].couches[j].choiceTableau,
-                  line: window['line'+i+j],
-                  nameLigne: paramJson.menu[i].couches[j].name_contour,
-                  couleurLigne: cloneBis,
-                  tailleLigne: paramJson.menu[i].couches[j].taille_contour,
-                  nameLigne: paramJson.menu[i].couches[j].name_contour,
-                  couleurSurf:  paramJson.menu[i].couches[j].couleur_highlight,
-                  transparence: paramJson.menu[i].couches[j].alpha_highlight
+                  globe.showJson(true, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, {
+                    typeDonnee: paramJson.menu[i].couches[j].type_donnee,
+                    classificationField: paramJson.menu[i].couches[j].champ_classif,
+                    colors: cloneBis,
+                    alpha: paramJson.menu[i].couches[j].alpha,
+                    choiceTableau: paramJson.menu[i].couches[j].choiceTableau,
+                    line: window['line'+i+j],
+                    nameLigne: paramJson.menu[i].couches[j].name_contour,
+                    couleurLigne: paramJson.menu[i].couches[j].couleur_contour,
+                    tailleLigne: paramJson.menu[i].couches[j].taille_contour,
+                    nameLigne: paramJson.menu[i].couches[j].name_contour,
+                    couleurHighlight:  paramJson.menu[i].couches[j].couleur_highlight,
+                    alphaHighlight: paramJson.menu[i].couches[j].alpha_highlight,
+                    epaisseur: paramJson.menu[i].couches[j].epaisseur,
+                    clamp: paramJson.menu[i].couches[j].ligne_2D
+                  });
+
+                  // on redonne le bon format à la couleur
+                  cloneRefresh = cloneBis;
                 });
-
-                // on redonne le bon format à la couleur
-                cloneRefresh = cloneBis;
-              });
-            }
-
-            if(paramJson.menu[i].couches[j].type_donnee === 'ligne' && paramJson.menu[i].couches[j].temps_reel === 'oui') {
-
-              document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
-                // On fait un 2ème clone qu'on garde en mémoire avant que le 1er ne soit modifié par la fonction
-                var cloneBis = JSON.parse(JSON.stringify(cloneRefresh));
-
-                globe.showPolyline(true, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].ligne_2D, paramJson.menu[i].couches[j].choice, {
-                  classification: true,
-                  classificationField: paramJson.menu[i].couches[j].champ_classif,
-                  colors: cloneBis,
-                  alpha: paramJson.menu[i].couches[j].alpha,
-                  epaisseur: paramJson.menu[i].couches[j].epaisseur,
-                  choiceTableau: paramJson.menu[i].couches[j].choiceTableau
-                });
-
-                // on redonne le bon format à la couleur
-                cloneRefresh = cloneBis;
-              });
+              }
             }
 
             if(paramJson.menu[i].couches[j].type_donnee === 'point' && paramJson.menu[i].couches[j].temps_reel === 'oui' && paramJson.menu[i].couches[j].couche_attributaire === 'non') {
@@ -424,11 +380,14 @@ class Data {
 
             if(paramJson.menu[i].couches[j].type_donnee === 'point' && paramJson.menu[i].couches[j].temps_reel === 'oui' && paramJson.menu[i].couches[j].couche_attributaire === 'oui') {
               document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
+                console.log(paramJson.menu[i].couches[j].couleur);
                 globe.updatePoint(paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].url_attribut, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                   line: window['line'+i+j],
                   couleur: paramJson.menu[i].couches[j].couleur,
                   choiceTableau: paramJson.menu[i].couches[j].choiceTableau
                 });
+                console.log(paramJson.menu[i].couches[j].couleur);
+
               });
             }
 
@@ -513,7 +472,9 @@ class Data {
               if (couchesDiv.style.display === "block") {
                 couchesDiv.style.display = "none";
               } else {
-                alert('Vous devez entrer un identifiant pour accéder aux données restreintes');
+                if(test ===1) {
+                  alert('Vous devez entrer un identifiant pour accéder aux données restreintes');
+                }
                 couchesDiv.style.display = "block";
               }
             }
@@ -533,7 +494,6 @@ class Data {
     // l'évenement lorsqu'on appuie sur "Ajouter" depuis l'onglet en accès restreint
     document.querySelector('#affichercouche').addEventListener('click', (e) => {
       var idtest = [];
-      this.fileList.classList.add('hidden'); // on masque à nouveau l'onglet identifiant
       var identifiant = $('#idEMS').val(); // on récupère la valeur rentrée dans le formulaire
 
       // Si on n'a pas rentré d'identifiants, ie si le formulaire a une longeur de 0, on demande à l'utilisateur d'en rentrer un
@@ -556,7 +516,9 @@ class Data {
                 couchesprivees[l].style.display === "block";
                 couchesprivees[l].classList.remove('hidden');
                 couchesprivees[l].classList.add('show');
-
+                couchesprivees[l].removeAttribute("title"); // on supprime le titre de la checkbox pour ne pas qu'il apparaisse au survol de la souris
+                this.fileList.classList.add('hidden'); // on masque à nouveau l'onglet identifiant
+                test = 2;
                 // Si l'identifiant rentré était correct, on stocke la valeur true dans un tableau
                 idtest.push(true);
               } else {

@@ -187,53 +187,21 @@ html, body {
   overflow-x: none;
 }
 
-/* boutons en haut du menu */
-/*#boutonfile {
-  display: block;
-  position: absolute;
-  left: 340px;
-  top: 100px;
-  cursor: pointer;
-}
-#config {
-  display: block;
-  position: absolute;
-  left: 10px;
-  background-color: #ECECEC;
-  color: black;
-  width: 25%;
-  cursor: pointer;
-}
-#reset {
-  display: block;
-  position: absolute;
-  left: 10px;
-  top: 150px;
-  background-color: #ECECEC;
-  color: black;
-  width: 25%;
-  cursor: pointer;
-}*/
-
 #guide {
-  display: block;
-  position: absolute;
-  left: 165px;
-  top: 60px;
+  position: relative;
+  left: 130px;
 }
 
 #doc {
-  display: block;
-  position: absolute;
-  left: 225px;
-  top: 60px;
+  position: relative;
+  left: 170px;
 }
 
 #private {
   display: block;
   position: absolute;
   right: 20px;
-  top: 98px;
+  top: 72px;
   cursor: pointer;
   z-index:1;
 }
@@ -338,6 +306,7 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 2;
 }
 
 .loadingIcon {
@@ -350,6 +319,7 @@ html, body {
   width: 66px;
   height: 66px;
   background: url(img/ajax-loader.gif) center no-repeat;
+  z-index: 2;
 }
 
 /* Style de la flèche pour dérouler le menu*/

@@ -144,6 +144,12 @@ class Menu {
 
   }
 
+  handle(e){
+      e.preventDefault(); // Otherwise the form will be submitted
+      console.log('salut');
+      alert("FORM WAS SUBMITTED");
+  }
+
   /**
   *
   *

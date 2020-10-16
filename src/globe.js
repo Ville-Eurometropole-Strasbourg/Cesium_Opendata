@@ -1520,16 +1520,15 @@ class Globe {
 
   /**
   *
-  * permet de charger des fichiers geojson surfaciques <br/>
+  * permet de charger des fichiers geojson surfaciques et linéaires <br/>
   * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités <br/>
-  * Note: dans le fichier param.js, l'option classification vaut toujours true <br/>
   * Optionnel: trace un contour autour des surfaces
   *
   * @param  {String} link Le lien vers le fichier
   * @param  {String} name Le nom qu'on donne au json
   * @param  {String} choice permet de classifier la donnée pour charger le tableau d'attributs
   * @param  {Object} options facultatif - Les options pour le chargement
-  * @param  {Boolean} options.classification true si la donnée doit être classifiée
+  * @param  {Boolean} options.clamp true pour clampToGround et false sinon (vaut true si non défini)
   * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
   * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
   * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
@@ -1538,12 +1537,18 @@ class Globe {
   * @param  {String} options.couleurLigne La couleur des lignes de contour au format '#FFFFFF'
   * @param  {Number} options.tailleLigne La largeur des lignes de contour
   * @param  {String} options.nameLigne La nom des lignes de contour
+  * @param  {Number} options.epaisseur L'épaisseur de la ligne pour les entités polylignes
   * @return  {GeoJsonDataSource} le json une fois que tout est chargé
   */
-  loadPolygon(link, name, choice, options = {}) {
+  loadGeoJson(link, name, choice, options = {}) {
 
+    if(options.clamp !== undefined) {
+      var clamp = options.clamp;
+    } else {
+      var clamp = true;
+    }
     let promisse = Cesium.GeoJsonDataSource.load(link, {
-      clampToGround: true
+      clampToGround: clamp
     });
     this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
     this.viewer.scene.logarithmicDepthBuffer = false; // idem
@@ -1554,9 +1559,8 @@ class Globe {
       this.viewer.dataSources.add(dataSource);
       this.dataSources[name] = dataSource;
       this.hideLoader();
-
       // permet de classifier les json
-      if(options.classification && options.classificationField !== undefined){
+      if(options.classificationField !== undefined){
         // Get the array of entities
         let entities = dataSource.entities.values;
         if(options.colors != undefined){
@@ -1569,34 +1573,44 @@ class Globe {
 
         for (let i = 0; i < entities.length; i++) {
           let entity = entities[i];
-          if (Cesium.defined(entity.polygon)) {
-            let color = colors[entity.properties[options.classificationField]];
-            if(!color){
-              color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
-              colors[entity.properties[options.classificationField]] = color;
-            }
 
-            // si la donnée n'a pas de tableau d'attributs particulier, on change juste le nom des entités
-            entity.name = choice;
+          let color = colors[entity.properties[options.classificationField]];
+          if(!color){
+            color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
+            colors[entity.properties[options.classificationField]] = color;
+          }
 
-            if(options.choiceTableau !== undefined) {
-              var tabl = new TableauAttribut();
+          if(options.choiceTableau !== undefined) {
+            var tabl = new TableauAttribut();
 
-              // l'attribut choiceTableau permet de classifier entre les différentes données et de charger le tableau d'attributs au bon format
-              var tablAttribut = 'createTableau' + options.choiceTableau;
-              tabl[tablAttribut](entity, dataSource);
-            }
+            // l'attribut choiceTableau permet de classifier entre les différentes données et de charger le tableau d'attributs au bon format
+            var tablAttribut = 'createTableau' + options.choiceTableau;
+            tabl[tablAttribut](entity, dataSource);
+          }
 
+          if (options.typeDonnee === 'surface') {
             //Dessine le contour des limites des entités
             if(options.couleurLigne !== undefined) {
               options.line.push(this.drawLine(entity.polygon.hierarchy._value.positions, options.tailleLigne, options.couleurLigne, 1, true, options.nameLigne));
             }
-
             // on classifie les entités par couleur
             entity.polygon.material = color;
             entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
             entity.polygon.arcType = Cesium.ArcType.GEODESIC;
+
+          } else if(options.typeDonnee === 'ligne') {
+            entity.polyline.material = color;
+            if(options.epaisseur !== undefined){
+              entity.polyline.width = options.epaisseur;
+            } else {
+              entity.polyline.width = 4.0;
+            }
+            entity.polyline.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+            entity.polyline.arcType = Cesium.ArcType.GEODESIC;
           }
+          // si la donnée n'a pas de tableau d'attributs particulier, on change juste le nom des entités
+          entity.name = choice;
+
         }
         globe.viewer.scene.requestRender();
       }
@@ -1618,24 +1632,25 @@ class Globe {
   * @param  {String} name Le nom qu'on donne au json
   * @param  {String} choice permet de classifier la donnée pour charger le tableau d'attributs
   * @param  {Object} options facultatif - Les options pour le chargement
-  * @param  {Boolean} options.classification true si la donnée doit être classifiée
+  * @param  {Boolean} options.clamp true pour clampToGround et false sinon (vaut true si non défini)
   * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
   * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
-  * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
   * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
   * @param  {Array} options.line Le tableau d'entités pour stocker les lignes de contours des polygones
+  * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
   * @param  {String} options.couleurLigne La couleur des lignes de contour au format '#FFFFFF'
   * @param  {Number} options.tailleLigne La largeur des lignes de contour
   * @param  {String} options.nameLigne La nom des lignes de contour
-  * @param  {String} options.couleurSurf La couleur du highlight quand on clique à l'intérieur du polygone au format '#FFFFFF'
-  * @param  {Number} options.transparence La transparence du highlight
-
+  * @param  {Number} options.epaisseur L'épaisseur de la ligne pour les entités polylignes
+  * @param  {String} options.couleurHighlight La couleur du highlight quand on clique sur la ligne au format '#FFFFFF'
+  * @param  {Number} options.alphaHighlight La transparence du highlight
   */
-  showPolygon(show, name, link, choice, options = {}){
+  showJson(show, name, link, choice, options = {}){
     var handler = new Cesium.ScreenSpaceEventHandler(globe.viewer.canvas);
+    var highlight = options.couleurHighlight || undefined;
 
     if(this.dataSources[name] == undefined) {
-      if(options.couleurSurf !== undefined) {
+      if(highlight !== undefined) {
         var highlighted = {
           feature : undefined,
           originalMaterial : new Cesium.Color()
@@ -1648,16 +1663,31 @@ class Globe {
           }
           // If a feature was previously highlighted, undo the highlight
           if (Cesium.defined(highlighted.feature)) {
-            highlighted.feature.id.polygon.material = highlighted.originalMaterial;
-            highlighted.feature = undefined;
+            if (options.typeDonnee === 'surface') {
+
+              highlighted.feature.id.polygon.material = highlighted.originalMaterial;
+              highlighted.feature = undefined;
+
+            } else if (options.typeDonnee === 'ligne') {
+              highlighted.feature.id.polyline.material = highlighted.originalMaterial;
+              highlighted.feature = undefined;
+            }
+
             globe.viewer.scene.requestRender();
           }
           // colorer la zone cliquée dans une couleur précise
           if (Cesium.defined(pickedObject)) {
             if (pickedObject.id.name === choice ) {
               highlighted.feature = pickedObject;
-              highlighted.originalMaterial = pickedObject.id.polygon.material;
-              pickedObject.id.polygon.material = Cesium.Color.fromCssColorString(options.couleurSurf).withAlpha(options.transparence);
+
+              if (options.typeDonnee === 'surface') {
+                highlighted.originalMaterial = pickedObject.id.polygon.material;
+                pickedObject.id.polygon.material = Cesium.Color.fromCssColorString(options.couleurHighlight).withAlpha(options.alphaHighlight);
+              } else if (options.typeDonnee === 'ligne') {
+                highlighted.originalMaterial = pickedObject.id.polyline.material;
+                pickedObject.id.polyline.material = Cesium.Color.fromCssColorString(options.couleurHighlight).withAlpha(options.alphaHighlight);
+              }
+
               globe.viewer.scene.requestRender();
             }
           }
@@ -1671,7 +1701,7 @@ class Globe {
         this.viewer.scene.requestRender();
       }
 
-      globe.loadPolygon(link, name, choice, options);
+      globe.loadGeoJson(link, name, choice, options);
       if(options.couleurLigne !== undefined) {
         for(var i = 0; i < options.line.length; i++){
           options.line[i].show = true;
@@ -1696,165 +1726,6 @@ class Globe {
   }
 
   /**
-  * permet de charger des fichiers geojson linéaires <br/>
-  * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités
-  *
-  * @param  {String} link Le lien vers le fichier
-  * @param  {String} name Le nom qu'on donne au json
-  * @param  {String} choice spécifique à la donnée de donner un nom aux entités
-  * @param  {Boolean} clamp true pour clampToGround et false sinon
-  * @param  {Object} options facultatif - Les options pour le chargement
-  * @param  {Boolean} options.classification true si la donnée doit être classifiée
-  * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
-  * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
-  * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
-  * @param  {Number} options.epaisseur L'épaisseur de la ligne
-  * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
-  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
-  */
-  loadPolyline(link, name, clamp, choice, options = {}) {
-    let promisse = Cesium.GeoJsonDataSource.load(link, {
-      clampToGround: clamp
-    });
-    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
-    this.viewer.scene.logarithmicDepthBuffer = false; // idem
-    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
-
-    promisse.then((dataSource) => {
-      // Ajoute le json dans la liste des dataSource
-      this.viewer.dataSources.add(dataSource);
-      this.dataSources[name] = dataSource;
-      this.hideLoader();
-
-      // permet de classifier les json
-      if(options.classification && options.classificationField !== undefined){
-
-        // Get the array of entities
-        let entities = dataSource.entities.values;
-
-        if(options.colors != undefined){
-          console.log('coucou');
-          Object.keys(options.colors).forEach(function(c){
-            console.log(options.colors[c]);
-            options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
-            options.colors[c].alpha = options.alpha || 1;
-          });
-        }
-
-        let colors = options.colors || {};
-        console.log(colors);
-        for (let i = 0; i < entities.length; i++) {
-          let entity = entities[i];
-
-          if (Cesium.defined(entity.polyline)) {
-            console.log(entity.properties[options.classificationField]);
-            let color = colors[entity.properties[options.classificationField]];
-            console.log(color);
-            if(!color){
-              color = Cesium.Color.fromRandom({ alpha : options.alpha || 1 });
-              colors[entity.properties[options.classificationField]] = color;
-            }
-
-            if(options.choiceTableau !== undefined) {
-              var tabl = new TableauAttribut();
-              // l'attribut choiceTableau permet de classifier entre les différentes données et de charger le tableau d'attributs au bon format
-              var tablAttribut = 'createTableau' + options.choiceTableau;
-              tabl[tablAttribut](entity, dataSource);
-            }
-
-            entity.polyline.material = color;
-            if(options.epaisseur !== undefined){
-              entity.polyline.width = options.epaisseur;
-            } else {
-              entity.polyline.width = 4.0;
-            }
-
-            entity.polyline.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
-            entity.polyline.arcType = Cesium.ArcType.GEODESIC;
-          }
-
-          entity.name = choice;
-        }
-        globe.viewer.scene.requestRender();
-      }
-    })
-    return promisse;
-  }
-
-  /**
-  * La fonction show associée à loadPolyline <br/>
-  * permet de charger ou de supprimer la donnée linéaire en fonction de la valeur de show
-  *
-  * @param  {String} link Le lien vers le fichier
-  * @param  {String} name Le nom qu'on donne au json
-  * @param  {String} choice permet de donner un nom aux entités
-  * @param  {Boolean} clamp true pour clampToGround et false sinon
-  * @param  {Object} options facultatif - Les options pour le chargement
-  * @param  {Boolean} options.classification true si la donnée doit être classifiée
-  * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
-  * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
-  * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
-  * @param  {Number} options.epaisseur L'épaisseur de la ligne
-  * @param  {String} options.couleurHighlight La couleur du highlight quand on clique sur la ligne au format '#FFFFFF'
-  * @param  {Number} options.alphaHighlight La transparence du highlight
-  * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
-  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
-  */
-  showPolyline(show, name, link, clamp, choice, options = {}) {
-    var handler = new Cesium.ScreenSpaceEventHandler(globe.viewer.canvas);
-
-    if(this.dataSources[name] == undefined){
-      if(options.couleurHighlight !== undefined) {
-        // Information about the currently highlighted feature
-        var highlighted = {
-          feature : undefined,
-          originalMaterial : new Cesium.Color()
-        };
-        // when we click on the entity change its scale and color
-
-        handler.setInputAction(function(movement) {
-          var pickedObject = globe.viewer.scene.pick(movement.position);
-          if (!Cesium.defined(pickedObject)) {
-            return;
-          }
-          // If a feature was previously highlighted, undo the highlight
-          if (Cesium.defined(highlighted.feature)) {
-            highlighted.feature.id.polyline.material = highlighted.originalMaterial;
-            highlighted.feature = undefined;
-            globe.viewer.scene.requestRender();
-          }
-          // colorer la zone cliquée dans une couleur précise
-          if (Cesium.defined(pickedObject)) {
-            if (pickedObject.id.name === choice ) {
-              highlighted.feature = pickedObject;
-              highlighted.originalMaterial = pickedObject.id.polyline.material;
-              pickedObject.id.polyline.material = Cesium.Color.fromCssColorString(options.couleurHighlight).withAlpha(options.alphaHighlight);
-              globe.viewer.scene.requestRender();
-            }
-          }
-        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-      }
-    }
-
-    if(show){
-      // on supprime l'ancienne donnée si elle existe déjà
-      if(this.dataSources[name] !== undefined){
-        this.viewer.dataSources.remove(this.dataSources[name]);
-      }
-      globe.loadPolyline(link, name, clamp, choice, options);
-      this.viewer.scene.requestRender();
-
-    } else{
-      if(this.dataSources[name] !== undefined){
-        this.viewer.dataSources.remove(this.dataSources[name]);
-        handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
-        this.viewer.scene.requestRender();
-
-      }
-    }
-  }
-
-  /**
   * permet de charger des fichiers geojson ponctuels 2D ou 3D et de les cluster ou non <br/>
   *
   *
@@ -1874,8 +1745,7 @@ class Globe {
     let promisse = Cesium.GeoJsonDataSource.load(link, {
       markerSize: 0 //pour que l'épingle n'apparaisse pas
     });
-    this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
-    this.viewer.scene.logarithmicDepthBuffer = false; // idem
+
     this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
 
     // on crée un CustomDataSource car les entités ne peuvent pas être clusterisées
@@ -2133,7 +2003,7 @@ class Globe {
         this.viewer.dataSources.remove(this.dataSources[name]);
         this.viewer.scene.requestRender();
         if(linkAttribut != undefined) {
-          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, cluster, options);
+          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options= {});
         } else {
           globe.loadPoint(link, name, image, billboard, point3D, cluster, options);
         }
@@ -2158,10 +2028,12 @@ class Globe {
     * @param  {String} options.nameLigne La nom des lignes de contour
     * @return  {GeoJsonDataSource} le json une fois que tout est chargé
     */
-    loadTimeJson(link, name, choice, options = {}){
+    loadTimeSurf(link, name, choice, options = {}){
       let promisse = Cesium.GeoJsonDataSource.load(link, {
-        clampToGround: true
+        clampToGround: true,
+        markerSize: 0 //pour que l'épingle n'apparaisse pas
       });
+
       this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
       this.viewer.scene.logarithmicDepthBuffer = false; // idem
       this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
@@ -2256,7 +2128,7 @@ class Globe {
 
     /**
     *
-    * La fonction show associée à loadTimeJson <br/>
+    * La fonction show associée à loadTimeSurf <br/>
     * permet d'afficher ou de masquer la donnée temporelle en fonction de la valeur de show
     *
     * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
@@ -2279,7 +2151,7 @@ class Globe {
 
       if(show){
         if(this.dataSources[name] === undefined){
-          globe.loadTimeJson(link, name, choice, options);
+          globe.loadTimeSurf(link, name, choice, options);
           // on zoome la timeline sur l'intervalle souhaité
           globe.viewer.timeline.zoomTo(start, end);
 
@@ -2336,8 +2208,7 @@ class Globe {
       let promisse = Cesium.GeoJsonDataSource.load(link, {
         markerSize: 0 //pour que l'épingle n'apparaisse pas
       });
-      this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
-      this.viewer.scene.logarithmicDepthBuffer = false; // idem
+      console.log(options.couleur);
       this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
 
       promisse.then((dataSource) => {
@@ -2345,14 +2216,13 @@ class Globe {
         this.viewer.dataSources.add(dataSource);
         this.dataSources[name] = dataSource;
         this.hideLoader();
-
+        console.log(options.couleur);
         let entities = dataSource.entities.values;
 
         // on est obligés de s'arrêter au nombre précis d'entités car ensuite les labels sont rajoutés à la liste des entités
         // ce qui entraine des bugs d'affichage et des erreurs au moment de la création du tableau d'attributs
         var stop = dataSource._entityCollection._entities.length;
-
-
+        console.log(options.couleur);
         // on récupère le fichier json de la fréquentation en temps réel
         var lienJson = linkAttribut;
         var xmlhttp = new XMLHttpRequest();
@@ -2372,7 +2242,6 @@ class Globe {
 
             for(let i = 0; i < stop; i++) {
               let entity = entities[i];
-
               // on récupère les coordonnées des points importés
               var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
               var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
@@ -2387,7 +2256,6 @@ class Globe {
                 // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
                 let height = Number(225 + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
                 var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
-
                 // on ajoute une entité billboard à chaque point, 225m plus haut
                 // l'entité billboard ne conserve pas les attributs
                 billboard.push(globe.createBillboard(coordHauteur, image, false));
@@ -2395,12 +2263,16 @@ class Globe {
 
                 //on trace une ligne partant du sol jusqu'à la base du billboard
                 var coordLigne = [position, coordHauteur];
-                var lineEntity = globe.drawLine(coordLigne, 2, options.couleur, 1, false)
+                let test = options.couleur;
+                console.log(test);
+                var lineEntity = globe.drawLine(coordLigne, 2, test, 1, false)
                 options.line.push(lineEntity);
+                console.log(options.couleur);
 
                 // coordonnées 15m en dessous pour la lisibilité du texte
                 let heightLabel = Number(210 + cartographic.height);
                 var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
+                console.log(options.couleur);
 
                 if(options.choiceTableau !== undefined){
                   // on lie les attributs des points au nouvelles entités billboard et lignes
@@ -2409,10 +2281,9 @@ class Globe {
                   tabl[tablBillboard](entity, jsonAttribut, billboard[i], coordLabel, dataSource);
 
                   var tablLine = 'createTableau' + options.choiceTableau;
-                  tabl[tablLine](entity, jsonAttribut, billboard[i], coordLabel, dataSource);
-
+                  tabl[tablLine](entity, jsonAttribut, lineEntity, coordLabel, dataSource);
+                  console.log(options.couleur);
                 }
-
 
               } else if(point3D === true) {
                 billboard.push(globe.createBillboard(position, image, false));
@@ -2423,8 +2294,7 @@ class Globe {
                 }
 
               }
-
-
+              console.log(options.couleur);
               globe.viewer.scene.requestRender();
 
             } // fin du for(i < entities.length)
@@ -2530,21 +2400,6 @@ class Globe {
       linePLUdetaille. push(this.drawLine(Cesium.Cartesian3.fromDegreesArray(coordContour), 2, "#FFFFFF", 1, true, 'Visibilité PLU détaillé'));
 
       this.viewer.scene.requestRender();
-
-    }
-
-    supprEntity(entity) {
-      console.log('test');
-      var handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
-      handler.setInputAction(function (movement) {
-        var pickedObject = globe.viewer.scene.pick(movement.endPosition);
-        if (Cesium.defined(pickedObject) && pickedObject.id === entity) {
-          if (e.shiftKey === 46) {
-            console.log('test1');
-            globe.viewer.entities.remove(entity);
-          }
-        }
-      }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
     }
 

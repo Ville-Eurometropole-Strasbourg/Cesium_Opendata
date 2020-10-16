@@ -251,7 +251,7 @@
                 <!-- Données en accès restreint -->
                 <div class="backdrop hidden" id="fileList">
                   <h2>Données en accès restreint</h2>
-                  <form>
+                  <form onsubmit="handle(event)">
                     <p>Identifiant : <input id="idEMS" type="text" size="20" /> </p>
                   </form>
                   <p><button id="affichercouche">Ajouter</button> </p>
@@ -275,32 +275,27 @@
                   <br/>
 
                   <div>
-                  <a href="Cesium_utilisateur_debutant.pdf" target="_blank"><button class="button" id="guide" title="Afficher le guide utilisateur"><img src="src/img/icons8-help.png"></button></a>
-                  <a href="https://3d.strasbourg.eu/CESIUM_OPENDATA/documentation/" target="_blank"><button class="button" id="doc" title="Afficher la documentation technique "><img src="src/img/icons8-maintenance.png"></button></a>
-                  <br/> <br/><br/>
+                    <button class="button" id="private" title="Données en accès restreint"><img src="src/img/icons8-private.png" style="align:center;"></button>
 
-                  <button class="button" id="private" title="Données en accès restreint"><img src="src/img/icons8-private.png" style="align:center;"></button>
-
-                  <div class="nowrap" id="photo">
-                    <input id="photoMaillage" type="checkbox" checked/>
-                    <label for="photoMaillage">Afficher le Photomaillage EmS 2018</label>
-                  </div>
-                  <div class="nowrap" id="photo2017">
-                    <input id="photoMaillage2017" type="checkbox"/>
-                    <label for="photoMaillage2017">Afficher le Photomaillage PSMV 2017</label>
-                  </div>
-
-
-                  <!--          <button id="config">Configuration</button> -->
-                  <!--          <button id="reset">Réinitialiser</button>   -->
-
-                  <!--          <button class="button" id="boutonfile"><img src="src/img/icons8-add-file-50.png"></button>  -->
-                  <br/>
+                    <div class="nowrap" id="photo">
+                      <input id="photoMaillage" type="checkbox" checked/>
+                      <label for="photoMaillage">Afficher le Photomaillage EmS 2018</label>
+                    </div>
+                    <div class="nowrap" id="photo2017">
+                      <input id="photoMaillage2017" type="checkbox"/>
+                      <label for="photoMaillage2017">Afficher le Photomaillage PSMV 2017</label>
+                    </div>
+                    <br/>
                   </div>
 
                   <!------------------------------------------------------------->
                   <button class="panel-title" id="bouton-param">PARAMETRES    <i class="arrow"></i></button>
                   <div class="panel-content" id="parametres">
+                    <br/>
+                    <a href="Cesium_utilisateur_debutant.pdf" target="_blank"><button class="button" id="guide" title="Afficher le guide utilisateur"><img src="src/img/icons8-help.png"></button></a>
+                    <a href="https://3d.strasbourg.eu/CESIUM_OPENDATA/documentation/" target="_blank"><button class="button" id="doc" title="Afficher la documentation technique "><img src="src/img/icons8-maintenance.png"></button></a>
+                    <br/><br/>
+
                     <div id="HSVtoolbar">
                       <table><tbody>
                         <tr>

@@ -703,13 +703,13 @@ class TableauAttribut {
   }
 
   //--------------------------------------------------------------------------------------------------------------------------
-  // Les fonctions appelées dans la fonction loadTimeJson
+  // Les fonctions appelées dans la fonction loadTimeSurf
 
 
 /**
 *
 * Afficher le tableau d'attributs de la donnée Qualite_Air_Eurométropole avec le bon format <br/>
-* Utilisée dans loadTimeJson
+* Utilisée dans loadTimeSurf
 *
 * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
 */
@@ -743,22 +743,17 @@ createTableauQualiteAir(entity){
   *
   */
   createTableauParkings(entity, jsonAttribut, billboard, coordLabel, dataSource) {
-    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
-
-
     // Renseignement des éléments de la boite d'information
-    // billboard.name = String(entity.properties['name']);
+    billboard.name = String(entity.properties['name']);
     billboard.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-    // if (Cesium.defined(entity.properties['imageurl'])) {
-    //   billboard.description += '<img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
-    // }
-    //
-    // billboard.description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
-    // billboard.description += '<tr><td>Mail</td><td>' + String(entity.properties['mail']) + '</td></tr>';
-    // billboard.description += '<tr><td>Téléphone </td><td>' + String(entity.properties['phone']) + '</td></tr>';
-    // billboard.description += '<tr><td>Adresse </td><td>' + String(entity.properties['address']) + '</td></tr>';
-    // billboard.description += '<tr><td>Accès </td><td>' + acces + '</td></tr>';
-    // billboard.description += '<tr><td>Lien vers le site de la piscine</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
+    if (Cesium.defined(entity.properties['description'])) {
+      billboard.description += '<p>' + String(entity.properties['description']) + '</p>';
+    }
+    billboard.description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '<tr><td>Adresse</td><td>' + String(entity.properties['address']) + '</td></tr>';
+    }
+    billboard.description += '<tr><td>Lien vers la page du parking</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
 
     // on rentre dans le fichier json chargé pour récupérer les attributs
     for(let j = 0; j < jsonAttribut.length; j++) {
@@ -794,42 +789,26 @@ createTableauQualiteAir(entity){
           }
         });
 
-        // classification du label en différentes couleurs en fonction de la fréquentation
-        // if(jsonAttribut[j].fields.realtimestatus === 'GREEN') {
-        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
-        // } else if(jsonAttribut[j].fields.realtimestatus === 'ORANGE') {
-        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
-        // } else if(jsonAttribut[j].fields.realtimestatus === 'RED') {
-        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
-        // } else if(jsonAttribut[j].fields.realtimestatus === 'BLACK') {
-        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
-        // } else if(jsonAttribut[j].fields.realtimestatus === 'CLOSED') {
-        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
-        // }
-
       }
     }
 
     // le reste du tableau d'attributs
-    // if (Cesium.defined(entity.properties['serviceandactivities'])) {
-    //   billboard.description += '<tr><td>Services et activités </td><td>' + service + '</td></tr>';
-    // }
-    // if (Cesium.defined(entity.properties['characteristics'])) {
-    //   billboard.description += '<tr><td>Caractéristiques </td><td>' + caracteristique + '</td></tr>';
-    // }
-    // if (Cesium.defined(entity.properties['exceptionalschedule'])) {
-    //   billboard.description += '<tr><td>Mesures exceptionnelles </td><td>' + exception + '</td></tr>';
-    // }
-    // if (Cesium.defined(entity.properties['additionalinformation'])) {
-    //   billboard.description += '<tr><td>Informations supplémentaires </td><td>' + info + '</td></tr>';
-    // }
-    //
-    // billboard.description +='</tbody></table><br/>';
-    // billboard.description += '<p>' + description + '</p>';
-    // billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Informations sur les données</a><br/><br/>';
+    billboard.description +='</tbody></table><br/>';
+    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/parkings/information/" target="_blank">Informations sur les données</a><br/><br/>';
 
   }
 
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée fréquentation en temps réel avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {json} jsonAttribut l'objet Json attributaire qu'on charge par dessus le GeoJson
+  * @param  {Array} billboard le tableau qui sert à stocker le CustomDataSource dans lequel on range les billboardData
+  * @param  {Cartesian3} coordLabel les coordonnées du label
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  *
+  */
   createTableauPiscine(entity, jsonAttribut, billboard, coordLabel, dataSource) {
     // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
     var acces = String(entity.properties['access']);
@@ -889,7 +868,6 @@ createTableauQualiteAir(entity){
     // on rentre dans le fichier json chargé pour récupérer les attributs
     for(let j = 0; j < jsonAttribut.length; j++) {
       if(entity.name == jsonAttribut[j].fields.name) {
-        console.log(jsonAttribut[j]);
         billboard.description += '<tr><td>Statut</td><td>' + String(jsonAttribut[j].fields.realtimestatus) + '</td></tr>';
         billboard.description += '<tr><td>Occupation </td><td>' + String(jsonAttribut[j].fields.occupation) + '</td></tr>';
         billboard.description += '<tr><td>Heure de mise à jour </td><td>' + String(jsonAttribut[j].fields.updatedate) + '</td></tr>';
@@ -952,6 +930,112 @@ createTableauQualiteAir(entity){
     billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Informations sur les données</a><br/><br/>';
 
   }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée fréquentation en temps réel avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {json} jsonAttribut l'objet Json attributaire qu'on charge par dessus le GeoJson
+  * @param  {Array} billboard le tableau qui sert à stocker le CustomDataSource dans lequel on range les billboardData
+  * @param  {Cartesian3} coordLabel les coordonnées du label
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  *
+  */
+  createTableauMairies(entity, jsonAttribut, billboard, coordLabel, dataSource) {
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+    var mail = String(entity.properties['mail']);
+    mail = mail.replace('{"de_DE": "', '');
+    mail = mail.replace('{"fr_FR": "', '');
+    mail = mail.replace('{"en_US": "', '');
+    mail = mail.replace('", "en_US": "', '');
+    mail = mail.replace('", "fr_FR": "', '');
+    mail = mail.replace('", "de_DE": "', '');
+    mail = mail.replace(/\\n/g,'');
+    mail = mail.replace(/\\t/g,'');
+    mail = mail.replace('"}','');
+    var phone = String(entity.properties['phone']);
+    phone = phone.replace('{"de_DE": "', '');
+    phone = phone.replace('{"fr_FR": "', '');
+    phone = phone.replace('{"en_US": "', '');
+    phone = phone.replace('", "en_US": "', '');
+    phone = phone.replace('", "fr_FR": "', '');
+    phone = phone.replace('", "de_DE": "', '');
+    phone = phone.replace(/\\n/g,'');
+    phone = phone.replace(/\\t/g,'');
+    phone = phone.replace('"}','');
+
+
+    // Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['name']);
+    billboard.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
+    if (Cesium.defined(entity.properties['description'])) {
+      billboard.description += '<p>' + String(entity.properties['description']) + '</p>';
+    }
+    billboard.description += '<tr><td>Nom</td><td>' + String(entity.properties['name']) + '</td></tr>';
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '<tr><td>Adresse</td><td>' + String(entity.properties['address']) + '</td></tr>';
+    }
+
+    // on rentre dans le fichier json chargé pour récupérer les attributs
+    for(let j = 0; j < jsonAttribut.length; j++) {
+      console.log(entity)
+      if(entity.properties['idsurfs'] == jsonAttribut[j].fields.sigid) {
+        console.log(jsonAttribut[j]);
+        billboard.description += '<tr><td>Durée d\'attente en minutes</td><td>' + String(jsonAttribut[j].fields.averagewaitingtime) + '</td></tr>';
+
+        // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'
+        if(jsonAttribut[j].fields.isopen === 1) {
+          var occupation = (jsonAttribut[j].fields.averagewaitingtime).toString();
+        } else if(jsonAttribut[j].fields.isopen === 0) {
+          var occupation = 'FERME';
+        }
+
+        // on ajoute le label
+        var statut = dataSource.entities.add({
+          position : coordLabel,
+          label : {
+            text : occupation,
+            font : '24px Helvetica',
+            outlineColor: Cesium.Color.fromCssColorString('#666a70'),
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+            scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+            showBackground: true,
+            backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
+          }
+        });
+
+        // classification du label en différentes couleurs en fonction de la fréquentation
+        if(jsonAttribut[j].fields.realtimestatus === 'GREEN') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
+        } else if(jsonAttribut[j].fields.realtimestatus === 'ORANGE') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
+        } else if(jsonAttribut[j].fields.realtimestatus === 'RED') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
+        } else if(jsonAttribut[j].fields.realtimestatus === 'BLACK') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
+        } else if(jsonAttribut[j].fields.realtimestatus === 'CLOSED') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
+        }
+
+      }
+    }
+
+    // le reste du tableau d'attributs
+    billboard.description += '<tr><td>Lien vers la page de la mairie de quartier</td><td>' + '<a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' </a></td></tr>';
+    if (Cesium.defined(entity.properties['mail'])) {
+      billboard.description += '<tr><td>Mail</td><td>' + mail + '</td></tr>';
+    }
+    if (Cesium.defined(entity.properties['phone'])) {
+      billboard.description += '<tr><td>Téléphone</td><td>' + phone + '</td></tr>';
+    }
+    billboard.description +='</tbody></table><br/>';
+    billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/duree-dattente-aux-mairies-en-temps-reel/information/" target="_blank">Informations sur les données</a><br/><br/>';
+
+  }
+
 
 
 
