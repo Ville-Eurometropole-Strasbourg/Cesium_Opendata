@@ -1281,6 +1281,46 @@
         },
         {
           "type_donnee": "point",
+          "animation": "oui",
+          "id_data": "ODQualiteAirStras",
+          "name": "Qualité de l'air de Strasbourg (sur un an)",
+          "url_info": "https://data.strasbourg.eu/explore/dataset/indices-de-qualite-de-lair-a-strasbourg/information/",
+          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=indices-de-qualite-de-lair-a-strasbourg&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
+          "champ_classif": "valeur",
+          "image": {
+            "1": "src/img/billboard/marker_blue.png",
+            "2": "src/img/billboard/marker_red.png",
+            "3": "src/img/billboard/marker_green.png",
+            "4": "src/img/billboard/marker_yellow.png",
+            "5": "src/img/billboard/marker_orange.png",
+            "6": "src/img/billboard/marker_pink.png",
+            "7": "src/img/billboard/marker_purple.png",
+            "8": "src/img/billboard/marker_white.png",
+            "9": "src/img/billboard/marker_grey.png",
+            "10": "src/img/billboard/marker_blue.png"
+          },
+          "couleur": "#47991f",
+          "alpha": 0.7,
+          "nom_legende": "Qualite Air Strasbourg",
+          "couleur_legende": {
+            "1 Très Bon": "<img src='src/img/billboard/marker_blue.png'>",
+            "2 Très Bon": "<img src='src/img/billboard/marker_red.png'>",
+            "3 Bon": "<img src='src/img/billboard/marker_green.png'>",
+            "4 Bon": "<img src='src/img/billboard/marker_yellow.png'>",
+            "5 Moyen": "<img src='src/img/billboard/marker_orange.png'>",
+            "6 Médiocre": "<img src='src/img/billboard/marker_pink.png'>",
+            "7 Médiocre": "<img src='src/img/billboard/marker_purple.png'>",
+            "8 Mauvais": "<img src='src/img/billboard/marker_white.png'>",
+            "9 Mauvais": "<img src='src/img/billboard/marker_grey.png'>",
+            "10 Très Mauvais": "<img src='src/img/billboard/marker_blue.png'>"
+          },
+          "point_3D": false,
+          "choice": "Qualite Air Strasbourg",
+          "start": "-366",
+          "end": "-2"
+        },
+        {
+          "type_donnee": "point",
           "id_data": "ODArbresRemarquables",
           "name": "Arbres remarquables",
           "url_info": "https://data.strasbourg.eu/explore/dataset/lieux_arbres-remarquables/information/",
@@ -1552,6 +1592,27 @@
           "id_data": "EcoleDanube",
           "name": "Projet école Danube",
           "url_data": "data/private/Danube/tileset.json"
+        },
+        {
+          "identifiant": "velum",
+          "type_donnee": "3dtiles",
+          "id_data": "Velum3D",
+          "name": "Velum 3D classifié",
+          "url_data": "https://3d.strasbourg.eu/TEST/Cesium2/data/Velum3D/tileset.json",
+          "couleur": {
+            "conditions": [
+              ["${CLASSIF} === 'HT'", "color('#C29D00', 0.7)"],
+              ["${CLASSIF} === 'ET'", "color('#E77200', 0.7)"],
+              ["${CLASSIF} === 'NR'", "color('#949DA5', 0.7)"],
+              ["true", "color('#1F85DE')"]
+            ]
+          },
+          "nom_legende": "Velum 3D classifié",
+          "couleur_legende": {
+            "HT": "#C29D00",
+            "ET" : "#E77200",
+            "NR": "#949DA5"
+          }
         }
       ]
 

@@ -337,7 +337,7 @@ class Globe {
 
     /*
     *
-    * Chargement de données
+    * Chargement de données 3DTiles
     *
     */
 
@@ -389,10 +389,10 @@ class Globe {
     * @param  {Object} options facultatif - Les options pour le chargement
     * @return  {tileset} tilesetPrimitive l'entité contenant le tileset
     */
-    load3DTiles(link, options = {}){
+    load3DTiles(link, maxError, options = {}){
       let tileset = globe.viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
         url : link,
-        maximumScreenSpaceError : 0.1,
+        maximumScreenSpaceError : maxError,
         maximumNumberOfLoadedTiles : 1000
 
       }));
@@ -410,12 +410,48 @@ class Globe {
     * @param  {Object} options facultatif - Les options pour le chargement
     */
     show3DTiles(show, name, link, maxError, options = {}){
+      var scene = this.viewer.scene;
+      var handler3D = new Cesium.ScreenSpaceEventHandler(globe.viewer.canvas);
+
+      let selected = {
+        feature: undefined,
+        originalColor: new Cesium.Color(),
+        selectedEntity: new Cesium.Entity() // Une entité qui contient les attributs du batiments selectionné
+      };
+
       if(show){
         if(this.dataSources[name] === undefined){
           globe.showLoader();
 
-          globe.addPhotomaillage(globe.loadPhotomaillage(link, maxError, options)).then((data) => {
-            this.dataSources[name] = data;
+          globe.load3DTiles(link, maxError, options).then((dataSource) => {
+            this.dataSources[name] = dataSource;
+
+            handler3D.setInputAction(function(movement) {
+              // Récuperer la forme sur laquelle on a cliqué
+              let pickedFeature = scene.pick(movement.position);
+              selected.feature = pickedFeature;
+              selected.selectedEntity.name = pickedFeature.getProperty('name');
+              selected.selectedEntity.description = '<table class="cesium-infoBox-defaultTable"><tbody>';
+
+              // Générer les lignes du tableau
+              let propertyNames = pickedFeature.getPropertyNames();
+              for(let i = 0; i < propertyNames.length; i++){
+                selected.selectedEntity.description += '<tr><th>' + propertyNames[i] + '</th><td>' + pickedFeature.getProperty(propertyNames[i]) + '</td></tr>';
+              }
+              selected.selectedEntity.description += '</tbody></table>';
+
+              // Afficher le tableau en haut à droite
+              globe.viewer.selectedEntity = selected.selectedEntity;
+
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+            if(options.couleur !== undefined) {
+              // Construire et appliquer le style au tileset
+              dataSource.style = new Cesium.Cesium3DTileStyle({
+                color: options.couleur
+              });
+            }
+
             globe.hideLoader();
           });
 
@@ -427,6 +463,7 @@ class Globe {
         if(this.dataSources[name] !== undefined){
           this.dataSources[name].show = false;
           this.viewer.scene.requestRender();
+          handler3D.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
         }
       }
     }
@@ -983,9 +1020,8 @@ class Globe {
           }
         }
         if(choice === 'line' && choice2 === 'mesure') {
-          var labeldistance = $("#distance").text();
+          var labeldistance = 'Dh : ' + $("#distance").text() + ' m \n Di : ' + $("#distanceinclinee").text() + ' m \n Da : ' +$("#hauteur").text() + ' m';
           var positionarray = globe.getMiddlePoint(coordsline);
-          console.log(positionarray);
 
           if(positionarray[0] != undefined) {
 
@@ -1188,17 +1224,13 @@ class Globe {
 
         if(distance !== undefined) {
           distCumul = Number((distCumul + distance).toFixed(2));
-          //$("#distancecumulee").text(distCumul);
           distInclCumul = Number((distInclCumul + distanceIncl).toFixed(2));
-          //$("#distanceinclineecum").text(distInclCumul);
+
         }
       }
       return {distance, distCumul, distanceIncl, distInclCumul, difference};
 
       if(distance !== undefined) {
-      /*  $("#distance").text((distance.toFixed(2).toString()));
-        $("#distanceinclinee").text((distanceIncl.toFixed(2).toString()));
-        $("#hauteur").text((difference.toString()));*/
         distance = 0;
         distanceIncl = 0;
         difference = 0;
@@ -1232,7 +1264,7 @@ class Globe {
           var d = c + 20;
 
           var coordlabel = new Cesium.Cartesian3.fromDegrees(a,b,d);
-          var coordsol = new Cesium.Cartesian3.fromDegrees(a,b,0);
+          var coordsol = new Cesium.Cartesian3.fromDegrees(a,b,c);
 
         }
       }
@@ -1541,7 +1573,6 @@ class Globe {
   * @return  {GeoJsonDataSource} le json une fois que tout est chargé
   */
   loadGeoJson(link, name, choice, options = {}) {
-
     if(options.clamp !== undefined) {
       var clamp = options.clamp;
     } else {
@@ -2003,9 +2034,17 @@ class Globe {
         this.viewer.dataSources.remove(this.dataSources[name]);
         this.viewer.scene.requestRender();
         if(linkAttribut != undefined) {
-          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options= {});
+          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options= {
+            line: options.line,
+            couleur: options.couleur,
+            choiceTableau: options.choiceTableau
+          });
         } else {
-          globe.loadPoint(link, name, image, billboard, point3D, cluster, options);
+          globe.loadPoint(link, name, image, billboard, point3D, cluster, options= {
+            line: options.line,
+            couleur: options.couleur,
+            choiceTableau: options.choiceTableau
+          });
         }
 
         this.viewer.scene.requestRender();
@@ -2020,7 +2059,6 @@ class Globe {
     * @param  {String} name Le nom qu'on donne au json
     * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
     * @param  {Object} options facultatif - Les options pour le chargement
-    * @param  {Boolean} options.classification true si la donnée doit être classifiée
     * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
     * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
     * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
@@ -2030,10 +2068,8 @@ class Globe {
     */
     loadTimeSurf(link, name, choice, options = {}){
       let promisse = Cesium.GeoJsonDataSource.load(link, {
-        clampToGround: true,
-        markerSize: 0 //pour que l'épingle n'apparaisse pas
+        clampToGround: true
       });
-
       this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
       this.viewer.scene.logarithmicDepthBuffer = false; // idem
       this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
@@ -2056,12 +2092,12 @@ class Globe {
             // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
             // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
             // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
-            if(choice === 'Qualité air communes Eurométropole') {
-              var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date_echeance._value);
-              var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
+            if(choice === 'default') {
+              var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date._value);
               var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
             } else {
-              var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date._value);
+              var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date_echeance._value);
+              var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
               var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
             }
 
@@ -2125,6 +2161,160 @@ class Globe {
       return promisse;
     }
 
+    /**
+    * permet de charger des fichiers geojson temporels (donnée dynamique qui va s'actualiser lorsqu'on bouge le curseur temps de Cesium)
+    *
+    * @param  {String} link Le lien vers le fichier
+    * @param  {String} name Le nom qu'on donne au json
+    * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {Boolean} options.classification true si la donnée doit être classifiée
+    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
+    * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
+    * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
+    * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones
+    * @param  {String} options.nameLigne La nom des lignes de contour
+    * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+    */
+    loadTimePoint(link, name, choice, options = {}){
+      var tabltemp = [];
+
+      let promisse = Cesium.GeoJsonDataSource.load(link, {
+        //markerSize: 0 //pour que l'épingle n'apparaisse pas
+      });
+
+      this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+      //var billboardData = new Cesium.CustomDataSource();
+      var billboardData = globe.viewer.scene.primitives.add(new Cesium.BillboardCollection());
+
+      promisse.then((dataSource) => {
+        // Ajoute le json dans la liste des dataSource
+        this.viewer.dataSources.add(dataSource);
+        this.dataSources[name] = dataSource;
+        let entities = dataSource.entities.values;
+        this.hideLoader();
+
+        console.log(entities.length);
+
+        for(let i = 0; i < entities.length; i++) {
+          let entity = entities[i];
+          // on récupère les coordonnées des points importés
+          var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
+          var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
+          var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
+
+          var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
+
+          // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
+          // l'entité billboard ne conserve pas les attributs
+          // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
+
+          var billboardEntity = billboardData.add({
+            billboard : {
+              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+              sizeInMeters: false,
+              scaleByDistance : new Cesium.NearFarScalar(1000, 2, 150000, 0)
+            }
+          });
+
+          billboardEntity.description = entity.properties._date_echeance._value;
+
+          if(options.classificationField !== undefined) {
+            var symbol = options.image[entity.properties[options.classificationField]];
+            if(symbol === undefined) {
+              var symbol = 'src/img/billboard/marker_black.png'
+            }
+            billboardEntity.image = symbol;
+          } else {
+            billboardEntity.image = image;
+          }
+
+          if(options.point3D === false) {
+            // nécessité de convertir en lon/lat car la coordonnée Z en ECEF ne correspond pas à la hauteur
+            let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
+            let longitude = cartographic.longitude;
+            let latitude = cartographic.latitude;
+            // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
+            let randomHeight = Math.floor(Math.random() * 20) + 230; // hauteur aléatoire pour rendre les doublons visibles
+            let height = Number(randomHeight + cartographic.height);
+
+            var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
+
+            //on trace une ligne partant du sol jusqu'à la base du billboard
+            var coordLigne = [position, coordHauteur];
+            var lineEntity = this.drawLine(coordLigne, 2, options.couleur, 1, false);
+            options.line.push(lineEntity);
+
+            billboardEntity.position = coordHauteur;
+            tabltemp.push(billboardEntity);
+
+          } else if(options.point3D === true) {
+            billboardEntity.position = position;
+          }
+
+          if(options.choiceTableau !== undefined) {
+            var tabl = new TableauAttribut();
+            // on lie les attributs des points au nouvelles entités billboard et lignes
+            // l'attribut choiceTableau permet de classifier entre les différentes données
+            var tablBillboard = 'createTableau' + options.choiceTableau;
+            tabl[tablBillboard](billboardEntity, entity);
+
+            // si on a tracé une ligne depuis le billboard jusqu'au sol on ajoute les attributs sur la ligne aussi
+            if(options.point3D === false) {
+              var tablLine = 'createTableau' + options.choiceTableau;
+              tabl[tablLine](lineEntity, entity);
+            }
+          }
+
+        } // fin du for entities
+        /*this.viewer.dataSources.add(billboardData);
+        options.billboard.push(billboardData);*/
+        console.log(billboardData);
+        console.log(billboardData.length);
+
+        // l'évenement qui actualise la valeur de l'horloge quand on clique sur la timeline
+        //this.viewer.clock.onTick.addEventListener(function () {
+          // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
+          var updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
+
+
+          for (let i = 0; i < billboardData.length; i++) {
+            let billboardtemp = billboardData.get(i);
+
+            // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
+            // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
+            // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
+            if(choice === 'default') {
+              var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
+              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+            } else {
+              var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
+              var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
+              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+            }
+
+            // si la date des attributs correspond à la date de la timeline on affiche l'entité
+            if(dateValidite === updateTime) {
+              billboardtemp.show = true;
+              console.log(updateTime);
+              globe.viewer.scene.requestRender();
+            } else {
+              billboardtemp.show = false;
+              console.log(billboardtemp);
+              globe.viewer.scene.requestRender();
+
+            }
+            // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
+            globe.viewer.scene.requestRender();
+          }
+
+        //});
+
+      });
+      return promisse;
+    }
+
 
     /**
     *
@@ -2151,7 +2341,12 @@ class Globe {
 
       if(show){
         if(this.dataSources[name] === undefined){
-          globe.loadTimeSurf(link, name, choice, options);
+          if(options.typeDonnee === 'surface') {
+            globe.loadTimeSurf(link, name, choice, options);
+          } else if(options.typeDonnee === 'point') {
+            globe.loadTimePoint(link, name, choice, options);
+          }
+
           // on zoome la timeline sur l'intervalle souhaité
           globe.viewer.timeline.zoomTo(start, end);
 
@@ -2208,7 +2403,6 @@ class Globe {
       let promisse = Cesium.GeoJsonDataSource.load(link, {
         markerSize: 0 //pour que l'épingle n'apparaisse pas
       });
-      console.log(options.couleur);
       this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
 
       promisse.then((dataSource) => {
@@ -2216,13 +2410,11 @@ class Globe {
         this.viewer.dataSources.add(dataSource);
         this.dataSources[name] = dataSource;
         this.hideLoader();
-        console.log(options.couleur);
         let entities = dataSource.entities.values;
 
         // on est obligés de s'arrêter au nombre précis d'entités car ensuite les labels sont rajoutés à la liste des entités
         // ce qui entraine des bugs d'affichage et des erreurs au moment de la création du tableau d'attributs
         var stop = dataSource._entityCollection._entities.length;
-        console.log(options.couleur);
         // on récupère le fichier json de la fréquentation en temps réel
         var lienJson = linkAttribut;
         var xmlhttp = new XMLHttpRequest();
@@ -2267,12 +2459,10 @@ class Globe {
                 console.log(test);
                 var lineEntity = globe.drawLine(coordLigne, 2, test, 1, false)
                 options.line.push(lineEntity);
-                console.log(options.couleur);
 
                 // coordonnées 15m en dessous pour la lisibilité du texte
                 let heightLabel = Number(210 + cartographic.height);
                 var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
-                console.log(options.couleur);
 
                 if(options.choiceTableau !== undefined){
                   // on lie les attributs des points au nouvelles entités billboard et lignes
@@ -2282,7 +2472,6 @@ class Globe {
 
                   var tablLine = 'createTableau' + options.choiceTableau;
                   tabl[tablLine](entity, jsonAttribut, lineEntity, coordLabel, dataSource);
-                  console.log(options.couleur);
                 }
 
               } else if(point3D === true) {
@@ -2294,7 +2483,6 @@ class Globe {
                 }
 
               }
-              console.log(options.couleur);
               globe.viewer.scene.requestRender();
 
             } // fin du for(i < entities.length)

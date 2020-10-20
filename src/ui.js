@@ -77,7 +77,7 @@ class Menu {
     };
 
     // la fonction pour gérer les paramètres d'affichage du photomaillage
-	  this.HSVinit();
+    this.HSVinit();
 
     // La fonction pour gérer la zone morte
     this.panelGauche();
@@ -116,7 +116,7 @@ class Menu {
   */
   outilClic(bouton, element) {
     document.querySelector(bouton).addEventListener('click', (e) => {
-      $(element).show();
+      $(element).toggle('hidden');
     });
     window.addEventListener('click', function(event){
       var $trigger = $(bouton);
@@ -142,12 +142,6 @@ class Menu {
       }
     });
 
-  }
-
-  handle(e){
-      e.preventDefault(); // Otherwise the form will be submitted
-      console.log('salut');
-      alert("FORM WAS SUBMITTED");
   }
 
   /**
@@ -761,14 +755,24 @@ class Menu {
 
     });
 
+    document.querySelector("#screenshot").addEventListener('click', function() {
+      var canvas = globe.viewer.canvas;
+      canvas.toBlob(function(blob) {
+        // Téléchargement du fichier drawing.json
+        let element = document.querySelector('#screenshot');
+        element.setAttribute('href', 'data:png,' + encodeURIComponent(blob));
+        element.setAttribute('download', 'capture.png');
+			});
+    });
+
     document.querySelector('#addcamera').addEventListener('click', (e) => {
       this.cameraList.classList.toggle('hidden');
     });
-	document.querySelector('#achenheim').addEventListener('click', function() {
+    document.querySelector('#achenheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4190494.10, 561015.32, 4759864.34);
       globe.fly(position, 3.51, -0.79, 0);
     });
-	document.querySelector('#bischheim').addEventListener('click', function() {
+    document.querySelector('#bischheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4186229.95, 569952.69, 4762530.48);
       globe.fly(position, 4.97, -0.69, 0);
     });
@@ -776,11 +780,11 @@ class Menu {
       var position = new Cesium.Cartesian3(4196693.50, 560574.55, 4754531.05);
       globe.fly(position, 1.19, -0.83, 0);
     });
-	document.querySelector('#breuschwickersheim').addEventListener('click', function() {
+    document.querySelector('#breuschwickersheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4190598.59, 559301.35, 4759997.67);
       globe.fly(position, 2.99, -0.82, 0);
     });
-	document.querySelector('#eckbolsheim').addEventListener('click', function() {
+    document.querySelector('#eckbolsheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4189862.77, 565510.48, 4759887.19);
       globe.fly(position, 1.11, -0.82, 0);
     });
@@ -788,7 +792,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4181297.27, 564788.54, 4767426.66);
       globe.fly(position, 5.92, -0.75, 0);
     });
-	document.querySelector('#entzheim').addEventListener('click', function() {
+    document.querySelector('#entzheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4194023.29, 562342.49, 4756631.48);
       globe.fly(position, 4.95, -0.766, 0);
     });
@@ -796,7 +800,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4197301.02, 568678.55, 4753015.26);
       globe.fly(position, 4.95, -0.66, 0);
     });
-	document.querySelector('#fegersheim').addEventListener('click', function() {
+    document.querySelector('#fegersheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4197253.19, 565937.32, 4753387.91);
       globe.fly(position, 2.93, -0.77, 0);
     });
@@ -804,11 +808,11 @@ class Menu {
       var position = new Cesium.Cartesian3(4195561.33, 563136.35, 4755203.03);
       globe.fly(position, 4.46, -0.76, 0);
     });
-	document.querySelector('#hangenbieten').addEventListener('click', function() {
+    document.querySelector('#hangenbieten').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4192127.35, 560335.37, 4758544.21);
       globe.fly(position, 3.38, -0.79, 0);
     });
-	document.querySelector('#hoenheim').addEventListener('click', function() {
+    document.querySelector('#hoenheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4185672.02, 569983.83, 4763019.50);
       globe.fly(position, 1.51, -0.72, 0);
     });
@@ -816,7 +820,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4191886.86, 562498.64, 4758465.78);
       globe.fly(position, 0.41, -0.93, 0);
     });
-	document.querySelector('#illkirch').addEventListener('click', function() {
+    document.querySelector('#illkirch').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4193747.64, 567758.17, 4756204.42);
       globe.fly(position, 1.84, -0.60, 0);
     });
@@ -824,7 +828,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4192395.91, 558488.50, 4758546.61);
       globe.fly(position, 4.97, -0.68, 0);
     });
-	document.querySelector('#lawantzenau').addEventListener('click', function() {
+    document.querySelector('#lawantzenau').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4181831.09, 574938.23, 4765771.14);
       globe.fly(position, 3.79, -0.60, 0);
     });
@@ -832,7 +836,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4183771.19, 565724.11, 4765172.97);
       globe.fly(position, 3.99, -0.93, 0);
     });
-	document.querySelector('#lingolsheim').addEventListener('click', function() {
+    document.querySelector('#lingolsheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4191863.71, 565388.71, 4758146.13);
       globe.fly(position, 0.36, -0.54, 0);
     });
@@ -840,7 +844,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4197399.67, 564804.87, 4753366.40);
       globe.fly(position, 1.59, -0.64, 0);
     });
-	document.querySelector('#mittelhausbergen').addEventListener('click', function() {
+    document.querySelector('#mittelhausbergen').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4186858.76, 565543.69, 4762535.37);
       globe.fly(position, 2.88, -0.88, 0);
     });
@@ -848,7 +852,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4184310.67, 566949.34, 4764545.43);
       globe.fly(position, 3.90, -0.61, 0);
     });
-	document.querySelector('#niederhausbergen').addEventListener('click', function() {
+    document.querySelector('#niederhausbergen').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4186064.74, 566076.67, 4763132.34);
       globe.fly(position, 5.43, -0.63, 0);
     });
@@ -856,7 +860,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4187684.39, 565211.40, 4761862.57);
       globe.fly(position, 5.27, -0.86, 0);
     });
-	document.querySelector('#oberschaeffolsheim').addEventListener('click', function() {
+    document.querySelector('#oberschaeffolsheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4189778.59, 562566.46, 4760293.99);
       globe.fly(position, 1.74, -0.49, 0);
     });
@@ -864,7 +868,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4190663.24, 555808.46, 4760364.14);
       globe.fly(position, 1.34, -0.65, 0);
     });
-	document.querySelector('#ostwald').addEventListener('click', function() {
+    document.querySelector('#ostwald').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4191958.87, 567810.05, 4757778.75);
       globe.fly(position, 6.09, -0.56, 0);
     });
@@ -872,7 +876,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4198464.61, 569523.54, 4751880.29);
       globe.fly(position, 0.84, -0.58, 0);
     });
-	document.querySelector('#reichstett').addEventListener('click', function() {
+    document.querySelector('#reichstett').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4183383.79, 569668.59, 4765049.97);
       globe.fly(position, 3.47, -0.52, 0);
     });
@@ -880,7 +884,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4187172.21, 569637.38, 4761783.19);
       globe.fly(position, 0.64, -0.53, 0);
     });
-	document.querySelector('#souffelweyersheim').addEventListener('click', function() {
+    document.querySelector('#souffelweyersheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4184718.61, 568888.73, 4764015.40);
       globe.fly(position, 6.28, -0.80, 0);
     });
@@ -888,7 +892,7 @@ class Menu {
       var position = new Cesium.Cartesian3(4189285.38, 570210.64, 4760121.97);
       globe.fly(position, 6.28, -0.80, 0);
     });
-	document.querySelector('#vendenheim').addEventListener('click', function() {
+    document.querySelector('#vendenheim').addEventListener('click', function() {
       var position = new Cesium.Cartesian3(4182524.16, 566365.22, 4766286.09);
       globe.fly(position, 5.46, -0.91, 0);
     });
@@ -982,268 +986,166 @@ class Menu {
     });
 
     /*document.querySelector('#VitaBoucle3D').addEventListener('change', (e) => {
-      var couleur = {
-        "facile": "#15780c",
-        "moyenne": "#097db8",
-        "difficile": "#fc0000"
-      };
+    var couleur = {
+    "facile": "#15780c",
+    "moyenne": "#097db8",
+    "difficile": "#fc0000"
+  };
 
-      globe.showPolyline(e.target.checked, 'VitaBoucle3D', 'data/test/vitaboucle3D.json', false, 'VitaBoucle', {
-        classification: true,
-        classificationField: 'difficulte',
-        colors: couleur,
-        alpha: 0.7
-      });
-    });*/
+  globe.showPolyline(e.target.checked, 'VitaBoucle3D', 'data/test/vitaboucle3D.json', false, 'VitaBoucle', {
+  classification: true,
+  classificationField: 'difficulte',
+  colors: couleur,
+  alpha: 0.7
+});
+});*/
 
-  }
-  /*
-  *
-  * Fin de la fonction evenementsCouches
-  */
-
-
-  /**
-  * Ajoute une source de données à la liste en donnant son nom "name" et la datasource "value"
-  *
-  * @param  {String} name Le nom qu'on souhaite donner à la datasource
-  * @param  {Object} value La valeur qu'on donne à la dataSource
-  */
-  addDataSource(name, value){
-    this.dataSources[name] = value;
-  }
+}
+/*
+*
+* Fin de la fonction evenementsCouches
+*/
 
 
-  /**
-  * Modification du contraste et saturation de l'affichage
-  *
-  */
-  HSVinit(){
+/**
+* Ajoute une source de données à la liste en donnant son nom "name" et la datasource "value"
+*
+* @param  {String} name Le nom qu'on souhaite donner à la datasource
+* @param  {Object} value La valeur qu'on donne à la dataSource
+*/
+addDataSource(name, value){
+  this.dataSources[name] = value;
+}
 
-    Cesium.knockout.track(globe.viewModel);
-    var toolbar = document.getElementById('HSVtoolbar');
-    Cesium.knockout.applyBindings(globe.viewModel, toolbar);
-    for (var name in globe.viewModel) {
-      if (globe.viewModel.hasOwnProperty(name)) {
-        Cesium.knockout.getObservable(globe.viewModel, name).subscribe(globe.updatePostProcess);
-      }
+
+/**
+* Modification du contraste et saturation de l'affichage
+*
+*/
+HSVinit(){
+
+  Cesium.knockout.track(globe.viewModel);
+  var toolbar = document.getElementById('HSVtoolbar');
+  Cesium.knockout.applyBindings(globe.viewModel, toolbar);
+  for (var name in globe.viewModel) {
+    if (globe.viewModel.hasOwnProperty(name)) {
+      Cesium.knockout.getObservable(globe.viewModel, name).subscribe(globe.updatePostProcess);
     }
-    globe.updatePostProcess();
+  }
+  globe.updatePostProcess();
+}
+
+
+/**
+* Ajout de couches interactif pour les données geojson <br/>
+* Principe: on a un serveur web qui permet d'avoir les fichiers au format http (Cesium n'accepte pas les fichiers stockés en
+* local pour des raisons de crossOrigin), on veut récupérer une liste de tous les fichiers présents dans un dossier spécifique.
+* On envoie la requête sur le serveur qui nous donne la liste au format texte, on récupère tous les noms de fichiers et
+* on s'en sert pour créer les liens d'accès jusqu'aux json <br/>
+* On propose à l'utilisateur de classifier la donnée lorsqu'il l'ajoute
+*
+* @return {Object} la liste des fichiers sur le serveur web
+*
+*/
+getJson() {
+  var result = []; // tableau pour stocker les éléments du dossier
+  var noms = []; // stocke les noms des couches
+  var json = []; // stocke les liens vers les json associés au nom
+
+  var id = []; // tableau unitaire 1, 2, 3 jusqu'à 100
+  // permet de donner un identifiant aux couches
+  // on ne peut pas avoir plus de 100 fichiers présents dans le dossier du serveur
+  var N = 100;
+  for (var i = 1; i <= N; i++) {
+    id.push(i);
   }
 
+  var valeurClassif = []; // champ de texte utlisé pour la classification
+  var couleurClassif = []; // couleur associée
 
-  /**
-  * Ajout de couches interactif pour les données geojson <br/>
-  * Principe: on a un serveur web qui permet d'avoir les fichiers au format http (Cesium n'accepte pas les fichiers stockés en
-  * local pour des raisons de crossOrigin), on veut récupérer une liste de tous les fichiers présents dans un dossier spécifique.
-  * On envoie la requête sur le serveur qui nous donne la liste au format texte, on récupère tous les noms de fichiers et
-  * on s'en sert pour créer les liens d'accès jusqu'aux json <br/>
-  * On propose à l'utilisateur de classifier la donnée lorsqu'il l'ajoute
-  *
-  * @return {Object} la liste des fichiers sur le serveur web
-  *
-  */
-  getJson() {
-    var result = []; // tableau pour stocker les éléments du dossier
-    var noms = []; // stocke les noms des couches
-    var json = []; // stocke les liens vers les json associés au nom
+  document.querySelector('#affichercouche').addEventListener('click', function() {
+    document.querySelector('#affichercouche').classList.add('hidden'); // on ne peut afficher qu'un seul contenu de dossier par session
+    localStorage.setItem('identifiant', $('#idEMS').val()); // on enregistre l'identifiant dans la mémoire du navigateur (cookie)
+    var identifiant = localStorage.getItem('identifiant'); // et on le récupère
 
-    var id = []; // tableau unitaire 1, 2, 3 jusqu'à 100
-    // permet de donner un identifiant aux couches
-    // on ne peut pas avoir plus de 100 fichiers présents dans le dossier du serveur
-    var N = 100;
-    for (var i = 1; i <= N; i++) {
-      id.push(i);
-    }
+    var filePath = 'http://localhost:8000/' + identifiant + '/json/'; // donne le chemin d'accès au dossier
 
-    var valeurClassif = []; // champ de texte utlisé pour la classification
-    var couleurClassif = []; // couleur associée
+    var xmlhttp = new XMLHttpRequest();
+    this.xmlhttp = this;
+    xmlhttp.open("GET", filePath, true);
+    xmlhttp.onreadystatechange = function () {
+      if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 
-    document.querySelector('#affichercouche').addEventListener('click', function() {
-      document.querySelector('#affichercouche').classList.add('hidden'); // on ne peut afficher qu'un seul contenu de dossier par session
-      localStorage.setItem('identifiant', $('#idEMS').val()); // on enregistre l'identifiant dans la mémoire du navigateur (cookie)
-      var identifiant = localStorage.getItem('identifiant'); // et on le récupère
+        let html = xmlhttp.responseText; // renvoie un texte au format html où la liste des fichers est dans une li
+        result = $(html).find("li > a"); // on récupère tous les li
 
-      var filePath = 'http://localhost:8000/' + identifiant + '/json/'; // donne le chemin d'accès au dossier
+        for(let i=0;i<result.length;i++) {
+          noms.push(result[i].innerText);
+          json.push(filePath + result[i].innerText);
 
-      var xmlhttp = new XMLHttpRequest();
-      this.xmlhttp = this;
-      xmlhttp.open("GET", filePath, true);
-      xmlhttp.onreadystatechange = function () {
-        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+          // créé les boutons qui récupère les infos du serveur et s'affiche dans la div fileList
+          var couche = document.createElement("BUTTON");
+          couche.innerHTML = noms[i];
+          document.getElementById("fileList").appendChild(couche);
+          var espace = document.createElement("br");
+          document.getElementById("fileList").appendChild(espace);
 
-          let html = xmlhttp.responseText; // renvoie un texte au format html où la liste des fichers est dans une li
-          result = $(html).find("li > a"); // on récupère tous les li
+          // Lorsqu'on clique sur un des boutons, ouvre un menu de classification et créé une checkbox dans l'onglet "mes couches"
+          couche.addEventListener('click', (e) => {
+            var divClone = $("#classifList").clone(); // on garde en mémoire l'état d'origine pour le remettre une fois une couche ajoutée
+            document.querySelector('#fileList').classList.add('hidden');
+            document.querySelector('#classifList').classList.remove('hidden');
 
-          for(let i=0;i<result.length;i++) {
-            noms.push(result[i].innerText);
-            json.push(filePath + result[i].innerText);
-
-            // créé les boutons qui récupère les infos du serveur et s'affiche dans la div fileList
-            var couche = document.createElement("BUTTON");
-            couche.innerHTML = noms[i];
-            document.getElementById("fileList").appendChild(couche);
-            var espace = document.createElement("br");
-            document.getElementById("fileList").appendChild(espace);
-
-            // Lorsqu'on clique sur un des boutons, ouvre un menu de classification et créé une checkbox dans l'onglet "mes couches"
-            couche.addEventListener('click', (e) => {
-              var divClone = $("#classifList").clone(); // on garde en mémoire l'état d'origine pour le remettre une fois une couche ajoutée
-              document.querySelector('#fileList').classList.add('hidden');
-              document.querySelector('#classifList').classList.remove('hidden');
-
-              document.querySelector('#ajoutertype').addEventListener('click', function() {
-                if($('#typeclassif').val() === 'ponctuelle') {
-                  document.querySelector('#ponctuelleDiv').classList.remove('hidden');
-                  document.querySelector('#ajouterclassif').classList.remove('hidden');
-                  document.querySelector('#ajoutertype').classList.add('hidden');
-                  document.querySelector('#choixDiv').classList.add('hidden');
-                } else if($('#typeclassif').val() === 'surfacique') {
-                  document.querySelector('#surfaciqueDiv').classList.remove('hidden');
-                  document.querySelector('#ajouterclassif').classList.remove('hidden');
-                  document.querySelector('#ajoutertype').classList.add('hidden');
-                  document.querySelector('#choixDiv').classList.add('hidden');
-                }
-              });
-
-              // A chaque clic, ajoute les 2 div pour classifier
-              document.querySelector('#addclassif').addEventListener('click', function() {
-                let divValClassif = document.createElement("input");
-                divValClassif.type = "text";
-                divValClassif.size = 10;
-                divValClassif.classList.add('valeurclassif');
-                let valText = document.createElement('span');
-                valText.innerHTML = 'Valeur : ';
-
-                let divCouleurClassif = document.createElement("input");
-                divCouleurClassif.type = "color";
-                divCouleurClassif.value = '#FFFFFF';
-                divCouleurClassif.classList.add('couleurclassif');
-                let coulText = document.createElement('span');
-                coulText.innerHTML = 'Couleur : ';
-
-                var espace2 = document.createElement("br");
-                var espace3 = document.createElement("br");
-                document.getElementById("classifForm").appendChild(valText);
-                document.getElementById("classifForm").appendChild(divValClassif);
-                document.getElementById("classifForm").appendChild(espace2);
-                document.getElementById("classifForm").appendChild(coulText);
-                document.getElementById("classifForm").appendChild(divCouleurClassif);
-                document.getElementById("classifForm").appendChild(espace3);
-
-              });
-
-              // Lorsqu'on a tout classifié, on récupère les valeurs de classif et créé la checkbox dans l'onglet "mes couches"
-              document.querySelector('#ajouterclassif').addEventListener('click', function() {
-                let item = document.createElement('div');
-                item.classList.add('nowrap');
-                let checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.name = noms[i];
-                checkbox.id = id[i];
-
-                let label = document.createElement('label');
-                label.htmlFor = id[i];
-                label.appendChild(document.createTextNode(noms[i]));
-                item.appendChild(checkbox);
-                item.appendChild(label);
-                document.getElementById("mescouches").appendChild(item);
-                document.querySelector('#mescouches').style.display = "block";
-
-                // données surfaciques
-                var champ = $('#classif').val();
-                var transparence = $('#classiftransparence').val();
-                valeurClassif = $('.valeurclassif').map(function() {
-                  return $(this).val();
-                }).get();
-                couleurClassif = $('.couleurclassif').map(function() {
-                  return $(this).val();
-                }).get();
-
-                var colors = new Map();
-                for(let j=0; j<valeurClassif.length; j++) {
-                  colors[valeurClassif[j]] = couleurClassif[j];
-                }
-
-                // données ponctuelles
-                var couleur = $('#classifpoint').val();
-                var url = $('#makiclassif').val();
-
-                document.querySelector('#classifList').classList.add('hidden');
-                $("#classifList").replaceWith(divClone); // pour avoir une div vierge lors de l'ajout de la prochaine couche
-
-                // L'evenement pour afficher la nouvelle couche
-                checkbox.addEventListener('change', (e) => {
-                  globe.showJson(e.target.checked, noms[i], json[i], url, Cesium.Color.fromCssColorString(couleur), undefined, undefined, undefined, {
-                    classification: true,
-                    classificationField: champ,
-                    colors: colors,
-                    alpha: transparence
-                  });
-                });
-              });
+            document.querySelector('#ajoutertype').addEventListener('click', function() {
+              if($('#typeclassif').val() === 'ponctuelle') {
+                document.querySelector('#ponctuelleDiv').classList.remove('hidden');
+                document.querySelector('#ajouterclassif').classList.remove('hidden');
+                document.querySelector('#ajoutertype').classList.add('hidden');
+                document.querySelector('#choixDiv').classList.add('hidden');
+              } else if($('#typeclassif').val() === 'surfacique') {
+                document.querySelector('#surfaciqueDiv').classList.remove('hidden');
+                document.querySelector('#ajouterclassif').classList.remove('hidden');
+                document.querySelector('#ajoutertype').classList.add('hidden');
+                document.querySelector('#choixDiv').classList.add('hidden');
+              }
             });
-          }
-        }
-      };
 
-      xmlhttp.send();
-    });
-  }
+            // A chaque clic, ajoute les 2 div pour classifier
+            document.querySelector('#addclassif').addEventListener('click', function() {
+              let divValClassif = document.createElement("input");
+              divValClassif.type = "text";
+              divValClassif.size = 10;
+              divValClassif.classList.add('valeurclassif');
+              let valText = document.createElement('span');
+              valText.innerHTML = 'Valeur : ';
 
-  /**
-  * Ajout de couches interactif pour les données 3DTiles <br/>
-  * Pas de classification simple pour les 3dtiles
-  *
-  */
-  get3DTiles() {
-    var result = [];
-    var noms = [];
-    var json = [];
-    var id = [];
-    var N = 100;
-    for (var i = 1; i <= N; i++) {
-      id.push(i);
-    }
+              let divCouleurClassif = document.createElement("input");
+              divCouleurClassif.type = "color";
+              divCouleurClassif.value = '#FFFFFF';
+              divCouleurClassif.classList.add('couleurclassif');
+              let coulText = document.createElement('span');
+              coulText.innerHTML = 'Couleur : ';
 
-    document.querySelector('#affichercouche').addEventListener('click', function() {
-      document.querySelector('#affichercouche').classList.add('hidden');
-      var identifiant = localStorage.getItem('identifiant');
+              var espace2 = document.createElement("br");
+              var espace3 = document.createElement("br");
+              document.getElementById("classifForm").appendChild(valText);
+              document.getElementById("classifForm").appendChild(divValClassif);
+              document.getElementById("classifForm").appendChild(espace2);
+              document.getElementById("classifForm").appendChild(coulText);
+              document.getElementById("classifForm").appendChild(divCouleurClassif);
+              document.getElementById("classifForm").appendChild(espace3);
 
+            });
 
-      var filePath = 'http://localhost:8000/' + identifiant + '/3dtiles/';
-
-      var xmlhttp = new XMLHttpRequest();
-      this.xmlhttp = this;
-
-      xmlhttp.open("GET", filePath, true);
-      xmlhttp.onreadystatechange = function () {
-        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-
-          let html = xmlhttp.responseText;
-          result = $(html).find("li > a");
-
-          for(let i=0;i<result.length;i++) {
-            noms.push(result[i].innerText);
-            json.push(filePath + result[i].innerText + 'tileset.json');
-
-            // créé les boutons qui récupère les infos du serveur
-            var couche = document.createElement("BUTTON");
-            couche.innerHTML = noms[i];
-            document.getElementById("fileList").appendChild(couche);
-            let espace = document.createElement("br");
-            document.getElementById("fileList").appendChild(espace);
-
-            // Pour chaque bouton, créé une checkbox dans l'onglet "mes couches"
-            couche.addEventListener('click', (e) => {
-              document.querySelector('#fileList').classList.add('hidden');
-
+            // Lorsqu'on a tout classifié, on récupère les valeurs de classif et créé la checkbox dans l'onglet "mes couches"
+            document.querySelector('#ajouterclassif').addEventListener('click', function() {
               let item = document.createElement('div');
               item.classList.add('nowrap');
               let checkbox = document.createElement("input");
               checkbox.type = "checkbox";
               checkbox.name = noms[i];
               checkbox.id = id[i];
+
               let label = document.createElement('label');
               label.htmlFor = id[i];
               label.appendChild(document.createTextNode(noms[i]));
@@ -1252,119 +1154,221 @@ class Menu {
               document.getElementById("mescouches").appendChild(item);
               document.querySelector('#mescouches').style.display = "block";
 
-              checkbox.addEventListener('change', (e) => {
-                globe.show3DTiles(e.target.checked, 'test', json[i]);
-              });
+              // données surfaciques
+              var champ = $('#classif').val();
+              var transparence = $('#classiftransparence').val();
+              valeurClassif = $('.valeurclassif').map(function() {
+                return $(this).val();
+              }).get();
+              couleurClassif = $('.couleurclassif').map(function() {
+                return $(this).val();
+              }).get();
 
-            });
-          }
-        }
-      };
+              var colors = new Map();
+              for(let j=0; j<valeurClassif.length; j++) {
+                colors[valeurClassif[j]] = couleurClassif[j];
+              }
 
-      xmlhttp.send();
-    });
-  }
+              // données ponctuelles
+              var couleur = $('#classifpoint').val();
+              var url = $('#makiclassif').val();
 
-  /**
-  * Ajout de couches interactif pour les dessins issus de Cesium via la fonction d'export
-  *
-  */
-  getDrawing() {
-    var result = []; // tableau pour stocker les éléments du dossier
-    var noms = []; // stocke les noms des couches
-    var json = []; // stocke les liens vers les json associés au nom
-
-    var id = []; // tableau unitaire 1, 2, 3 jusqu'à 100
-    // permet de donner un identifiant aux couches
-    // on ne peut pas avoir plus de 100 fichiers présents dans le dossier du serveur
-    var N = 100;
-    for (var i = 1; i <= N; i++) {
-      id.push(i);
-    }
-
-    var valeurClassif = []; // champ de texte utlisé pour la classification
-    var couleurClassif = []; // couleur associée
-
-    // variables neutres qui servent lors de l'appel de la fonction showJson
-    var symbol;
-    var couleur = 'FFFFFF';
-    var options;
-
-    document.querySelector('#affichercouche').addEventListener('click', function() {
-      document.querySelector('#affichercouche').classList.add('hidden'); // on ne peut afficher qu'un seul contenu de dossier par session
-      localStorage.setItem('identifiant', $('#idEMS').val()); // on enregistre l'identifiant dans la mémoire du navigateur (cookie)
-      var identifiant = localStorage.getItem('identifiant'); // et on le récupère
-
-      var filePath = 'http://localhost:8000/' + identifiant + '/drawing/'; // donne le chemin d'accès au dossier
-
-      var divClone = $("#classifList").clone(); // on garde en mémoire l'état d'origine pour le remettre une fois une couche ajoutée
-
-      var xmlhttp = new XMLHttpRequest();
-      this.xmlhttp = this;
-      xmlhttp.open("GET", filePath, true);
-      xmlhttp.onreadystatechange = function () {
-        if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-
-          let html = xmlhttp.responseText; // renvoie un texte au format html où la liste des fichers est dans une li
-          result = $(html).find("li > a"); // on récupère tous les li
-
-
-          for(let i=0;i<result.length;i++) {
-            noms.push(result[i].innerText);
-            json.push(filePath + result[i].innerText);
-
-            // créé les boutons qui récupère les infos du serveur
-            var couche = document.createElement("BUTTON");
-            couche.innerHTML = noms[i];
-            document.getElementById("fileList").appendChild(couche);
-            let espace = document.createElement("br");
-            document.getElementById("fileList").appendChild(espace);
-
-            // Pour chaque bouton, créé une checkbox dans l'onglet "mes couches"
-            couche.addEventListener('click', (e) => {
-              document.querySelector('#fileList').classList.add('hidden');
-
-              let item = document.createElement('div');
-              item.classList.add('nowrap');
-              let checkbox = document.createElement("input");
-              checkbox.type = "checkbox";
-              checkbox.name = noms[i];
-              checkbox.id = id[i];
-              let label = document.createElement('label');
-              label.htmlFor = id[i];
-              label.appendChild(document.createTextNode(noms[i]));
-              item.appendChild(checkbox);
-              item.appendChild(label);
-              document.getElementById("mescouches").appendChild(item);
-              document.querySelector('#mescouches').style.display = "block";
+              document.querySelector('#classifList').classList.add('hidden');
+              $("#classifList").replaceWith(divClone); // pour avoir une div vierge lors de l'ajout de la prochaine couche
 
               // L'evenement pour afficher la nouvelle couche
               checkbox.addEventListener('change', (e) => {
-                if(e.target.checked){
-                  if(globe.dataSources[noms[i]] === undefined){
-                    globe.loadDrawing(json[i], noms[i], options);
-                  } else{
-                    globe.dataSources[noms[i]].show = true;
-                    globe.viewer.scene.requestRender();
-                  }
-                } else{
-                  if(globe.dataSources[noms[i]] !== undefined){
-                    globe.dataSources[noms[i]].show = false;
-                    globe.viewer.scene.requestRender();
-                  }
-                }
+                globe.showJson(e.target.checked, noms[i], json[i], url, Cesium.Color.fromCssColorString(couleur), undefined, undefined, undefined, {
+                  classification: true,
+                  classificationField: champ,
+                  colors: colors,
+                  alpha: transparence
+                });
               });
             });
-          }
+          });
         }
-      };
+      }
+    };
 
-      xmlhttp.send();
-    });
+    xmlhttp.send();
+  });
+}
+
+/**
+* Ajout de couches interactif pour les données 3DTiles <br/>
+* Pas de classification simple pour les 3dtiles
+*
+*/
+get3DTiles() {
+  var result = [];
+  var noms = [];
+  var json = [];
+  var id = [];
+  var N = 100;
+  for (var i = 1; i <= N; i++) {
+    id.push(i);
   }
 
-  /*
-  * Fin de la classe Menu
-  */
+  document.querySelector('#affichercouche').addEventListener('click', function() {
+    document.querySelector('#affichercouche').classList.add('hidden');
+    var identifiant = localStorage.getItem('identifiant');
+
+
+    var filePath = 'http://localhost:8000/' + identifiant + '/3dtiles/';
+
+    var xmlhttp = new XMLHttpRequest();
+    this.xmlhttp = this;
+
+    xmlhttp.open("GET", filePath, true);
+    xmlhttp.onreadystatechange = function () {
+      if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+
+        let html = xmlhttp.responseText;
+        result = $(html).find("li > a");
+
+        for(let i=0;i<result.length;i++) {
+          noms.push(result[i].innerText);
+          json.push(filePath + result[i].innerText + 'tileset.json');
+
+          // créé les boutons qui récupère les infos du serveur
+          var couche = document.createElement("BUTTON");
+          couche.innerHTML = noms[i];
+          document.getElementById("fileList").appendChild(couche);
+          let espace = document.createElement("br");
+          document.getElementById("fileList").appendChild(espace);
+
+          // Pour chaque bouton, créé une checkbox dans l'onglet "mes couches"
+          couche.addEventListener('click', (e) => {
+            document.querySelector('#fileList').classList.add('hidden');
+
+            let item = document.createElement('div');
+            item.classList.add('nowrap');
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = noms[i];
+            checkbox.id = id[i];
+            let label = document.createElement('label');
+            label.htmlFor = id[i];
+            label.appendChild(document.createTextNode(noms[i]));
+            item.appendChild(checkbox);
+            item.appendChild(label);
+            document.getElementById("mescouches").appendChild(item);
+            document.querySelector('#mescouches').style.display = "block";
+
+            checkbox.addEventListener('change', (e) => {
+              globe.show3DTiles(e.target.checked, 'test', json[i]);
+            });
+
+          });
+        }
+      }
+    };
+
+    xmlhttp.send();
+  });
+}
+
+/**
+* Ajout de couches interactif pour les dessins issus de Cesium via la fonction d'export
+*
+*/
+getDrawing() {
+  var result = []; // tableau pour stocker les éléments du dossier
+  var noms = []; // stocke les noms des couches
+  var json = []; // stocke les liens vers les json associés au nom
+
+  var id = []; // tableau unitaire 1, 2, 3 jusqu'à 100
+  // permet de donner un identifiant aux couches
+  // on ne peut pas avoir plus de 100 fichiers présents dans le dossier du serveur
+  var N = 100;
+  for (var i = 1; i <= N; i++) {
+    id.push(i);
+  }
+
+  var valeurClassif = []; // champ de texte utlisé pour la classification
+  var couleurClassif = []; // couleur associée
+
+  // variables neutres qui servent lors de l'appel de la fonction showJson
+  var symbol;
+  var couleur = 'FFFFFF';
+  var options;
+
+  document.querySelector('#affichercouche').addEventListener('click', function() {
+    document.querySelector('#affichercouche').classList.add('hidden'); // on ne peut afficher qu'un seul contenu de dossier par session
+    localStorage.setItem('identifiant', $('#idEMS').val()); // on enregistre l'identifiant dans la mémoire du navigateur (cookie)
+    var identifiant = localStorage.getItem('identifiant'); // et on le récupère
+
+    var filePath = 'http://localhost:8000/' + identifiant + '/drawing/'; // donne le chemin d'accès au dossier
+
+    var divClone = $("#classifList").clone(); // on garde en mémoire l'état d'origine pour le remettre une fois une couche ajoutée
+
+    var xmlhttp = new XMLHttpRequest();
+    this.xmlhttp = this;
+    xmlhttp.open("GET", filePath, true);
+    xmlhttp.onreadystatechange = function () {
+      if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+
+        let html = xmlhttp.responseText; // renvoie un texte au format html où la liste des fichers est dans une li
+        result = $(html).find("li > a"); // on récupère tous les li
+
+
+        for(let i=0;i<result.length;i++) {
+          noms.push(result[i].innerText);
+          json.push(filePath + result[i].innerText);
+
+          // créé les boutons qui récupère les infos du serveur
+          var couche = document.createElement("BUTTON");
+          couche.innerHTML = noms[i];
+          document.getElementById("fileList").appendChild(couche);
+          let espace = document.createElement("br");
+          document.getElementById("fileList").appendChild(espace);
+
+          // Pour chaque bouton, créé une checkbox dans l'onglet "mes couches"
+          couche.addEventListener('click', (e) => {
+            document.querySelector('#fileList').classList.add('hidden');
+
+            let item = document.createElement('div');
+            item.classList.add('nowrap');
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = noms[i];
+            checkbox.id = id[i];
+            let label = document.createElement('label');
+            label.htmlFor = id[i];
+            label.appendChild(document.createTextNode(noms[i]));
+            item.appendChild(checkbox);
+            item.appendChild(label);
+            document.getElementById("mescouches").appendChild(item);
+            document.querySelector('#mescouches').style.display = "block";
+
+            // L'evenement pour afficher la nouvelle couche
+            checkbox.addEventListener('change', (e) => {
+              if(e.target.checked){
+                if(globe.dataSources[noms[i]] === undefined){
+                  globe.loadDrawing(json[i], noms[i], options);
+                } else{
+                  globe.dataSources[noms[i]].show = true;
+                  globe.viewer.scene.requestRender();
+                }
+              } else{
+                if(globe.dataSources[noms[i]] !== undefined){
+                  globe.dataSources[noms[i]].show = false;
+                  globe.viewer.scene.requestRender();
+                }
+              }
+            });
+          });
+        }
+      }
+    };
+
+    xmlhttp.send();
+  });
+}
+
+/*
+* Fin de la classe Menu
+*/
 
 }

@@ -56,7 +56,6 @@ class Data {
       if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 
         var paramJson = xmlhttp.response;
-        console.log(paramJson);
 
         for(let i=0;i<paramJson.menu.length;i++) {
           // ajout du menu déroulant thématique
@@ -254,7 +253,7 @@ class Data {
                 globe.viewer.clock.currentTime = end;
 
                 globe.showTimeJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, start, end, {
-                  classification: true,
+                  typeDonnee: paramJson.menu[i].couches[j].type_donnee,
                   classificationField: paramJson.menu[i].couches[j].champ_classif,
                   colors: cloneColor,
                   alpha: paramJson.menu[i].couches[j].alpha,
@@ -280,13 +279,46 @@ class Data {
 
               }
 
-              // modèles 3D au format 3DTiles
-              if(paramJson.menu[i].couches[j].type_donnee === '3dtiles') {
-                globe.show3DTiles(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data);
+              // données ponctuelles 4D
+              if(paramJson.menu[i].couches[j].type_donnee === 'point' && paramJson.menu[i].couches[j].animation === 'oui') {
+                // paramètres pour l'horloge
+                var today = Cesium.JulianDate.now();
+                var start = Cesium.JulianDate.addDays(today, Number(paramJson.menu[i].couches[j].start), new Cesium.JulianDate());
+                var end = Cesium.JulianDate.addDays(today, Number(paramJson.menu[i].couches[j].end), new Cesium.JulianDate());
+                globe.viewer.clock.currentTime = end;
+
+                globe.showTimeJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, start, end, {
+                  typeDonnee: paramJson.menu[i].couches[j].type_donnee,
+                  classificationField: paramJson.menu[i].couches[j].champ_classif,
+                  line: window['line'+i+j],
+                  image: paramJson.menu[i].couches[j].image,
+                  point3D: paramJson.menu[i].couches[j].point_3D,
+                  billboard: window['billboard'+i+j],
+                  couleur: paramJson.menu[i].couches[j].couleur,
+                  choiceTableau: paramJson.menu[i].couches[j].choiceTableau
+                });
 
                 if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
                   if(e.target.checked){
-                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {});
+                  } else{
+                    globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
+                  }
+                }
+
+                globe.viewer.scene.requestRender();
+
+              }
+
+              // modèles 3D au format 3DTiles
+              if(paramJson.menu[i].couches[j].type_donnee === '3dtiles') {
+                globe.show3DTiles(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, 0.1, {
+                  couleur: paramJson.menu[i].couches[j].couleur
+                });
+
+                if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
+                  if(e.target.checked){
+                    globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, 'surface', {
                     } );
                   } else{
                     globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
@@ -304,6 +336,7 @@ class Data {
                 };
 
                 globe.showJson(e.target.checked, 'ODPLUdetaille', 'https://data.strasbourg.eu/api/records/1.0/download?dataset=plu_prescription_s&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&disjunctive.type_prescription=true&disjunctive.sous_type=true&disjunctive.commune=true&refine.type_prescription=05&timezone=Europe/Berlin&lang=fr', 'Emplacements reserves', {
+                  typeDonnee: 'surface',
                   classificationField: 'type_prescription',
                   alpha: 0.001,
                   choiceTableau: 'ER'
@@ -311,7 +344,7 @@ class Data {
 
                 if(e.target.checked){
                   globe.pluDetaille(256, 17, pluTiles, linePLUdetaille);
-                  globe.legendManager.addLegend('PLU_détaillé', 'ODPLUdetailleLegend', legend, 'point',{});
+                  globe.legendManager.addLegend('PLU détaillé', 'ODPLUdetailleLegend', legend, 'point',{});
                   globe.viewer.scene.requestRender();
                 } else {
                   globe.legendManager.removeLegend('ODPLUdetailleLegend');
@@ -380,13 +413,11 @@ class Data {
 
             if(paramJson.menu[i].couches[j].type_donnee === 'point' && paramJson.menu[i].couches[j].temps_reel === 'oui' && paramJson.menu[i].couches[j].couche_attributaire === 'oui') {
               document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
-                console.log(paramJson.menu[i].couches[j].couleur);
                 globe.updatePoint(paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].url_attribut, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                   line: window['line'+i+j],
                   couleur: paramJson.menu[i].couches[j].couleur,
                   choiceTableau: paramJson.menu[i].couches[j].choiceTableau
                 });
-                console.log(paramJson.menu[i].couches[j].couleur);
 
               });
             }

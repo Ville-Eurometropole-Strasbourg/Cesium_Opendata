@@ -251,7 +251,7 @@
                 <!-- Données en accès restreint -->
                 <div class="backdrop hidden" id="fileList">
                   <h2>Données en accès restreint</h2>
-                  <form onsubmit="handle(event)">
+                  <form onSubmit="return false;">
                     <p>Identifiant : <input id="idEMS" type="text" size="20" /> </p>
                   </form>
                   <p><button id="affichercouche">Ajouter</button> </p>
@@ -275,7 +275,7 @@
                   <br/>
 
                   <div>
-                    <button class="button" id="private" title="Données en accès restreint"><img src="src/img/icons8-private.png" style="align:center;"></button>
+                    <button class="button" id="private" title="Ajouter des données en accès restreint"><img src="src/img/icons8-private.png" style="align:center;"></button>
 
                     <div class="nowrap" id="photo">
                       <input id="photoMaillage" type="checkbox" checked/>
@@ -434,6 +434,10 @@
                     <td>
                       <button class="button" id="addcamera"><img src="src/img/icons8-add-camera.png"></button>
                       <span style="font-size:small;"> Ajouter point de vue </span>
+                    </td>
+                    <td>
+                      <button class="button" id="screenshot"><img src="src/img/icons8-png.png"></button>
+                      <span style="font-size:small;"> Capture d'écran </span>
                     </td>
                   </tr>
                   <tr bgcolor="#d3d3d3">

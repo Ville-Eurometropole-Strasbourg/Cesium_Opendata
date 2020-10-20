@@ -22,7 +22,7 @@ html, body {
  *
  */
 #menu {
-  position: absolute;
+  position: relative;
   top: 0;
   left: -440px;
   width: 440px;
@@ -38,7 +38,8 @@ html, body {
 /* style du panel où on écrit 'MENU' */
 #menu-content {
   display: block;
-  width: 100%;
+  position: relative;
+  width: auto;
   background-image: linear-gradient(90deg, #020024 0%, #434d53 35%, #d7dcdd 100%);
   font-family: Arial, Gadget, sans-serif;
   font-size: 1.6em;
@@ -104,7 +105,7 @@ html, body {
 
 /* Annimation du menu */
 #menu, #left-pane {
-  transition: left 0.5s;
+  transition: all 0.3s;
 }
 
 /*
@@ -381,57 +382,63 @@ i {
   position: absolute;
   top: 5px;
   left: 100px;
+  transition: left 0.3s;
 }
 #construction {
   position: absolute;
   top: 5px;
   left: 145px;
+  transition: left 0.3s;
 }
 #coupe {
   position: absolute;
   top: 5px;
   left: 190px;
+  transition: left 0.3s;
 }
 #time {
   position: absolute;
   top: 5px;
   left: 235px;
+  transition: left 0.3s;
 }
 #camera {
   position: absolute;
   top: 5px;
   left: 280px;
+  transition: left 0.3s;
 }
 #link {
   position: absolute;
   top: 5px;
   left: 325px;
+  transition: left 0.3s;
 }
 
 /* les boutons bougent à l'ouverture du menu */
 #mesures.menu-open {
   left:540px;
-  transition: left 0.5s;
+  transition: left 0.3s;
 }
 #construction.menu-open {
   left:580px;
-  transition: left 0.5s;
+  transition: left 0.3s;
 }
 #coupe.menu-open {
   left:620px;
-  transition: left 0.5s;
+  transition: left 0.3s;
 }
 #time.menu-open {
   left:660px;
-  transition: left 0.5s;
+  transition: left 0.3s;
 }
 #camera.menu-open {
   left:700px;
-  transition: left 0.5s;
+  transition: left 0.3s;
 }
 #link.menu-open {
   left:740px;
-  transition: left 0.5s;
+  transition: left 0.3s;
 }
 
 /* ouverture du contenu en dessous des boutons de la boîte à outils */
