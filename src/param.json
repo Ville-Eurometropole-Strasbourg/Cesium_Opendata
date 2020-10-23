@@ -1122,8 +1122,8 @@
         {
           "type_donnee": "ligne",
           "temps_reel": "oui",
-          "id_data": "ODTraffic",
-          "name": "Traffic routier",
+          "id_data": "ODTrafic",
+          "name": "Trafic routier",
           "url_info": "https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/",
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=trafic-routier-eurometropole&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
           "ligne_2D": true,
@@ -1140,8 +1140,8 @@
             "Dense": "#de8b1f",
             "Saturé": "#e80707"
           },
-          "choice": "Traffic routier SIRAC",
-          "choiceTableau": "Traffic"
+          "choice": "Trafic routier SIRAC",
+          "choiceTableau": "Trafic"
 
         },
         {
@@ -1155,11 +1155,11 @@
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=parkings&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
           "point_3D": false,
           "cluster": false,
-          "image": "src/img/billboard/marker_orange.png",
-          "couleur": "#ff8c00",
-          "nom_legende": "Fréquentation en temps réel des parkings",
+          "image": "src/img/billboard/Parking.png",
+          "couleur": "#6E7DC7",
+          "nom_legende": "Nombre de places disponibles en temps réel dans les parkings",
           "couleur_legende": {
-            "Parking        ": "<img src='src/img/billboard/marker_orange.png'>"
+            "Parking        ": "<img src='src/img/billboard/Parking.png'>"
           },
           "choiceTableau": "Parkings"
         }
@@ -1462,25 +1462,26 @@
           "cluster": false,
           "champ_classif": "types",
           "image":  {
-            "Patrimoine": "src/img/billboard/marker_blue.png",
-            "Ecole de musique": "src/img/billboard/marker_red.png",
-            "Lieu de spectacle et d'exposition": "src/img/billboard/marker_green.png",
-            "Œuvres street art": "src/img/billboard/marker_yellow.png",
-            "Musée de la ville de Strasbourg": "src/img/billboard/marker_orange.png",
-            "Institution culturelle": "src/img/billboard/marker_pink.png",
-            "Œuvres d'art dans la ville": "src/img/billboard/marker_purple.png"
+            "Patrimoine": "src/img/billboard/Patrimoine.png",
+            "Ecole de musique": "src/img/billboard/Ecole_Musique.png",
+            "Lieu de spectacle et d'exposition": "src/img/billboard/Lieu_spectale_exposition.png",
+            "Œuvres street art": "src/img/billboard/Street_art.png",
+            "Musée de la ville de Strasbourg": "src/img/billboard/Musees_Strasbourg.png",
+            "Institution culturelle": "src/img/billboard/Institution_Culturelle.png",
+            "Œuvres d'art dans la ville": "src/img/billboard/Oeuvre_Art.png",
+            "Autre": "src/img/billboard/Autre.png"
           },
           "couleur": "#686a6e",
           "nom_legende": "Lieux culturels",
           "couleur_legende": {
-            "Patrimoine": "<img src='src/img/billboard/marker_blue.png'>",
-            "Ecole de musique": "<img src='src/img/billboard/marker_red.png'>",
-            "Lieu de spectacle et d'exposition": "<img src='src/img/billboard/marker_green.png'>",
-            "Œuvres street art": "<img src='src/img/billboard/marker_yellow.png'>",
-            "Musée de la ville de Strasbourg": "<img src='src/img/billboard/marker_orange.png'>",
-            "Institution culturelle": "<img src='src/img/billboard/marker_pink.png'>",
-            "Œuvres d'art dans la ville": "<img src='src/img/billboard/marker_purple.png'>",
-            "Autre": "<img src='src/img/billboard/marker_black.png'>"
+            "Patrimoine": "<img src='src/img/billboard/Patrimoine.png'>",
+            "Ecole de musique": "<img src='src/img/billboard/Ecole_Musique.png'>",
+            "Lieu de spectacle et d'exposition": "<img src='src/img/billboard/Lieu_spectale_exposition.png'>",
+            "Œuvres street art": "<img src='src/img/billboard/Street_art.png'>",
+            "Musée de la ville de Strasbourg": "<img src='src/img/billboard/Musees_Strasbourg.png'>",
+            "Institution culturelle": "<img src='src/img/billboard/Institution_Culturelle.png'>",
+            "Œuvres d'art dans la ville": "<img src='src/img/billboard/Oeuvre_Art.png'>",
+            "Autre": "<img src='src/img/billboard/Autre.png'>"
           },
           "choice": "Lieu culturel",
           "choiceTableau": "LieuCulturel"
@@ -1500,11 +1501,11 @@
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_mairies-de-quartier-et-centre-administratif&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
           "point_3D": false,
           "cluster": false,
-          "image": "src/img/billboard/marker_blue.png",
-          "couleur": "#47B0F2",
+          "image": "src/img/billboard/Mairie.png",
+          "couleur": "#3E412E",
           "nom_legende": "Durée d'attente aux mairies en temps réel",
           "couleur_legende": {
-            "Mairie ": "<img src='src/img/billboard/marker_blue.png'>"
+            "Mairie ": "<img src='src/img/billboard/Mairie.png'>"
           },
           "choiceTableau": "Mairies"
         }

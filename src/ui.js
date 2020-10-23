@@ -34,6 +34,7 @@ class Menu {
     this.timeDiv = document.querySelector('#time');
     this.cameraDiv = document.querySelector('#camera');
     this.linkDiv = document.querySelector('#link');
+    this.screenBouton = document.querySelector("#screenshot");
 
     /*
     *  Div qui contiennent les formulaires de personnalisation (affichés à gauche)
@@ -45,6 +46,7 @@ class Menu {
     // dessin
     this.pointList = document.querySelector('#pointList');
     this.ligneList = document.querySelector('#ligneList');
+    this.rectangleList = document.querySelector('#rectangleList');
     this.surfaceList = document.querySelector('#surfaceList');
     this.volumeList = document.querySelector('#volumeList');
     // coupe
@@ -197,6 +199,7 @@ class Menu {
     // dessin
     var billboard = [];
     var line = [];
+    var rectangle = [];
     var surface = [];
     var volume = [];
     // mesures
@@ -381,6 +384,7 @@ class Menu {
       this.aideCheckbox.classList.add('hidden');
       this.pointList.classList.add('hidden');
       this.ligneList.classList.add('hidden');
+      this.rectangleList.classList.add('hidden');
       this.surfaceList.classList.add('hidden');
       this.volumeList.classList.add('hidden');
     });
@@ -401,6 +405,7 @@ class Menu {
       //globe.supprSouris();
       this.aideCheckbox.classList.add('hidden');
       this.ligneList.classList.add('hidden');
+      this.rectangleList.classList.add('hidden');
       this.surfaceList.classList.add('hidden');
       this.volumeList.classList.add('hidden');
 
@@ -421,10 +426,34 @@ class Menu {
 
       //globe.supprSouris();
       this.pointList.classList.add('hidden');
+      this.rectangleList.classList.add('hidden');
       this.surfaceList.classList.add('hidden');
       this.volumeList.classList.add('hidden');
 
       this.ligneList.classList.remove('hidden');
+      this.aideCheckbox.classList.remove('hidden');
+    });
+
+    document.querySelector('#crectangle').addEventListener('click', (e) => {
+      var choice = 'rectangle';
+      var choice2 = 'dessin';
+      var couleur = $('#couleurrectangle').val();
+      var transparence = $('#transparencerectangle').val();
+      console.log(couleur, transparence);
+
+      globe.updateShape(choice, choice2, couleur, {
+        transparence: transparence,
+        rectangle: rectangle,
+        distance: 10
+      });
+
+      //globe.supprSouris();
+      this.pointList.classList.add('hidden');
+      this.ligneList.classList.add('hidden');
+      this.surfaceList.classList.add('hidden');
+      this.volumeList.classList.add('hidden');
+
+      this.rectangleList.classList.remove('hidden');
       this.aideCheckbox.classList.remove('hidden');
     });
 
@@ -442,6 +471,7 @@ class Menu {
       //globe.supprSouris();
       this.pointList.classList.add('hidden');
       this.ligneList.classList.add('hidden');
+      this.rectangleList.classList.add('hidden');
       this.volumeList.classList.add('hidden');
 
       this.surfaceList.classList.remove('hidden');
@@ -463,6 +493,7 @@ class Menu {
       //globe.supprSouris();
       this.pointList.classList.add('hidden');
       this.ligneList.classList.add('hidden');
+      this.rectangleList.classList.add('hidden');
       this.surfaceList.classList.add('hidden');
 
       this.volumeList.classList.remove('hidden');
@@ -753,16 +784,6 @@ class Menu {
         globe.fly(position, heading, pitch, roll);
       });
 
-    });
-
-    document.querySelector("#screenshot").addEventListener('click', function() {
-      var canvas = globe.viewer.canvas;
-      canvas.toBlob(function(blob) {
-        // Téléchargement du fichier drawing.json
-        let element = document.querySelector('#screenshot');
-        element.setAttribute('href', 'data:png,' + encodeURIComponent(blob));
-        element.setAttribute('download', 'capture.png');
-			});
     });
 
     document.querySelector('#addcamera').addEventListener('click', (e) => {

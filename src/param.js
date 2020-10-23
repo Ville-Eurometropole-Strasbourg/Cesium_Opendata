@@ -213,12 +213,13 @@ class Data {
               }
 
               // points
-              if(paramJson.menu[i].couches[j].type_donnee === 'point') {
+              if(paramJson.menu[i].couches[j].type_donnee === 'point' && paramJson.menu[i].couches[j].animation == undefined) {
                 if(paramJson.menu[i].couches[j].couche_attributaire === 'oui') {
                   globe.showPoint(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].url_attribut, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                     line: window['line'+i+j],
                     couleur: paramJson.menu[i].couches[j].couleur,
-                    choiceTableau: paramJson.menu[i].couches[j].choiceTableau
+                    choiceTableau: paramJson.menu[i].couches[j].choiceTableau,
+                    classificationField: paramJson.menu[i].couches[j].champ_classif
                   });
                 } else {
                   globe.showPoint(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, undefined, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
@@ -252,7 +253,7 @@ class Data {
                 var end = Cesium.JulianDate.addDays(today, Number(paramJson.menu[i].couches[j].end), new Cesium.JulianDate());
                 globe.viewer.clock.currentTime = end;
 
-                globe.showTimeJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, start, end, {
+                globe.showTimeJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, undefined, start, end, {
                   typeDonnee: paramJson.menu[i].couches[j].type_donnee,
                   classificationField: paramJson.menu[i].couches[j].champ_classif,
                   colors: cloneColor,
@@ -287,19 +288,19 @@ class Data {
                 var end = Cesium.JulianDate.addDays(today, Number(paramJson.menu[i].couches[j].end), new Cesium.JulianDate());
                 globe.viewer.clock.currentTime = end;
 
-                globe.showTimeJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, start, end, {
+                globe.showTimeJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, paramJson.menu[i].couches[j].choice, window['billboard'+i+j], start, end, {
                   typeDonnee: paramJson.menu[i].couches[j].type_donnee,
                   classificationField: paramJson.menu[i].couches[j].champ_classif,
                   line: window['line'+i+j],
                   image: paramJson.menu[i].couches[j].image,
                   point3D: paramJson.menu[i].couches[j].point_3D,
-                  billboard: window['billboard'+i+j],
                   couleur: paramJson.menu[i].couches[j].couleur,
                   choiceTableau: paramJson.menu[i].couches[j].choiceTableau
                 });
 
                 if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
                   if(e.target.checked){
+                    console.log('salut');
                     globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {});
                   } else{
                     globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');

@@ -323,17 +323,17 @@ class TableauAttribut {
 
   /**
   *
-  * Afficher le tableau d'attributs de la donnée Traffic_routier_Eurométropole avec le bon format <br/>
+  * Afficher le tableau d'attributs de la donnée Trafic_routier_Eurométropole avec le bon format <br/>
   * Utilisée dans loadPolyline
   *
   * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
   * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolyline
   */
-  createTableauTraffic(entity, dataSource){
+  createTableauTrafic(entity, dataSource){
     //Renseignement des éléments de la boite d'information
     entity.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
     entity.description += '<tr><td>Nom</td><td>' + String(entity.properties['nom']) + '</td></tr>';
-    entity.description += '<tr><td>Etat du traffic</td><td>' + String(entity.properties['etat']) + '</td></tr>';
+    entity.description += '<tr><td>Etat du trafic</td><td>' + String(entity.properties['etat']) + '</td></tr>';
     entity.description += '<tr><td>Date/heure de mise à jour</td><td>' + String(entity.properties['dmajetatexp']) + '</td></tr>';
     entity.description += '<tr><td>tauxlisse</td><td>' + String(entity.properties['tauxlisse']) + '</td></tr>';
     entity.description += '<tr><td>debitlisse</td><td>' + String(entity.properties['debitlisse']) + '</td></tr>';
@@ -765,7 +765,7 @@ createTableauQualiteAir(entity){
 
         // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'
         if(jsonAttribut[j].fields.etat === 1) {
-          var occupation = (jsonAttribut[j].fields.libre).toString();
+          var occupation = (jsonAttribut[j].fields.infousager).toString();
         } else if(jsonAttribut[j].fields.etat === 2) {
           var occupation = 'FERME';
         }
@@ -1008,17 +1008,17 @@ createTableauQualiteAir(entity){
         });
 
         // classification du label en différentes couleurs en fonction de la fréquentation
-        if(jsonAttribut[j].fields.realtimestatus === 'GREEN') {
-          statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
-        } else if(jsonAttribut[j].fields.realtimestatus === 'ORANGE') {
-          statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
-        } else if(jsonAttribut[j].fields.realtimestatus === 'RED') {
-          statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
-        } else if(jsonAttribut[j].fields.realtimestatus === 'BLACK') {
-          statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
-        } else if(jsonAttribut[j].fields.realtimestatus === 'CLOSED') {
-          statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
-        }
+        // if(jsonAttribut[j].fields.realtimestatus === 'GREEN') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'ORANGE') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'RED') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'BLACK') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'CLOSED') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
+        // }
 
       }
     }

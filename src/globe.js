@@ -786,7 +786,7 @@ class Globe {
       var symbol = this.viewer.entities.add({
         position : worldPosition,
         billboard : {
-          image : url,
+          image: url,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
           sizeInMeters: size,
           scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0)
@@ -862,6 +862,25 @@ class Globe {
           }),
           clampToGround : clamp,
           width : largeur
+        }
+      });
+      return shape;
+    }
+
+    /**
+    *
+    *  Ajoute un rectangle
+    *
+    * @param  {Cartesian3} positionData les coordonnées des sommets du rectangle
+    * @param  {String} couleur le couleur du rectangle
+    * @param  {Number} transparence la transparence du rectangle
+    * @return {Entity} shape l'entité ajoutée au viewer
+    */
+    drawRectangle(positionData, couleur, transparence) {
+      var shape = this.viewer.entities.add({
+        rectangle: {
+          coordinates: positionData,
+          material : Cesium.Color.fromCssColorString(couleur).withAlpha(transparence)
         }
       });
       return shape;
@@ -976,6 +995,8 @@ class Globe {
               }
             } else if(choice === 'polygon') {
               activeShape = globe.drawPolygon(dynamicPositions, couleur, options.transparence);
+            } else if(choice === 'rectangle') {
+              activeShape = globe.drawRectangle(dynamicPositions, couleur, options.transparence);
             } else if(choice === 'volume') {
               z = globe.getHauteur(activeShapePoints, options.hauteurVol);
               activeShape = globe.drawVolume(dynamicPositions, couleur, options.transparence, z);
@@ -1116,6 +1137,9 @@ class Globe {
 
           } else if( choice === 'polygon') {
             options.surface.push(globe.drawPolygon(activeShapePoints, couleur, options.transparence));
+          } else if( choice === 'rectangle') {
+            globe.getRectangle(activeShapePoints, options.distance);
+            options.rectangle.push(globe.drawRectangle(activeShapePoints, couleur, options.transparence));
           } else if( choice === 'volume') {
             options.volume.push(globe.drawVolume(activeShapePoints, couleur, options.transparence, z));
           }
@@ -1307,6 +1331,66 @@ class Globe {
         }
       }
       this.aire.innerHTML = Math.abs(aire);
+    }
+
+    getRectangle(activeShapePoints, distance) {
+      var coordsX = [];
+      var coordsY = [];
+      var coordsZ = [];
+
+      for (let i=0; i < activeShapePoints.length; i+=1) {
+        // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
+        var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z);
+        let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        let longitude = Cesium.Math.toDegrees(cartographic.longitude);
+        let latitude = Cesium.Math.toDegrees(cartographic.latitude);
+        console.log(longitude, latitude);
+
+        var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
+        coordsX.push(longitude); // degrés
+        coordsY.push(latitude);
+        console.log(coordsX);
+        console.log(coordsY);
+      }
+      if(coordsX.length > 1) {
+        for (let i=0; i < coordsX.length-1; i+=1) {
+          var a = coordsX[i+1]-coordsX[i];
+          var b = coordsY[i+1]-coordsY[i];
+          var g12 = Math.atan2(a, b); // g12 est en degrés
+          console.log(g12);
+          var g23 = ((g12 - 90) +360) %360; // g23 est en degrés
+          console.log(g23);
+          var e = Math.sin(g23*Math.PI/180); // e et f sont en degrés
+          var f = Math.cos(g23*Math.PI/180);
+
+          console.log(e, f);
+
+          /*var c = (coordsX[i+1]-coordsX[i])*(coordsX[i+1]-coordsX[i]);
+          var d = (coordsY[i+1]-coordsY[i])*(coordsY[i+1]-coordsY[i]);
+
+          var distance = Number(Math.sqrt(c+d));*/
+          var g = distance * e;
+          var h = distance * f;
+          console.log(g,h);
+
+          var x3 = coordsX[i+1] + g;
+          var y3 = coordsY[i+1] + h;
+          console.log(x3, y3);
+
+          var test = this.viewer.entities.add({
+            position : new Cesium.Cartesian3.fromDegrees(x3, y3),
+            point : {
+              color : Cesium.Color.RED,
+              pixelSize : 5,
+              heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND // plaque au 3dtiles
+            }
+          });
+
+          this.viewer.zoomTo(test);
+
+        }
+      }
+
     }
 
     /**
@@ -2176,11 +2260,11 @@ class Globe {
     * @param  {String} options.nameLigne La nom des lignes de contour
     * @return  {GeoJsonDataSource} le json une fois que tout est chargé
     */
-    loadTimePoint(link, name, choice, options = {}){
+    loadTimePoint(link, name, choice, billboard, options = {}){
       var tabltemp = [];
 
       let promisse = Cesium.GeoJsonDataSource.load(link, {
-        //markerSize: 0 //pour que l'épingle n'apparaisse pas
+        markerSize: 0 //pour que l'épingle n'apparaisse pas
       });
 
       this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
@@ -2194,8 +2278,6 @@ class Globe {
         this.dataSources[name] = dataSource;
         let entities = dataSource.entities.values;
         this.hideLoader();
-
-        console.log(entities.length);
 
         for(let i = 0; i < entities.length; i++) {
           let entity = entities[i];
@@ -2214,7 +2296,7 @@ class Globe {
             billboard : {
               verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
               sizeInMeters: false,
-              scaleByDistance : new Cesium.NearFarScalar(1000, 2, 150000, 0)
+              scaleByDistance : new Cesium.NearFarScalar(1000, 5, 150000, 0)
             }
           });
 
@@ -2236,8 +2318,7 @@ class Globe {
             let longitude = cartographic.longitude;
             let latitude = cartographic.latitude;
             // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
-            let randomHeight = Math.floor(Math.random() * 20) + 230; // hauteur aléatoire pour rendre les doublons visibles
-            let height = Number(randomHeight + cartographic.height);
+            let height = Number(230 + cartographic.height);
 
             var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
 
@@ -2268,13 +2349,11 @@ class Globe {
           }
 
         } // fin du for entities
-        /*this.viewer.dataSources.add(billboardData);
-        options.billboard.push(billboardData);*/
-        console.log(billboardData);
-        console.log(billboardData.length);
+        //globe.viewer.dataSources.add(billboardData);
+        //billboard.push(billboardData);
 
         // l'évenement qui actualise la valeur de l'horloge quand on clique sur la timeline
-        //this.viewer.clock.onTick.addEventListener(function () {
+        this.viewer.clock.onTick.addEventListener(function () {
           // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
           var updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
 
@@ -2297,19 +2376,17 @@ class Globe {
             // si la date des attributs correspond à la date de la timeline on affiche l'entité
             if(dateValidite === updateTime) {
               billboardtemp.show = true;
-              console.log(updateTime);
-              globe.viewer.scene.requestRender();
             } else {
               billboardtemp.show = false;
               console.log(billboardtemp);
-              globe.viewer.scene.requestRender();
+              console.count();
 
             }
             // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
             globe.viewer.scene.requestRender();
           }
 
-        //});
+        });
 
       });
       return promisse;
@@ -2335,7 +2412,7 @@ class Globe {
     * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones
     * @param  {String} options.nameLigne La nom des lignes de contour
     */
-    showTimeJson(show, name, link, choice, start, end, options = {}){
+    showTimeJson(show, name, link, choice, billboard, start, end, options = {}){
       var today = Cesium.JulianDate.now();
       var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
 
@@ -2344,7 +2421,7 @@ class Globe {
           if(options.typeDonnee === 'surface') {
             globe.loadTimeSurf(link, name, choice, options);
           } else if(options.typeDonnee === 'point') {
-            globe.loadTimePoint(link, name, choice, options);
+            globe.loadTimePoint(link, name, choice, billboard, options);
           }
 
           // on zoome la timeline sur l'intervalle souhaité
@@ -2428,7 +2505,7 @@ class Globe {
           if(xmlhttp.readyState === 4 && xmlhttp.status === 200) {
             // on récupère le json chargé
             var jsonAttribut = xmlhttp.response;
-
+            var billboardData = new Cesium.CustomDataSource();
             // le lien avec la classe tableau pour l'ajout du tableau d'attributs au bon format
             var tabl = new TableauAttribut();
 
@@ -2441,51 +2518,67 @@ class Globe {
 
               var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
 
+              let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
+              let longitude = cartographic.longitude;
+              let latitude = cartographic.latitude;
+              // coordonnées 15m en dessous pour la lisibilité du texte
+              let heightLabel = Number(210 + cartographic.height);
+              var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
+
+              var billboardEntity = billboardData.entities.add({
+                billboard : {
+                  verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                  scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0)
+                }
+              });
+
               if(point3D === false) {
-                let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
-                let longitude = cartographic.longitude;
-                let latitude = cartographic.latitude;
                 // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
                 let height = Number(225 + cartographic.height); // on rajoute 225m à la hauteur ellipsoïdale
                 var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
                 // on ajoute une entité billboard à chaque point, 225m plus haut
                 // l'entité billboard ne conserve pas les attributs
-                billboard.push(globe.createBillboard(coordHauteur, image, false));
+
+                billboardEntity.position = coordHauteur;
                 // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
 
                 //on trace une ligne partant du sol jusqu'à la base du billboard
                 var coordLigne = [position, coordHauteur];
-                let test = options.couleur;
-                console.log(test);
-                var lineEntity = globe.drawLine(coordLigne, 2, test, 1, false)
+                var lineEntity = globe.drawLine(coordLigne, 2, options.couleur, 1, false)
                 options.line.push(lineEntity);
-
-                // coordonnées 15m en dessous pour la lisibilité du texte
-                let heightLabel = Number(210 + cartographic.height);
-                var coordLabel = new Cesium.Cartesian3.fromRadians(longitude, latitude, heightLabel);
 
                 if(options.choiceTableau !== undefined){
                   // on lie les attributs des points au nouvelles entités billboard et lignes
                   // l'attribut choiceTableau permet de classifier entre les différentes données
                   var tablBillboard = 'createTableau' + options.choiceTableau;
-                  tabl[tablBillboard](entity, jsonAttribut, billboard[i], coordLabel, dataSource);
-
-                  var tablLine = 'createTableau' + options.choiceTableau;
-                  tabl[tablLine](entity, jsonAttribut, lineEntity, coordLabel, dataSource);
+                  tabl[tablBillboard](entity, jsonAttribut, billboardEntity, coordLabel, dataSource);
+                  tabl[tablBillboard](entity, jsonAttribut, lineEntity, coordLabel, dataSource);
                 }
 
               } else if(point3D === true) {
-                billboard.push(globe.createBillboard(position, image, false));
-
+                billboardEntity.position = position;
                 if(options.choiceTableau !== undefined) {
                   var tablBillboard = 'createTableau' + options.choiceTableau;
-                  tabl[tablBillboard](entity, jsonAttribut, billboard[i], coordLabel, dataSource);
+                  tabl[tablBillboard](entity, jsonAttribut, billboardEntity, coordLabel, dataSource);
                 }
 
               }
+
+              if(options.classificationField !== undefined) {
+                var symbol = image[entity.properties[options.classificationField]];
+                if(symbol === undefined) {
+                  var symbol = 'src/img/billboard/marker_black.png'
+                }
+                billboardEntity.billboard.image = symbol;
+              } else {
+                billboardEntity.billboard.image = image;
+              }
+
               globe.viewer.scene.requestRender();
 
             } // fin du for(i < entities.length)
+            globe.viewer.dataSources.add(billboardData);
+            billboard.push(billboardData)
 
           } // fin de la requête xmlhttp
         } // fin de la requête xmlhttp
