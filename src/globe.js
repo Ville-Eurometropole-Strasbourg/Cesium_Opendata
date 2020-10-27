@@ -480,7 +480,7 @@ class Globe {
     * @param  {Object} options facultatif - Les options pour le chargement
     * @return  {GeoJsonDataSource} le json une fois que tout est chargé
     */
-    loadDrawing(link, name, options = {}){
+    loadDrawing(link, name){
       let promisse = Cesium.GeoJsonDataSource.load(link, {
         clampToGround: true
       });
@@ -878,8 +878,8 @@ class Globe {
     */
     drawRectangle(positionData, couleur, transparence) {
       var shape = this.viewer.entities.add({
-        rectangle: {
-          coordinates: positionData,
+        polygon: {
+          hierarchy: new Cesium.Cartesian3.fromDegreesArray(positionData),
           material : Cesium.Color.fromCssColorString(couleur).withAlpha(transparence)
         }
       });
@@ -957,6 +957,7 @@ class Globe {
     updateShape(choice, choice2, couleur, options = {}) {
       var activeShapePoints = [];
       var coordsline = [];
+      var coordsRectangle = [];
 
       var activeShape;
       var floatingPoint;
@@ -978,7 +979,7 @@ class Globe {
             activeShapePoints.push(earthPosition);
             activeShapePoints.push(earthPosition);
             var dynamicPositions = new Cesium.CallbackProperty(function () {
-              if (choice === 'polygon' || choice === 'volume') {
+              if (choice === 'polygon' || choice === 'volume' || choice === 'rectangle') {
                 return new Cesium.PolygonHierarchy(activeShapePoints);
               }
               return activeShapePoints;
@@ -995,8 +996,6 @@ class Globe {
               }
             } else if(choice === 'polygon') {
               activeShape = globe.drawPolygon(dynamicPositions, couleur, options.transparence);
-            } else if(choice === 'rectangle') {
-              activeShape = globe.drawRectangle(dynamicPositions, couleur, options.transparence);
             } else if(choice === 'volume') {
               z = globe.getHauteur(activeShapePoints, options.hauteurVol);
               activeShape = globe.drawVolume(dynamicPositions, couleur, options.transparence, z);
@@ -1140,8 +1139,8 @@ class Globe {
           } else if( choice === 'polygon') {
             options.surface.push(globe.drawPolygon(activeShapePoints, couleur, options.transparence));
           } else if( choice === 'rectangle') {
-            globe.getRectangle(activeShapePoints, options.distance);
-            options.rectangle.push(globe.drawRectangle(activeShapePoints, couleur, options.transparence));
+            coordsRectangle = globe.getRectangle(activeShapePoints, options.distance);
+            options.rectangle.push(globe.drawRectangle(coordsRectangle, couleur, options.transparence));
           } else if( choice === 'volume') {
             options.volume.push(globe.drawVolume(activeShapePoints, couleur, options.transparence, z));
           }
@@ -1339,6 +1338,7 @@ class Globe {
       var coordsX = [];
       var coordsY = [];
       var coordsZ = [];
+      var latlon = [];
 
       for (let i=0; i < activeShapePoints.length; i+=1) {
         // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
@@ -1346,61 +1346,58 @@ class Globe {
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         let longitude = Cesium.Math.toDegrees(cartographic.longitude);
         let latitude = Cesium.Math.toDegrees(cartographic.latitude);
+        latlon.push(longitude, latitude);
 
         var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
         coordsX.push(coords[0]); // degrés
         coordsY.push(coords[1]);
-        console.log(coordsX);
-        console.log(coordsY);
+        coordsZ.push(cartographic.height);
       }
       if(coordsX.length > 1) {
         for (let i=0; i < coordsX.length-1; i+=1) {
-          var a = coordsX[i+1]-coordsX[i];
-          var b = coordsY[i+1]-coordsY[i];
-
-          var g12 = Math.atan2(a, b); // g12 est en degrés
-          console.log(g12);
-          var g12 = (g12 - 90);
-          if(b > 0 && a <0 ) {
-            var g12 = g12 + 360;
-          } else if(b < 0){
-            var g12 = g12 + 180;
-          }
-          //var g23 = ((g12 - 90) +360) %360; // g23 est en degrés
-          console.log(g12);
-          var e = Math.sin(g12*Math.PI/180);
-          var f = Math.cos(g12*Math.PI/180);
-
-          console.log(e, f);
-
-          /*var c = (coordsX[i+1]-coordsX[i])*(coordsX[i+1]-coordsX[i]);
-          var d = (coordsY[i+1]-coordsY[i])*(coordsY[i+1]-coordsY[i]);
-
-          var distance = Number(Math.sqrt(c+d));*/
-          var g = distance * e;
-          var h = distance * f;
-          console.log(g,h);
-
-          var x3 = coordsX[i+1] + g;
-          var y3 = coordsY[i+1] + h;
-          console.log(x3, y3);
-
-          var latlon = proj4('EPSG:3948','EPSG:4326', [x3, y3]);
-          console.log(latlon);
-          var test = this.viewer.entities.add({
-            position : new Cesium.Cartesian3.fromDegrees(latlon[0], latlon[1]),
-            point : {
-              color : Cesium.Color.RED,
-              pixelSize : 5,
-              heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND // plaque au 3dtiles
-            }
-          });
-
-          this.viewer.zoomTo(test);
+          var coordfinal1 = this.computeCoord(distance, coordsX[i+1],coordsX[i], coordsY[i+1], coordsY[i], coordsZ[i]);
+          var coordfinal2 = this.computeCoord(distance, coordsX[i],coordsX[i+1], coordsY[i], coordsY[i+1], coordsZ[i]);
+          var coordfinal = coordfinal1.concat(coordfinal2);
 
         }
       }
+      coordfinal = latlon.concat(coordfinal);
+      return coordfinal;
+    }
 
+    computeCoord(distance, var1, var2, var3, var4, var5) {
+      var a = var1 - var2;
+      var b = var3 - var4;
+
+      var g12 = Math.atan2(a, b); // g12 est en radians
+      g12 = g12* 180 / Math.PI; // g12 en degrés
+
+      if(b > 0 && a <0 ) {
+        var g12 = g12 + 360;
+      } else if(b < 0){
+        var g12 = g12 + 180;
+      }
+
+      if(g12 < 90) {
+        //var g23 = (g12 + 90);
+        var g23 = ((g12 + 270) +360) %360;
+      } else if(g12 > 90) {
+        //var g23 = (g12 + 90);
+        var g23 = ((g12 - 90) +360) %360;
+      }
+
+      var e = Math.sin(g23*Math.PI/180);
+      var f = Math.cos(g23*Math.PI/180);
+
+      var g = distance * e;
+      var h = distance * f;
+
+      var x3 = var1 + g;
+      var y3 = var3 + h;
+
+      var latlon = proj4('EPSG:3948','EPSG:4326', [x3, y3]);
+
+      return latlon;
     }
 
     /**
@@ -1825,8 +1822,11 @@ class Globe {
         this.viewer.dataSources.remove(this.dataSources[name]);
         this.viewer.scene.requestRender();
       }
-
-      globe.loadGeoJson(link, name, choice, options);
+      if(options.typeDonnee === 'dessin') {
+        globe.loadDrawing(link, name)
+      } else {
+        globe.loadGeoJson(link, name, choice, options);
+      }
       if(options.couleurLigne !== undefined) {
         for(var i = 0; i < options.line.length; i++){
           options.line[i].show = true;

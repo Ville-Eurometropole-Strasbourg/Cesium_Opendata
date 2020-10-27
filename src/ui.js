@@ -337,6 +337,20 @@ class Menu {
       });
     });
 
+    document.querySelector("#rectangleList").addEventListener("input", function () {
+      var choice = 'rectangle';
+      var choice2 = 'dessin';
+      var couleur = $('#couleurrectangle').val();
+      var transparence = $('#transparencerectangle').val();
+      var distance = $('#largeurrectangle').val();
+
+      globe.updateShape(choice, choice2, couleur, {
+        transparence: transparence,
+        rectangle: rectangle,
+        distance: distance
+      });
+    });
+
     document.querySelector("#surfaceList").addEventListener("input", function () {
       var choice = 'polygon';
       var choice2 = 'dessin';
@@ -367,6 +381,8 @@ class Menu {
     globe.supprFigure('#supprimerpoint', billboard);
     globe.annulFigure('#annulerligne', line);
     globe.supprFigure('#supprimerligne', line);
+    globe.annulFigure('#annulerrectangle', rectangle);
+    globe.supprFigure('#supprimerrectangle', rectangle);
     globe.annulFigure('#annulersurf', surface);
     globe.supprFigure('#supprimersurf', surface);
     globe.annulFigure('#annulervol', volume);
@@ -375,6 +391,7 @@ class Menu {
     // supprime toutes les entités
     globe.supprFigure('#suppr', billboard);
     globe.supprFigure('#suppr', line);
+    globe.supprFigure('#suppr', rectangle);
     globe.supprFigure('#suppr', surface);
     globe.supprFigure('#suppr', volume);
 
@@ -439,12 +456,12 @@ class Menu {
       var choice2 = 'dessin';
       var couleur = $('#couleurrectangle').val();
       var transparence = $('#transparencerectangle').val();
-      console.log(couleur, transparence);
+      var distance = $('#largeurrectangle').val();
 
       globe.updateShape(choice, choice2, couleur, {
         transparence: transparence,
         rectangle: rectangle,
-        distance: 10
+        distance: distance
       });
 
       //globe.supprSouris();

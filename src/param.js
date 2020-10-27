@@ -312,6 +312,15 @@ class Data {
               }
 
               // modèles 3D au format 3DTiles
+              if(paramJson.menu[i].couches[j].type_donnee === 'dessin') {
+                globe.showJson(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, undefined, {
+                  typeDonnee: paramJson.menu[i].couches[j].type_donnee
+                });
+
+                globe.viewer.scene.requestRender();
+              }
+
+              // modèles 3D au format 3DTiles
               if(paramJson.menu[i].couches[j].type_donnee === '3dtiles') {
                 globe.show3DTiles(e.target.checked, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].url_data, 0.1, {
                   couleur: paramJson.menu[i].couches[j].couleur

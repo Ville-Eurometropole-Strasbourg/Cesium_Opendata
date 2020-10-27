@@ -1614,6 +1614,13 @@
             "ET" : "#E77200",
             "NR": "#949DA5"
           }
+        },
+        {
+          "identifiant": "dessin",
+          "type_donnee": "dessin",
+          "id_data": "Drawing2_7",
+          "name": "Test dessin",
+          "url_data": "data/private/drawing2_7.json"
         }
       ]
 
