@@ -514,6 +514,15 @@ class TableauAttribut {
     billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_parcs/information/" target="_blank">Informations sur les données</a><br/><br/>';
   }
 
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Lieux culturels avec le bon format<br/>
+  * Utilisée dans loadPoint
+  *
+  * @param  {Array} billboard le billboard auquel on va lier l'attribut de l'entité
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
   createTableauLieuCulturel(billboard, entity){
     // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
     var images = String(entity.properties['images']);
@@ -624,6 +633,14 @@ class TableauAttribut {
     billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/lieux_culture/information/" target="_blank">Informations sur les données</a><br/><br/>';
   }
 
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée arbres remarquables avec le bon format<br/>
+  * Utilisée dans loadPoint
+  *
+  * @param  {Array} billboard le billboard auquel on va lier l'attribut de l'entité
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
   createTableauArbresRemarquables(billboard, entity){
     // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
     var images = String(entity.properties['images']);
@@ -758,20 +775,13 @@ createTableauQualiteAir(entity){
     // on rentre dans le fichier json chargé pour récupérer les attributs
     for(let j = 0; j < jsonAttribut.length; j++) {
       if(entity.name == jsonAttribut[j].fields.nom_parking) {
-        console.log(jsonAttribut[j]);
         billboard.description += '<tr><td>Informations Usagers</td><td>' + String(jsonAttribut[j].fields.infousager) + '</td></tr>';
         billboard.description += '<tr><td>Nombre total de places</td><td>' + String(jsonAttribut[j].fields.total) + '</td></tr>';
         billboard.description += '<tr><td>Nombres de places libres</td><td>' + String(jsonAttribut[j].fields.libre) + '</td></tr>';
+        billboard.description += '<tr><td>Etat descriptif</td><td>' + String(jsonAttribut[j].fields.etat_descriptif) + '</td></tr>';
 
-        // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'
-        if(jsonAttribut[j].fields.etat === 1) {
-          var occupation = (jsonAttribut[j].fields.infousager).toString();
-        } else if(jsonAttribut[j].fields.etat === 2) {
-          var occupation = 'FERME';
-        }
-          else if(jsonAttribut[j].fields.etat === 0) {
-          var occupation = 'NoData';
-        }
+        // le texte à afficher sur les labels
+        var occupation = (jsonAttribut[j].fields.infousager).toString();
 
         // on ajoute le label
         var statut = dataSource.entities.add({
@@ -979,9 +989,7 @@ createTableauQualiteAir(entity){
 
     // on rentre dans le fichier json chargé pour récupérer les attributs
     for(let j = 0; j < jsonAttribut.length; j++) {
-      console.log(entity)
       if(entity.properties['idsurfs'] == jsonAttribut[j].fields.sigid) {
-        console.log(jsonAttribut[j]);
         billboard.description += '<tr><td>Durée d\'attente en minutes</td><td>' + String(jsonAttribut[j].fields.averagewaitingtime) + '</td></tr>';
 
         // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'

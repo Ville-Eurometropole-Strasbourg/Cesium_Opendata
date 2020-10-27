@@ -1052,7 +1052,9 @@ class Globe {
                 text: labeldistance,
                 font: "20px sans-serif",
                 scaleByDistance : new Cesium.NearFarScalar(10000, 1, 120000, 0),
-                verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                showBackground: true,
+                backgroundColor: Cesium.Color.fromCssColorString('#1a1b1c')
               }
             }));
 
@@ -1344,11 +1346,10 @@ class Globe {
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         let longitude = Cesium.Math.toDegrees(cartographic.longitude);
         let latitude = Cesium.Math.toDegrees(cartographic.latitude);
-        console.log(longitude, latitude);
 
         var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
-        coordsX.push(longitude); // degrés
-        coordsY.push(latitude);
+        coordsX.push(coords[0]); // degrés
+        coordsY.push(coords[1]);
         console.log(coordsX);
         console.log(coordsY);
       }
@@ -1356,12 +1357,19 @@ class Globe {
         for (let i=0; i < coordsX.length-1; i+=1) {
           var a = coordsX[i+1]-coordsX[i];
           var b = coordsY[i+1]-coordsY[i];
+
           var g12 = Math.atan2(a, b); // g12 est en degrés
           console.log(g12);
-          var g23 = ((g12 - 90) +360) %360; // g23 est en degrés
-          console.log(g23);
-          var e = Math.sin(g23*Math.PI/180); // e et f sont en degrés
-          var f = Math.cos(g23*Math.PI/180);
+          var g12 = (g12 - 90);
+          if(b > 0 && a <0 ) {
+            var g12 = g12 + 360;
+          } else if(b < 0){
+            var g12 = g12 + 180;
+          }
+          //var g23 = ((g12 - 90) +360) %360; // g23 est en degrés
+          console.log(g12);
+          var e = Math.sin(g12*Math.PI/180);
+          var f = Math.cos(g12*Math.PI/180);
 
           console.log(e, f);
 
@@ -1377,8 +1385,10 @@ class Globe {
           var y3 = coordsY[i+1] + h;
           console.log(x3, y3);
 
+          var latlon = proj4('EPSG:3948','EPSG:4326', [x3, y3]);
+          console.log(latlon);
           var test = this.viewer.entities.add({
-            position : new Cesium.Cartesian3.fromDegrees(x3, y3),
+            position : new Cesium.Cartesian3.fromDegrees(latlon[0], latlon[1]),
             point : {
               color : Cesium.Color.RED,
               pixelSize : 5,
