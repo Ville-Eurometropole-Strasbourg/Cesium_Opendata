@@ -4,7 +4,6 @@
       "couches": [
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODPLUiZonage",
           "name": "PLU - Règlement graphique et écrit",
           "url_info": "https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/",
@@ -138,7 +137,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODPLUbatiexceptionnel",
           "name": "PLU Bâti exceptionnel",
           "url_info": "https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/",
@@ -159,7 +157,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODTerrasses",
           "name": "Terrasses autorisées en 2019",
           "url_info": "https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2019/information/",
@@ -177,7 +174,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODTerrasses2020",
           "name": "Terrasses autorisées en 2020",
           "url_info": "https://data.strasbourg.eu/explore/dataset/terrasses-autorisees-en-2020/information/",
@@ -200,7 +196,6 @@
       "couches": [
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODLimitesCommunes",
           "name": "LIMITES DE COMMUNES",
           "url_info": "https://data.strasbourg.eu/explore/dataset/limites_de_communes/information/",
@@ -220,7 +215,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODLimitesSections",
           "name": "LIMITES DE SECTIONS",
           "url_info": "https://data.strasbourg.eu/explore/dataset/sections_cadastrales/information/",
@@ -240,7 +234,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreAchenheim",
           "name": "ACHENHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -260,7 +253,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreBischheim",
           "name": "BISCHHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -280,7 +272,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreBlaesheim",
           "name": "BLAESHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -300,7 +291,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreBreuschwickersheim",
           "name": "BREUSCHWICKERSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -320,7 +310,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreEckbolsheim",
           "name": "ECKBOLSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -340,7 +329,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreEckwersheim",
           "name": "ECKWERSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -360,7 +348,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreEntzheim",
           "name": "ENTZHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -380,7 +367,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreEschau",
           "name": "ESCHAU",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -400,7 +386,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreFegersheim",
           "name": "FEGERSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -420,7 +405,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreGeispolsheim",
           "name": "GEISPOLSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -440,7 +424,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreHangenbieten",
           "name": "HANGENBIETEN",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -460,7 +443,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreHoenheim",
           "name": "HOENHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -480,7 +462,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreHoltzheim",
           "name": "HOLTZHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -500,7 +481,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreIllkirch",
           "name": "ILLKIRCH-GRAFFENSTADEN",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -520,7 +500,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreKolbsheim",
           "name": "KOLBSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -540,7 +519,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreLampertheim",
           "name": "LAMPERTHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -560,7 +538,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreLingolsheim",
           "name": "LINGOLSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -580,7 +557,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreLipsheim",
           "name": "LIPSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -600,7 +576,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreMittelhausbergen",
           "name": "MITTELHAUSBERGEN",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -620,7 +595,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreMundolsheim",
           "name": "MUNDOLSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -640,7 +614,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreNiederhausbergen",
           "name": "NIEDERHAUSBERGEN",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -660,7 +633,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreOberhausbergen",
           "name": "OBERHAUSBERGEN",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -680,7 +652,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreOberschaeffolsheim",
           "name": "OBERSCHAEFFOLSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -700,7 +671,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreOsthoffen",
           "name": "OSTHOFFEN",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -720,7 +690,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreOstwald",
           "name": "OSTWALD",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -740,7 +709,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastrePlobsheim",
           "name": "PLOBSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -760,7 +728,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreReichstett",
           "name": "REICHSTETT",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -780,7 +747,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreSchiltigheim",
           "name": "SCHILTIGHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -800,7 +766,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreSouffelweyersheim",
           "name": "SOUFFELWEYERSHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -820,7 +785,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgCentre",
           "name": "STRASBOURG Centre",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -840,7 +804,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgGareKleber",
           "name": "STRASBOURG Gare-Kléber",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -860,7 +823,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgEsplaBourseKrut",
           "name": "STRASBOURG Esplanade-Bourse-Krutenau",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -880,7 +842,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgNeudorf",
           "name": "STRASBOURG Neudorf-Schluthfeld-Port du Rhin-Musau",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -900,7 +861,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgMeinau",
           "name": "STRASBOURG Meinau",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -920,7 +880,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgNeuhof",
           "name": "STRASBOURG Neuhof",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -940,7 +899,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgKoenigsMV",
           "name": "STRASBOURG Koenigshoffen-Montagne Verte",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -960,7 +918,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgCroHautPotHohberg",
           "name": "STRASBOURG Cronenbourg-Hautepierre-Poteries-Hohberg",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -980,7 +937,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreStrasbourgRobertsau",
           "name": "STRASBOURG Robertsau",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -1000,7 +956,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreVendenheim",
           "name": "VENDENHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -1020,7 +975,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreLaWantzenau",
           "name": "LA WANTZENAU",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -1040,7 +994,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODCadastreWolfisheim",
           "name": "WOLFISHEIM",
           "url_info": "https://data.strasbourg.eu/explore/dataset/parcelles_cadastrales/information/",
@@ -1065,7 +1018,6 @@
       "couches": [
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODStationPayant",
           "name": "Stationnement payant",
           "url_info": "https://data.strasbourg.eu/explore/dataset/stationnement-payant/information/",
@@ -1088,7 +1040,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODZonesStationnementResidant",
           "name": "Zones de stationnement résidant",
           "url_info": "https://data.strasbourg.eu/explore/dataset/stationnement_residant/information/",
@@ -1216,7 +1167,6 @@
         },
         {
           "type_donnee": "point",
-          "couche_attributaire": "non",
           "id_data": "ODParcs",
           "name": "Parcs",
           "url_info": "https://data.strasbourg.eu/explore/dataset/lieux_parcs/information/",
@@ -1288,34 +1238,35 @@
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=indices-de-qualite-de-lair-a-strasbourg&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
           "champ_classif": "valeur",
           "image": {
-            "1": "src/img/billboard/marker_blue.png",
-            "2": "src/img/billboard/marker_red.png",
-            "3": "src/img/billboard/marker_green.png",
-            "4": "src/img/billboard/marker_yellow.png",
-            "5": "src/img/billboard/marker_orange.png",
-            "6": "src/img/billboard/marker_pink.png",
-            "7": "src/img/billboard/marker_purple.png",
-            "8": "src/img/billboard/marker_white.png",
-            "9": "src/img/billboard/marker_grey.png",
-            "10": "src/img/billboard/marker_blue.png"
+            "1": "src/img/billboard/icons8-qualite1.png",
+            "2": "src/img/billboard/icons8-qualite2.png",
+            "3": "src/img/billboard/icons8-qualite3.png",
+            "4": "src/img/billboard/icons8-qualite4.png",
+            "5": "src/img/billboard/icons8-qualite5.png",
+            "6": "src/img/billboard/icons8-qualite6.png",
+            "7": "src/img/billboard/icons8-qualite7.png",
+            "8": "src/img/billboard/icons8-qualite8.png",
+            "9": "src/img/billboard/icons8-qualite9.png",
+            "10": "src/img/billboard/icons8-qualite10.png"
           },
           "couleur": "#47991f",
           "alpha": 0.7,
           "nom_legende": "Qualite Air Strasbourg",
           "couleur_legende": {
-            "1 Très Bon": "<img src='src/img/billboard/marker_blue.png'>",
-            "2 Très Bon": "<img src='src/img/billboard/marker_red.png'>",
-            "3 Bon": "<img src='src/img/billboard/marker_green.png'>",
-            "4 Bon": "<img src='src/img/billboard/marker_yellow.png'>",
-            "5 Moyen": "<img src='src/img/billboard/marker_orange.png'>",
-            "6 Médiocre": "<img src='src/img/billboard/marker_pink.png'>",
-            "7 Médiocre": "<img src='src/img/billboard/marker_purple.png'>",
-            "8 Mauvais": "<img src='src/img/billboard/marker_white.png'>",
-            "9 Mauvais": "<img src='src/img/billboard/marker_grey.png'>",
-            "10 Très Mauvais": "<img src='src/img/billboard/marker_blue.png'>"
+            "1 Très Bon": "<img src='src/img/billboard/icons8-qualite1.png'>",
+            "2 Très Bon": "<img src='src/img/billboard/icons8-qualite2.png'>",
+            "3 Bon": "<img src='src/img/billboard/icons8-qualite3.png'>",
+            "4 Bon": "<img src='src/img/billboard/icons8-qualite4.png'>",
+            "5 Moyen": "<img src='src/img/billboard/icons8-qualite5.png'>",
+            "6 Médiocre": "<img src='src/img/billboard/icons8-qualite6.png'>",
+            "7 Médiocre": "<img src='src/img/billboard/icons8-qualite7.png'>",
+            "8 Mauvais": "<img src='src/img/billboard/icons8-qualite8.png'>",
+            "9 Mauvais": "<img src='src/img/billboard/icons8-qualite9.png'>",
+            "10 Très Mauvais": "<img src='src/img/billboard/icons8-qualite10.png'>"
           },
           "point_3D": false,
           "choice": "Qualite Air Strasbourg",
+          "choiceTableau": "QualiteAirStras",
           "start": "-366",
           "end": "-2"
         },
@@ -1325,7 +1276,6 @@
           "name": "Arbres remarquables",
           "url_info": "https://data.strasbourg.eu/explore/dataset/lieux_arbres-remarquables/information/",
           "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=lieux_arbres-remarquables&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
-          "couche_attributaire": "non",
           "point_3D": false,
           "cluster": false,
           "image": "src/img/billboard/marker_green.png",
@@ -1339,7 +1289,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "LCZadapte",
           "name": "LCZ adapté localement",
           "url_data": "data/LCZ/LCZ_local.json",
@@ -1385,7 +1334,6 @@
         },
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "LCZinter",
           "name": "LCZ norme internationale",
           "url_data": "data/LCZ/LCZ_international.json",
@@ -1436,7 +1384,6 @@
       "couches": [
         {
           "type_donnee": "point",
-          "couche_attributaire": "non",
           "id_data": "ODPatrimoine",
           "name": "Patrimoine de mon quartier",
           "url_info": "https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/",
@@ -1453,7 +1400,6 @@
         },
         {
           "type_donnee": "point",
-          "couche_attributaire": "non",
           "id_data": "ODLieuxculturels",
           "name": "Lieux culturels",
           "url_info": "https://data.strasbourg.eu/explore/dataset/lieux_culture/information/",
@@ -1469,7 +1415,7 @@
             "Musée de la ville de Strasbourg": "src/img/billboard/Musees_Strasbourg.png",
             "Institution culturelle": "src/img/billboard/Institution_Culturelle.png",
             "Œuvres d'art dans la ville": "src/img/billboard/Oeuvre_Art.png",
-            "Autre": "src/img/billboard/Autre.png"
+            "Autre": "src/img/billboard/marker_black.png"
           },
           "couleur": "#686a6e",
           "nom_legende": "Lieux culturels",
@@ -1481,7 +1427,7 @@
             "Musée de la ville de Strasbourg": "<img src='src/img/billboard/Musees_Strasbourg.png'>",
             "Institution culturelle": "<img src='src/img/billboard/Institution_Culturelle.png'>",
             "Œuvres d'art dans la ville": "<img src='src/img/billboard/Oeuvre_Art.png'>",
-            "Autre": "<img src='src/img/billboard/Autre.png'>"
+            "Autre": "<img src='src/img/billboard/marker_black.png'>"
           },
           "choice": "Lieu culturel",
           "choiceTableau": "LieuCulturel"
@@ -1516,7 +1462,6 @@
       "couches": [
         {
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODBruitDepassementSeuilNuit",
           "name": "Bruit routier - Dépassement des seuils (nuit)",
           "url_info": "https://data.strasbourg.eu/explore/dataset/bruit_c_route_lnc_ems2017/information/",
@@ -1542,7 +1487,6 @@
         {
           "identifiant": "salut",
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODPropInstitAchenheim",
           "name": "Propriétaires institutionnels Achenheim",
           "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",
@@ -1566,7 +1510,6 @@
         {
           "identifiant": "salut",
           "type_donnee": "surface",
-          "animation": "non",
           "id_data": "ODPropInstitEckbolsheim",
           "name": "Propriétaires institutionnels Eckbolsheim",
           "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",

@@ -170,7 +170,7 @@ class Data {
             // l'évenement à ajouter lorsqu'on coche la checkbox de la donnée
             coucheCheckbox.addEventListener('change', (e) => {
               // surfaces & lignes
-              if((paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].animation === 'non') || paramJson.menu[i].couches[j].type_donnee === 'ligne') {
+              if((paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].animation == undefined) || paramJson.menu[i].couches[j].type_donnee === 'ligne') {
 
                   // pour les objets linéaires et surfaciques qui nécessitent une classification:
                   // on clone l'objet qui contient les couleurs car Cesium modifie la structure après le passage
@@ -300,7 +300,6 @@ class Data {
 
                 if(paramJson.menu[i].couches[j].nom_legende !== undefined) {
                   if(e.target.checked){
-                    console.log('salut');
                     globe.legendManager.addLegend(paramJson.menu[i].couches[j].nom_legende, paramJson.menu[i].couches[j].id_data + 'Legend', paramJson.menu[i].couches[j].couleur_legende, paramJson.menu[i].couches[j].type_donnee, {});
                   } else{
                     globe.legendManager.removeLegend(paramJson.menu[i].couches[j].id_data + 'Legend');
@@ -410,7 +409,7 @@ class Data {
               }
             }
 
-            if(paramJson.menu[i].couches[j].type_donnee === 'point' && paramJson.menu[i].couches[j].temps_reel === 'oui' && paramJson.menu[i].couches[j].couche_attributaire === 'non') {
+            if(paramJson.menu[i].couches[j].type_donnee === 'point' && paramJson.menu[i].couches[j].temps_reel === 'oui' && paramJson.menu[i].couches[j].couche_attributaire === undefined) {
               document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Refresh').addEventListener('click', function() {
                 globe.updatePoint(paramJson.menu[i].couches[j].url_data, undefined, paramJson.menu[i].couches[j].id_data, paramJson.menu[i].couches[j].image, window['billboard'+i+j], paramJson.menu[i].couches[j].point_3D, paramJson.menu[i].couches[j].cluster, {
                   line: window['line'+i+j],

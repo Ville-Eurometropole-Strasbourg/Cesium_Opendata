@@ -469,67 +469,6 @@ class Globe {
     }
 
     /**
-    * Permet de charger les dessins exportés depuis Cesium <br/>
-    * va chercher les propriétés de dessin (couleur, épaisseur de ligne, hauteur de volume, etc)
-    * dans le json pour garder les propriétés à l'affichage <br/>
-    * Utilise la fonction showPolygon pour afficher les données <br/>
-    * Les points seront affichés simplement avec le même billboard pour tous
-    *
-    * @param  {String} link Le lien vers le fichier
-    * @param  {String} name Le nom qu'on donne au json
-    * @param  {Object} options facultatif - Les options pour le chargement
-    * @return  {GeoJsonDataSource} le json une fois que tout est chargé
-    */
-    loadDrawing(link, name){
-      let promisse = Cesium.GeoJsonDataSource.load(link, {
-        clampToGround: true
-      });
-      this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
-
-      promisse.then((dataSource) => {
-        this.viewer.dataSources.add(dataSource);
-        this.dataSources[name] = dataSource;
-        this.hideLoader();
-
-        // Get the array of entities
-        var entities = dataSource.entities.values;
-        for (let i = 0; i < entities.length; i++) {
-          let entity = entities[i];
-          if(Cesium.defined(entity.billboard)) {
-            entity.billboard.height = entity.properties.height;
-            entity.billboard.verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
-            entity.billboard.image = entity.properties.image;
-
-          } else if (Cesium.defined(entity.polygon)) {
-            let rouge = entity.properties.color._value.red;
-            let vert = entity.properties.color._value.green;
-            let bleu = entity.properties.color._value.blue;
-            let alpha = entity.properties.color._value.alpha;
-            let couleur = new Cesium.Color(rouge, vert, bleu, alpha);
-
-            entity.polygon.material =  couleur;
-            entity.polygon.outline = false;
-            entity.polygon.extrudedHeight = entity.properties.extrudedHeight;
-            entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
-
-          } else if(Cesium.defined(entity.polyline)) {
-            let rouge = entity.properties.color._value.red;
-            let vert = entity.properties.color._value.green;
-            let bleu = entity.properties.color._value.blue;
-            let alpha = entity.properties.color._value.alpha;
-            let couleur = new Cesium.Color(rouge, vert, bleu, alpha);
-
-            entity.polyline.material = couleur;
-            entity.polyline.width = entity.properties.width;
-            entity.polyline.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
-
-          }
-        }
-      });
-      return promisse;
-    }
-
-    /**
     * Affiche une icône de chargement sur l'écran
     */
     showLoader(){
@@ -869,9 +808,9 @@ class Globe {
 
     /**
     *
-    *  Ajoute un rectangle
+    *  Ajoute un polygone pour les entités rectangle --> interprète les coordonnées en degrés
     *
-    * @param  {Cartesian3} positionData les coordonnées des sommets du rectangle
+    * @param  {Cartesian3} positionData les coordonnées des sommets du rectangle en lat/lon WGS84 degrés
     * @param  {String} couleur le couleur du rectangle
     * @param  {Number} transparence la transparence du rectangle
     * @return {Entity} shape l'entité ajoutée au viewer
@@ -945,9 +884,11 @@ class Globe {
     * @param  {Number} options.largeur la largeur de l'entité
     * @param  {Number} options.transparence la transparence de l'entité
     * @param  {Number} options.hauteurVol la hauteur de l'entité
+    * @param  {Number} options.distance la distance de décalage pour les entités rectangle
     * @param  {String} options.url le lien vers les images pour les entités billboard
     * @param  {Array} options.billboard le tableau où stocker les entités billboard
     * @param  {Array} options.line le tableau où stocker les entités lignes
+    * @param  {Array} options.rectangle le tableau où stocker les entités rectangles
     * @param  {Array} options.surface le tableau où stocker les entités surface
     * @param  {Array} options.volume le tableau où stocker les entités boîte
     * @param  {Array} options.dline le tableau où stocker les entités lignes pour les mesures
@@ -1209,7 +1150,8 @@ class Globe {
     *
     *  Permet de mesurer la distance horizontale et inclinée entre deux points
     *
-    * @param  {Object} activeShapePoints le tableau de coordonnées cartésiennes x y z des points à partir duquel calculer la distance
+    * @param  {Array} activeShapePoints le tableau de coordonnées cartésiennes x y z des points à partir duquel calculer la distance
+    * @return  {Object} un objet qui contient les 5 valeurs calculées (Dh, Dh cumulé, Di, Di cumulé, Dh)
     */
     measureDistance(activeShapePoints)  {
       var coordsX = [];
@@ -1264,6 +1206,13 @@ class Globe {
       }
     }
 
+    /**
+    *
+    *  Calcule et retourne les coordonnées du point au milieu du segment (pour l'affichage des mesures de distances)
+    *
+    * @param  {Array} activeShapePoints le tableau de coordonnées cartésiennes x y z des points à partir duquel calculer la distance
+    * @return  {Array} Une array de longeur 2 avec les coordonnées au sol et en l'air de l'étiquette à placer pour les mesures
+    */
     getMiddlePoint(activeShapePoints) {
       var coordsX = [];
       var coordsY = [];
@@ -1334,6 +1283,15 @@ class Globe {
       this.aire.innerHTML = Math.abs(aire);
     }
 
+    /**
+    *
+    * Retourne les coordonnées des 4 points du sommets du rectangle à partir de 2 points cliqués et d'une distance de décalage précisée
+    * par l'utilisateur
+    *
+    * @param  {Array} activeShapePoints le tableau de coordonnées cartésiennes x y z des points à partir duquel calculer l'aire
+    * @param  {Number} distance la distance de décalage en mètres spécifiée par l'utilisateur
+    * @return  {Array} coordfinal le tableau des 4 couples de coordonnées des sommets du rectangle
+    */
     getRectangle(activeShapePoints, distance) {
       var coordsX = [];
       var coordsY = [];
@@ -1342,59 +1300,73 @@ class Globe {
 
       for (let i=0; i < activeShapePoints.length; i+=1) {
         // convertit les coordonnées cartésiennes en lat/lon, puis en CC48
-        var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z);
-        let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-        let longitude = Cesium.Math.toDegrees(cartographic.longitude);
+        var cartesian = new Cesium.Cartesian3(activeShapePoints[i].x, activeShapePoints[i].y, activeShapePoints[i].z); // cartesian est en coord cartesiennes
+        let cartographic = Cesium.Cartographic.fromCartesian(cartesian); // cartographic en radians
+        let longitude = Cesium.Math.toDegrees(cartographic.longitude); // lon et lat en degrés
         let latitude = Cesium.Math.toDegrees(cartographic.latitude);
         latlon.push(longitude, latitude);
 
         var coords = proj4('EPSG:4326','EPSG:3948', [longitude, latitude]);
-        coordsX.push(coords[0]); // degrés
+        coordsX.push(coords[0]); // coord en CC48
         coordsY.push(coords[1]);
-        coordsZ.push(cartographic.height);
+        coordsZ.push(cartographic.height); // hauteur ellipsoïdale
       }
       if(coordsX.length > 1) {
         for (let i=0; i < coordsX.length-1; i+=1) {
-          var coordfinal1 = this.computeCoord(distance, coordsX[i+1],coordsX[i], coordsY[i+1], coordsY[i], coordsZ[i]);
-          var coordfinal2 = this.computeCoord(distance, coordsX[i],coordsX[i+1], coordsY[i], coordsY[i+1], coordsZ[i]);
-          var coordfinal = coordfinal1.concat(coordfinal2);
+          // chaque appel à la fonction computeCoord donne les coordonnées d'un sommet
+          var coordfinal1 = this.computeCoord(distance, coordsX[i+1],coordsX[i], coordsY[i+1], coordsY[i]);
+          var coordfinal2 = this.computeCoord(distance, coordsX[i],coordsX[i+1], coordsY[i], coordsY[i+1]);
+          var coordfinal = coordfinal1.concat(coordfinal2); // on combine les tableaux pour avoir les 2 sommets calculés dans un seul tableau
 
         }
       }
-      coordfinal = latlon.concat(coordfinal);
+      coordfinal = latlon.concat(coordfinal); // on ajoute les coordonnées des 2 points cliqués
       return coordfinal;
     }
 
-    computeCoord(distance, var1, var2, var3, var4, var5) {
-      var a = var1 - var2;
-      var b = var3 - var4;
+    /**
+    *
+    * Retourne les coordonnées des 4 points du sommets du rectangle à partir de 2 points cliqués et d'une distance de décalage précisée
+    * par l'utilisateur
+    *
+    * @param  {Number} distance la distance de décalage en mètres spécifiée par l'utilisateur
+    * @param  {Number} coord1 la coordonnée X du premier point
+    * @param  {Number} coord2 la coordonnée X du deuxième point
+    * @param  {Number} coord3 la coordonnée Y du premier point
+    * @param  {Number} coord4 la coordonnée Y du deuxième point
+    * @return  {Array} latlon un tableau avec la longitude et la latitude calculée
+    */
+    computeCoord(distance, coord1, coord2, coord3, coord4) {
+      var a = coord1 - coord2;
+      var b = coord3 - coord4;
 
-      var g12 = Math.atan2(a, b); // g12 est en radians
-      g12 = g12* 180 / Math.PI; // g12 en degrés
+      // calcul du gisement entre le point 1 et 2
+      var g12 = Math.atan2(a, b); // la fonction atan retourne toujours un angle en radians --> g12 est en radians
+      g12 = g12* 180 / Math.PI; // conversion --> g12 en degrés
 
+      // on corrige les valeurs du gisement en fonction de la valeur de la soustraction des coordonnées
       if(b > 0 && a <0 ) {
         var g12 = g12 + 360;
       } else if(b < 0){
         var g12 = g12 + 180;
       }
 
+      // on enlève l'angle droit dans les coins du rectangle pour avoir le gisement du point 2 vers le point inconnu 3
       if(g12 < 90) {
-        //var g23 = (g12 + 90);
-        var g23 = ((g12 + 270) +360) %360;
+        var g23 = (g12 + 270) %360;
       } else if(g12 > 90) {
-        //var g23 = (g12 + 90);
         var g23 = ((g12 - 90) +360) %360;
       }
 
-      var e = Math.sin(g23*Math.PI/180);
+      // calcul des nouvelles coordonnées
+      var e = Math.sin(g23*Math.PI/180); // les fonctions sin et cos de la librairie js ne prennent que des angles en radians en arguments
       var f = Math.cos(g23*Math.PI/180);
-
       var g = distance * e;
       var h = distance * f;
+      var x3 = coord1 + g;
+      var y3 = coord3 + h;
 
-      var x3 = var1 + g;
-      var y3 = var3 + h;
-
+      // on convertit à nouveau les coordonnées CC48 en WGS84 pour avoir lon/lat en degrés
       var latlon = proj4('EPSG:3948','EPSG:4326', [x3, y3]);
 
       return latlon;
@@ -1642,6 +1614,67 @@ class Globe {
   */
 
   /**
+  * Permet de charger les dessins exportés depuis Cesium <br/>
+  * va chercher les propriétés de dessin (couleur, épaisseur de ligne, hauteur de volume, etc)
+  * dans le json pour garder les propriétés à l'affichage <br/>
+  * Utilise la fonction showJson pour afficher les données <br/>
+  * Les points seront affichés simplement avec le même billboard pour tous
+  *
+  * @param  {String} link Le lien vers le fichier
+  * @param  {String} name Le nom qu'on donne au json
+  * @param  {Object} options facultatif - Les options pour le chargement
+  * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+  */
+  loadDrawing(link, name){
+    let promise = Cesium.GeoJsonDataSource.load(link, {
+      clampToGround: true
+    });
+    this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+    promise.then((dataSource) => {
+      this.viewer.dataSources.add(dataSource);
+      this.dataSources[name] = dataSource;
+      this.hideLoader();
+
+      // Get the array of entities
+      var entities = dataSource.entities.values;
+      for (let i = 0; i < entities.length; i++) {
+        let entity = entities[i];
+        if(Cesium.defined(entity.billboard)) {
+          entity.billboard.height = entity.properties.height;
+          entity.billboard.verticalOrigin = Cesium.VerticalOrigin.BOTTOM;
+          entity.billboard.image = entity.properties.image;
+
+        } else if (Cesium.defined(entity.polygon)) {
+          let rouge = entity.properties.color._value.red;
+          let vert = entity.properties.color._value.green;
+          let bleu = entity.properties.color._value.blue;
+          let alpha = entity.properties.color._value.alpha;
+          let couleur = new Cesium.Color(rouge, vert, bleu, alpha);
+
+          entity.polygon.material =  couleur;
+          entity.polygon.outline = false;
+          entity.polygon.extrudedHeight = entity.properties.extrudedHeight;
+          entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+
+        } else if(Cesium.defined(entity.polyline)) {
+          let rouge = entity.properties.color._value.red;
+          let vert = entity.properties.color._value.green;
+          let bleu = entity.properties.color._value.blue;
+          let alpha = entity.properties.color._value.alpha;
+          let couleur = new Cesium.Color(rouge, vert, bleu, alpha);
+
+          entity.polyline.material = couleur;
+          entity.polyline.width = entity.properties.width;
+          entity.polyline.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+
+        }
+      }
+    });
+    return promise;
+  }
+
+  /**
   *
   * permet de charger des fichiers geojson surfaciques et linéaires <br/>
   * il est conseillé de donner un nom compréhensible à la variable choice: par défaut, c'est cette variable qui donne son nom aux entités <br/>
@@ -1649,8 +1682,9 @@ class Globe {
   *
   * @param  {String} link Le lien vers le fichier
   * @param  {String} name Le nom qu'on donne au json
-  * @param  {String} choice permet de classifier la donnée pour charger le tableau d'attributs
+  * @param  {String} choice permet de donner un nom aux entités
   * @param  {Object} options facultatif - Les options pour le chargement
+  * @param  {String} options.typeDonnee spécifie le type de donnée (ici surface ou ligne)
   * @param  {Boolean} options.clamp true pour clampToGround et false sinon (vaut true si non défini)
   * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
   * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
@@ -1669,14 +1703,14 @@ class Globe {
     } else {
       var clamp = true;
     }
-    let promisse = Cesium.GeoJsonDataSource.load(link, {
+    let promise = Cesium.GeoJsonDataSource.load(link, {
       clampToGround: clamp
     });
     this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
     this.viewer.scene.logarithmicDepthBuffer = false; // idem
     this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
 
-    promisse.then((dataSource) => {
+    promise.then((dataSource) => {
       // Ajoute le json dans la liste des dataSource
       this.viewer.dataSources.add(dataSource);
       this.dataSources[name] = dataSource;
@@ -1738,7 +1772,7 @@ class Globe {
       }
 
     })
-    return promisse;
+    return promise;
 
   }
 
@@ -1752,8 +1786,9 @@ class Globe {
   * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
   * @param  {String} link Le lien vers le fichier
   * @param  {String} name Le nom qu'on donne au json
-  * @param  {String} choice permet de classifier la donnée pour charger le tableau d'attributs
+  * @param  {String} choice permet de donner un nom aux entités
   * @param  {Object} options facultatif - Les options pour le chargement
+  * @param  {String} options.typeDonnee spécifie le type de donnée (ici surface ou ligne)
   * @param  {Boolean} options.clamp true pour clampToGround et false sinon (vaut true si non défini)
   * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
   * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
@@ -1861,13 +1896,14 @@ class Globe {
   * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
   * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
   * @param  {Object} options facultatif - Les options pour le chargement
+  * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
   * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
   * @param  {String} options.couleur La couleur de la ligne et de la puce pour le cluster au format '#FFFFFF'
   * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
   * @return  {GeoJsonDataSource} le json une fois que tout est chargé
   */
   loadPoint(link, name, image, billboard, point3D, cluster, options = {}){
-    let promisse = Cesium.GeoJsonDataSource.load(link, {
+    let promise = Cesium.GeoJsonDataSource.load(link, {
       markerSize: 0 //pour que l'épingle n'apparaisse pas
     });
 
@@ -1877,7 +1913,7 @@ class Globe {
     // on ne peut que cluster des dataSource, et l'altitude des points dans la dataSource en peut pas être modifié
     var billboardData = new Cesium.CustomDataSource();
 
-    promisse.then((dataSource) => {
+    promise.then((dataSource) => {
       // Ajoute le json dans la liste des dataSource
       this.viewer.dataSources.add(dataSource);
       this.dataSources[name] = dataSource;
@@ -2044,430 +2080,8 @@ class Globe {
         }
 
       });
-      return promisse;
+      return promise;
 
-    }
-
-    /**
-    * La fonction show associée à loadPoint <br/>
-    * permet d'afficher ou de masquer la donnée ponctuelle en fonction de la valeur de show
-    *
-    * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
-    * @param  {String} link Le lien vers le fichier
-    * @param  {String} linkAttribut Le lien vers le fichier json attributaires sans géométrie
-    * @param  {String} name Le nom qu'on donne au json
-    * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
-    * @param  {Array} billboard l'objet dans lequel on stocke le CustomDataSource
-    * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
-    * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
-    * @param  {Object} options facultatif - Les options pour le chargement
-    * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
-    * @param  {String} options.couleur La couleur de la ligne et de la puce pour le cluster au format '#FFFFFF'
-    * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
-    */
-    showPoint(show, name, link, linkAttribut, image, billboard, point3D, cluster, options = {}){
-      if(show){
-        if(this.dataSources[name] === undefined){
-          if(linkAttribut != undefined) {
-            globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options);
-            this.viewer.scene.requestRender();
-          } else {
-            globe.loadPoint(link, name, image, billboard, point3D, cluster, options);
-            this.viewer.scene.requestRender();
-          }
-
-        } else{
-          this.dataSources[name].show = true;
-          for(var i = 0; i < billboard.length; i++){
-            billboard[i].show = true;
-          }
-
-          if(point3D === false) {
-            for(var i = 0; i < options.line.length; i++){
-              options.line[i].show = true;
-            }
-          }
-
-          this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
-        }
-      } else{
-        if(this.dataSources[name] !== undefined){
-          this.dataSources[name].show = false;
-          for(var i = 0; i < billboard.length; i++){
-            billboard[i].show = false;
-          }
-          if(point3D === false) {
-            for(var i = 0; i < options.line.length; i++){
-              options.line[i].show = false;
-            }
-          }
-          this.viewer.scene.requestRender();
-        }
-      }
-    }
-
-
-    /**
-    *
-    * Permet de re-charger la donnée ponctuelle (temps réel)
-    *
-    * @param  {String} link Le lien vers le fichier
-    * @param  {String} linkAttribut Le lien vers le fichier json attributaires sans géométrie
-    * @param  {String} name Le nom qu'on donne au json
-    * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
-    * @param  {Array} billboard l'objet dans lequel on stocke le CustomDataSource
-    * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
-    * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
-    * @param  {Object} options facultatif - Les options pour le chargement
-    * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
-    * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
-    * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
-    */
-    updatePoint(link, linkAttribut, name, image, billboard, point3D, cluster, options = {}) {
-      if(this.dataSources[name] !== undefined){
-        this.viewer.dataSources.remove(this.dataSources[name]);
-        this.viewer.scene.requestRender();
-        if(linkAttribut != undefined) {
-          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options= {
-            line: options.line,
-            couleur: options.couleur,
-            choiceTableau: options.choiceTableau
-          });
-        } else {
-          globe.loadPoint(link, name, image, billboard, point3D, cluster, options= {
-            line: options.line,
-            couleur: options.couleur,
-            choiceTableau: options.choiceTableau
-          });
-        }
-
-        this.viewer.scene.requestRender();
-      }
-
-    }
-
-    /**
-    * permet de charger des fichiers geojson temporels (donnée dynamique qui va s'actualiser lorsqu'on bouge le curseur temps de Cesium)
-    *
-    * @param  {String} link Le lien vers le fichier
-    * @param  {String} name Le nom qu'on donne au json
-    * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
-    * @param  {Object} options facultatif - Les options pour le chargement
-    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
-    * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
-    * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
-    * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones
-    * @param  {String} options.nameLigne La nom des lignes de contour
-    * @return  {GeoJsonDataSource} le json une fois que tout est chargé
-    */
-    loadTimeSurf(link, name, choice, options = {}){
-      let promisse = Cesium.GeoJsonDataSource.load(link, {
-        clampToGround: true
-      });
-      this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
-      this.viewer.scene.logarithmicDepthBuffer = false; // idem
-      this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
-
-      promisse.then((dataSource) => {
-        // Ajoute le json dans la liste des dataSource
-        this.viewer.dataSources.add(dataSource);
-        this.dataSources[name] = dataSource;
-        let entities = dataSource.entities.values;
-        this.hideLoader();
-
-        // l'évenement qui actualise la valeur de l'horloge quand on clique sur la timeline
-        this.viewer.clock.onTick.addEventListener(function () {
-          // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
-          let updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
-
-          for (let i = 0; i < entities.length; i++) {
-            let entity = entities[i];
-
-            // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
-            // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
-            // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
-            if(choice === 'default') {
-              var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date._value);
-              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
-            } else {
-              var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date_echeance._value);
-              var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
-              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
-            }
-
-            // si la date des attributs correspond à la date de la timeline on affiche l'entité
-            if(dateValidite == updateTime) {
-              entity.show = true;
-            } else {
-              entity.show = false;
-            }
-            // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
-            globe.viewer.scene.requestRender();
-          }
-
-        });
-
-        // permet de classifier les json
-        if(options.classification && options.classificationField !== undefined){
-          let entities = dataSource.entities.values;
-
-          if(options.colors != undefined){
-            Object.keys(options.colors).forEach(function(c){
-              options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
-              options.colors[c].alpha = options.alpha || 0.8;
-            })
-          }
-          let colors = options.colors || {};
-
-          for (let i = 0; i < entities.length; i++) {
-
-            let entity = entities[i];
-            if (Cesium.defined(entity.polygon)) {
-              let color = colors[entity.properties[options.classificationField]];
-              if(!color){
-                color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
-                colors[entity.properties[options.classificationField]] = color;
-              }
-              entity.polygon.material = color;
-              entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
-              entity.polygon.arcType = Cesium.ArcType.GEODESIC;
-            }
-
-            entity.name = choice;
-
-            if(options.choiceTableau !== undefined) {
-              var tabl = new TableauAttribut();
-
-              var tablEntity = 'createTableau' + options.choiceTableau;
-              tabl[tablEntity](entity);
-
-            }
-
-            if(options.nameLigne !== undefined) {
-              // on trace les contours des entités
-              options.line.push(this.drawLine(entity.polygon.hierarchy._value.positions, 3, '#FFFFFF', 1, true, options.nameLigne));
-            }
-
-          }
-        }
-
-      });
-      return promisse;
-    }
-
-    /**
-    * permet de charger des fichiers geojson temporels (donnée dynamique qui va s'actualiser lorsqu'on bouge le curseur temps de Cesium)
-    *
-    * @param  {String} link Le lien vers le fichier
-    * @param  {String} name Le nom qu'on donne au json
-    * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
-    * @param  {Object} options facultatif - Les options pour le chargement
-    * @param  {Boolean} options.classification true si la donnée doit être classifiée
-    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
-    * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
-    * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
-    * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones
-    * @param  {String} options.nameLigne La nom des lignes de contour
-    * @return  {GeoJsonDataSource} le json une fois que tout est chargé
-    */
-    loadTimePoint(link, name, choice, billboard, options = {}){
-      var tabltemp = [];
-
-      let promisse = Cesium.GeoJsonDataSource.load(link, {
-        markerSize: 0 //pour que l'épingle n'apparaisse pas
-      });
-
-      this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
-
-      //var billboardData = new Cesium.CustomDataSource();
-      var billboardData = globe.viewer.scene.primitives.add(new Cesium.BillboardCollection());
-
-      promisse.then((dataSource) => {
-        // Ajoute le json dans la liste des dataSource
-        this.viewer.dataSources.add(dataSource);
-        this.dataSources[name] = dataSource;
-        let entities = dataSource.entities.values;
-        this.hideLoader();
-
-        for(let i = 0; i < entities.length; i++) {
-          let entity = entities[i];
-          // on récupère les coordonnées des points importés
-          var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
-          var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
-          var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
-
-          var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
-
-          // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
-          // l'entité billboard ne conserve pas les attributs
-          // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
-
-          var billboardEntity = billboardData.add({
-            billboard : {
-              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-              sizeInMeters: false,
-              scaleByDistance : new Cesium.NearFarScalar(1000, 5, 150000, 0)
-            }
-          });
-
-          billboardEntity.description = entity.properties._date_echeance._value;
-
-          if(options.classificationField !== undefined) {
-            var symbol = options.image[entity.properties[options.classificationField]];
-            if(symbol === undefined) {
-              var symbol = 'src/img/billboard/marker_black.png'
-            }
-            billboardEntity.image = symbol;
-          } else {
-            billboardEntity.image = image;
-          }
-
-          if(options.point3D === false) {
-            // nécessité de convertir en lon/lat car la coordonnée Z en ECEF ne correspond pas à la hauteur
-            let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
-            let longitude = cartographic.longitude;
-            let latitude = cartographic.latitude;
-            // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
-            let height = Number(230 + cartographic.height);
-
-            var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
-
-            //on trace une ligne partant du sol jusqu'à la base du billboard
-            var coordLigne = [position, coordHauteur];
-            var lineEntity = this.drawLine(coordLigne, 2, options.couleur, 1, false);
-            options.line.push(lineEntity);
-
-            billboardEntity.position = coordHauteur;
-            tabltemp.push(billboardEntity);
-
-          } else if(options.point3D === true) {
-            billboardEntity.position = position;
-          }
-
-          if(options.choiceTableau !== undefined) {
-            var tabl = new TableauAttribut();
-            // on lie les attributs des points au nouvelles entités billboard et lignes
-            // l'attribut choiceTableau permet de classifier entre les différentes données
-            var tablBillboard = 'createTableau' + options.choiceTableau;
-            tabl[tablBillboard](billboardEntity, entity);
-
-            // si on a tracé une ligne depuis le billboard jusqu'au sol on ajoute les attributs sur la ligne aussi
-            if(options.point3D === false) {
-              var tablLine = 'createTableau' + options.choiceTableau;
-              tabl[tablLine](lineEntity, entity);
-            }
-          }
-
-        } // fin du for entities
-        //globe.viewer.dataSources.add(billboardData);
-        //billboard.push(billboardData);
-
-        // l'évenement qui actualise la valeur de l'horloge quand on clique sur la timeline
-        this.viewer.clock.onTick.addEventListener(function () {
-          // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
-          var updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
-
-
-          for (let i = 0; i < billboardData.length; i++) {
-            let billboardtemp = billboardData.get(i);
-
-            // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
-            // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
-            // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
-            if(choice === 'default') {
-              var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
-              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
-            } else {
-              var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
-              var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
-              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
-            }
-
-            // si la date des attributs correspond à la date de la timeline on affiche l'entité
-            if(dateValidite === updateTime) {
-              billboardtemp.show = true;
-            } else {
-              billboardtemp.show = false;
-              console.log(billboardtemp);
-              console.count();
-
-            }
-            // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
-            globe.viewer.scene.requestRender();
-          }
-
-        });
-
-      });
-      return promisse;
-    }
-
-
-    /**
-    *
-    * La fonction show associée à loadTimeSurf <br/>
-    * permet d'afficher ou de masquer la donnée temporelle en fonction de la valeur de show
-    *
-    * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
-    * @param  {String} link Le lien vers le fichier
-    * @param  {String} name Le nom qu'on donne au json
-    * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
-    * @param  {JulianDate} start La date de début de l'intervalle de temps qu'on souhaite afficher dans la timeline
-    * @param  {JulianDate} end La date de fin de l'intervalle de temps qu'on souhaite afficher dans la timeline
-    * @param  {Object} options facultatif - Les options pour le chargement
-    * @param  {Boolean} options.classification true si la donnée doit être classifiée
-    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
-    * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
-    * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
-    * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones
-    * @param  {String} options.nameLigne La nom des lignes de contour
-    */
-    showTimeJson(show, name, link, choice, billboard, start, end, options = {}){
-      var today = Cesium.JulianDate.now();
-      var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
-
-      if(show){
-        if(this.dataSources[name] === undefined){
-          if(options.typeDonnee === 'surface') {
-            globe.loadTimeSurf(link, name, choice, options);
-          } else if(options.typeDonnee === 'point') {
-            globe.loadTimePoint(link, name, choice, billboard, options);
-          }
-
-          // on zoome la timeline sur l'intervalle souhaité
-          globe.viewer.timeline.zoomTo(start, end);
-
-        } else{
-          globe.viewer.timeline.zoomTo(start, end);
-          this.dataSources[name].show = true;
-          if(options.nameLigne !== undefined) {
-            for(var i = 0; i < options.line.length; i++){
-              options.line[i].show = true;
-            }
-          }
-          this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
-        }
-      } else{
-        if(this.dataSources[name] !== undefined){
-          // on rezoome la timeline sur aujourd'hui et on reset les paramètres de l'horloge
-          var today = Cesium.JulianDate.now();
-          var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
-          globe.viewer.clock.shouldAnimate = false;
-          globe.viewer.clock.currentTime = today;
-          globe.viewer.clock.startTime = Cesium.JulianDate.addDays(today, -10, new Cesium.JulianDate());
-          globe.viewer.clock.stopTime = Cesium.JulianDate.addDays(today, 10, new Cesium.JulianDate());
-          globe.viewer.clock.multiplier = 1.0;
-          globe.viewer.timeline.zoomTo(today, demain);
-
-          this.dataSources[name].show = false;
-          if(options.nameLigne !== undefined) {
-            for(var i = 0; i < options.line.length; i++){
-              options.line[i].show = false;
-            }
-          }
-          this.viewer.scene.requestRender();
-        }
-      }
     }
 
     /**
@@ -2481,18 +2095,19 @@ class Globe {
     * @param  {Array} billboard Le tableau d'entités où stocker les billboards
     * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
     * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
     * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
     * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
     * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
     * @return  {GeoJsonDataSource} le json une fois que tout est chargé
     */
     loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options = {}){
-      let promisse = Cesium.GeoJsonDataSource.load(link, {
+      let promise = Cesium.GeoJsonDataSource.load(link, {
         markerSize: 0 //pour que l'épingle n'apparaisse pas
       });
       this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
 
-      promisse.then((dataSource) => {
+      promise.then((dataSource) => {
         // Ajoute le json dans la liste des dataSource
         this.viewer.dataSources.add(dataSource);
         this.dataSources[name] = dataSource;
@@ -2594,9 +2209,453 @@ class Globe {
         } // fin de la requête xmlhttp
 
       });
-      return promisse;
+      return promise;
 
     }
+
+    /**
+    * La fonction show associée à loadPoint <br/>
+    * permet d'afficher ou de masquer la donnée ponctuelle en fonction de la valeur de show
+    *
+    * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
+    * @param  {String} name Le nom qu'on donne au json
+    * @param  {String} link Le lien vers le fichier
+    * @param  {String} linkAttribut Le lien vers le fichier json attributaires sans géométrie
+    * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
+    * @param  {Array} billboard l'objet dans lequel on stocke le CustomDataSource
+    * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
+    * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
+    * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
+    * @param  {String} options.couleur La couleur de la ligne et de la puce pour le cluster au format '#FFFFFF'
+    * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
+    */
+    showPoint(show, name, link, linkAttribut, image, billboard, point3D, cluster, options = {}){
+      if(show){
+        if(this.dataSources[name] === undefined){
+          if(linkAttribut != undefined) {
+            globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options);
+            this.viewer.scene.requestRender();
+          } else {
+            globe.loadPoint(link, name, image, billboard, point3D, cluster, options);
+            this.viewer.scene.requestRender();
+          }
+
+        } else{
+          this.dataSources[name].show = true;
+          for(var i = 0; i < billboard.length; i++){
+            billboard[i].show = true;
+          }
+
+          if(point3D === false) {
+            for(var i = 0; i < options.line.length; i++){
+              options.line[i].show = true;
+            }
+          }
+
+          this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
+        }
+      } else{
+        if(this.dataSources[name] !== undefined){
+          this.dataSources[name].show = false;
+          for(var i = 0; i < billboard.length; i++){
+            billboard[i].show = false;
+          }
+          if(point3D === false) {
+            for(var i = 0; i < options.line.length; i++){
+              options.line[i].show = false;
+            }
+          }
+          this.viewer.scene.requestRender();
+        }
+      }
+    }
+
+
+    /**
+    *
+    * Permet de re-charger la donnée ponctuelle (temps réel)
+    *
+    * @param  {String} link Le lien vers le fichier
+    * @param  {String} linkAttribut Le lien vers le fichier json attributaires sans géométrie
+    * @param  {String} name Le nom qu'on donne au json
+    * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
+    * @param  {Array} billboard l'objet dans lequel on stocke le CustomDataSource
+    * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
+    * @param  {Boolean} cluster true si les points doivent être clusterisés, false sinon
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
+    * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
+    * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
+    * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
+    */
+    updatePoint(link, linkAttribut, name, image, billboard, point3D, cluster, options = {}) {
+      if(this.dataSources[name] !== undefined){
+        this.viewer.dataSources.remove(this.dataSources[name]);
+        this.viewer.scene.requestRender();
+        if(linkAttribut != undefined) {
+          globe.loadJsonAttribut(link, linkAttribut, name, image, billboard, point3D, options= {
+            classificationField: options.classificationField,
+            line: options.line,
+            couleur: options.couleur,
+            choiceTableau: options.choiceTableau
+          });
+        } else {
+          globe.loadPoint(link, name, image, billboard, point3D, cluster, options= {
+            classificationField: options.classificationField,
+            line: options.line,
+            couleur: options.couleur,
+            choiceTableau: options.choiceTableau
+          });
+        }
+
+        this.viewer.scene.requestRender();
+      }
+
+    }
+
+    /**
+    * permet de charger des fichiers geojson temporels surfaciques (donnée dynamique qui va s'actualiser lorsqu'on bouge le curseur temps de Cesium)
+    *
+    * @param  {String} link Le lien vers le fichier
+    * @param  {String} name Le nom qu'on donne au json
+    * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
+    * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
+    * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
+    * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones
+    * @param  {String} options.nameLigne La nom des lignes de contour
+    * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
+    * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+    */
+    loadTimeSurf(link, name, choice, options = {}){
+      let promise = Cesium.GeoJsonDataSource.load(link, {
+        clampToGround: true
+      });
+      this.viewer.scene.globe.depthTestAgainstTerrain = true; // test pour voir si les json arrête de baver
+      this.viewer.scene.logarithmicDepthBuffer = false; // idem
+      this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+      promise.then((dataSource) => {
+        // Ajoute le json dans la liste des dataSource
+        this.viewer.dataSources.add(dataSource);
+        this.dataSources[name] = dataSource;
+        let entities = dataSource.entities.values;
+        this.hideLoader();
+
+        // l'évenement qui actualise la valeur de l'horloge quand on clique sur la timeline
+        this.viewer.clock.onTick.addEventListener(function () {
+          // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
+          let updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
+
+          for (let i = 0; i < entities.length; i++) {
+            let entity = entities[i];
+
+            // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
+            // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
+            // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
+            if(choice === 'default') {
+              var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date._value);
+              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+            } else {
+              var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date_echeance._value);
+              var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
+              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+            }
+
+            // si la date des attributs correspond à la date de la timeline on affiche l'entité
+            if(dateValidite == updateTime) {
+              entity.show = true;
+            } else {
+              entity.show = false;
+            }
+            // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
+            globe.viewer.scene.requestRender();
+          }
+
+        });
+
+        // permet de classifier les json
+        if(options.classification && options.classificationField !== undefined){
+          let entities = dataSource.entities.values;
+
+          if(options.colors != undefined){
+            Object.keys(options.colors).forEach(function(c){
+              options.colors[c] = Cesium.Color.fromCssColorString(options.colors[c]);
+              options.colors[c].alpha = options.alpha || 0.8;
+            })
+          }
+          let colors = options.colors || {};
+
+          for (let i = 0; i < entities.length; i++) {
+
+            let entity = entities[i];
+            if (Cesium.defined(entity.polygon)) {
+              let color = colors[entity.properties[options.classificationField]];
+              if(!color){
+                color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
+                colors[entity.properties[options.classificationField]] = color;
+              }
+              entity.polygon.material = color;
+              entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
+              entity.polygon.arcType = Cesium.ArcType.GEODESIC;
+            }
+
+            entity.name = choice;
+
+            if(options.choiceTableau !== undefined) {
+              var tabl = new TableauAttribut();
+
+              var tablEntity = 'createTableau' + options.choiceTableau;
+              tabl[tablEntity](entity);
+
+            }
+
+            if(options.nameLigne !== undefined) {
+              // on trace les contours des entités
+              options.line.push(this.drawLine(entity.polygon.hierarchy._value.positions, 3, '#FFFFFF', 1, true, options.nameLigne));
+            }
+
+          }
+        }
+
+      });
+      return promise;
+    }
+
+    /**
+    * permet de charger des fichiers geojson temporels (donnée dynamique qui va s'actualiser lorsqu'on bouge le curseur temps de Cesium)
+    *
+    * @param  {String} link Le lien vers le fichier
+    * @param  {String} name Le nom qu'on donne au json
+    * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
+    * @param  {String} image L'image à utiliser pour les billboard des entités ponctuelles
+    * @param  {Array} billboard Le tableau d'entités où stocker les billboards
+    * @param  {Boolean} point3D true si les points ont une composante 3D, false sinon
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
+    * @param  {Array} options.line Le tableau d'entités où stocker les lignes qu'on trace depuis le bas du billbard jusqu'au sol
+    * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
+    * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
+    * @return  {GeoJsonDataSource} le json une fois que tout est chargé
+    */
+    loadTimePoint(link, name, choice, image, billboardData, point3D, options = {}){
+      let promise = Cesium.GeoJsonDataSource.load(link, {
+        markerSize: 0 //pour que l'épingle n'apparaisse pas
+      });
+
+      this.showLoader(); // fonction qui affiche un symbole de chargement sur la page
+
+      //var billboardData = new Cesium.CustomDataSource();
+      //var billboardData = globe.viewer.scene.primitives.add(new Cesium.BillboardCollection());
+
+      promise.then((dataSource) => {
+        // Ajoute le json dans la liste des dataSource
+        this.viewer.dataSources.add(dataSource);
+        this.dataSources[name] = dataSource;
+        let entities = dataSource.entities.values;
+        this.hideLoader();
+
+        for(let i = 0; i < entities.length; i++) {
+          let entity = entities[i];
+          // on récupère les coordonnées des points importés
+          var X = (dataSource._entityCollection._entities._array[i]._position._value.x);
+          var Y = (dataSource._entityCollection._entities._array[i]._position._value.y);
+          var Z = (dataSource._entityCollection._entities._array[i]._position._value.z);
+
+          var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
+
+          // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
+          // l'entité billboard ne conserve pas les attributs
+          // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
+          var billboardEntity = billboardData.add({
+            billboard : {
+              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+              sizeInMeters: false,
+              scaleByDistance : new Cesium.NearFarScalar(1000, 10, 150000, 0)
+            }
+          });
+
+          billboardEntity.description = entity.properties._date_echeance._value;
+
+          if(options.classificationField !== undefined) {
+            var symbol = image[entity.properties[options.classificationField]];
+            if(symbol === undefined) {
+              var symbol = 'src/img/billboard/marker_black.png'
+            }
+            billboardEntity.image = symbol;
+          } else {
+            billboardEntity.image = image;
+          }
+
+          if(point3D === false) {
+            // nécessité de convertir en lon/lat car la coordonnée Z en ECEF ne correspond pas à la hauteur
+            let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
+            let longitude = cartographic.longitude;
+            let latitude = cartographic.latitude;
+            // on augmente la hauteur des points pour qu'ils apparaissent au dessus du photomaillage
+            let height = Number(230 + cartographic.height);
+
+            var coordHauteur = new Cesium.Cartesian3.fromRadians(longitude, latitude, height);
+
+            //on trace une ligne partant du sol jusqu'à la base du billboard
+            var coordLigne = [position, coordHauteur];
+            var lineEntity = this.drawLine(coordLigne, 2, options.couleur, 1, false);
+            options.line.push(lineEntity);
+
+            billboardEntity.position = coordHauteur;
+
+          } else if(point3D === true) {
+            billboardEntity.position = position;
+          }
+
+        } // fin du for entities
+
+        // l'évenement qui actualise la valeur de l'horloge quand on clique sur la timeline
+        this.viewer.clock.onTick.addEventListener(function test() {
+          // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
+          var updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
+
+
+          for (let i = 0; i < billboardData.length; i++) {
+            let billboardtemp = billboardData.get(i);
+
+            // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
+            // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
+            // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
+            if(choice === 'default') {
+              var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
+              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+            } else {
+              var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
+              var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
+              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+            }
+
+            // si la date des attributs correspond à la date de la timeline on affiche l'entité
+            if(dateValidite === updateTime) {
+              billboardtemp.show = true;
+            } else {
+              billboardtemp.show = false;
+
+            }
+            // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
+            globe.viewer.scene.requestRender();
+          }
+
+        });
+
+        for(let i = 0; i < entities.length; i++) {
+          if(options.choiceTableau !== undefined) {
+            var tabl = new TableauAttribut();
+            // on lie les attributs des points au nouvelles entités billboard et lignes
+            // l'attribut choiceTableau permet de classifier entre les différentes données
+            var tablBillboard = 'createTableau' + options.choiceTableau;
+            tabl[tablBillboard](billboardEntity, entity);
+
+            // si on a tracé une ligne depuis le billboard jusqu'au sol on ajoute les attributs sur la ligne aussi
+            if(point3D === false) {
+              var tablLine = 'createTableau' + options.choiceTableau;
+              tabl[tablLine](lineEntity, entity);
+            }
+          }
+        }
+
+      });
+      return promise;
+    }
+
+
+    /**
+    *
+    * La fonction show associée à loadTimeSurf <br/>
+    * permet d'afficher ou de masquer la donnée temporelle en fonction de la valeur de show
+    *
+    * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
+    * @param  {String} link Le lien vers le fichier
+    * @param  {String} name Le nom qu'on donne au json
+    * @param  {String} choice spécifique à la donnée, permet de charger l'attribut dans lequel on stocke la date de la donnée
+    * @param  {JulianDate} start La date de début de l'intervalle de temps qu'on souhaite afficher dans la timeline
+    * @param  {JulianDate} end La date de fin de l'intervalle de temps qu'on souhaite afficher dans la timeline
+    * @param  {Object} options facultatif - Les options pour le chargement
+    * @param  {String} options.typeDonnee spécifie le type de donnée (ici surface ou point)
+    * @param  {String} options.classificationField le champ de la donnée selon lesquelles les données seront classifiées
+    * @param  {Object} options.colors un objet qui contient les valeurs que peut prendre le classificationField et les couleurs à associer
+    * @param  {Number} options.alpha La transparence de la couleur des entités à afficher
+    * @param  {Array} options.line Le tableau d'entités où stocker les contours des polygones ou lignes qu'on trace depuis le bas du billbard jusqu'au sol
+    * @param  {String} options.nameLigne La nom des lignes de contour
+    * @param  {String} options.image L'image à utiliser pour les billboard des entités ponctuelles
+    * @param  {Array} options.billboard Le tableau d'entités où stocker les billboards
+    * @param  {Boolean} options.point3D true si les points ont une composante 3D, false sinon
+    * @param  {String} options.couleur La couleur de la ligne au format '#FFFFFF'
+    * @param  {String} options.choiceTableau la chaine de caractère à rajouter à createTableau pour appeler la bonne fonction de mise en forme du tableau d'attributs
+    */
+    showTimeJson(show, name, link, choice, billboard, start, end, options = {}){
+      var today = Cesium.JulianDate.now();
+      var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
+      var billboardData = this.viewer.scene.primitives.add(new Cesium.BillboardCollection());
+
+      if(show){
+        // on zoome la timeline sur l'intervalle souhaité
+        this.viewer.timeline.zoomTo(start, end);
+
+        if(this.dataSources[name] === undefined){
+          if(options.typeDonnee === 'surface') {
+            globe.loadTimeSurf(link, name, choice, options);
+          } else if(options.typeDonnee === 'point') {
+            globe.loadTimePoint(link, name, choice, options.image, billboardData, options.point3D, options);
+          }
+        } else{
+          this.dataSources[name].show = true;
+          if(options.nameLigne !== undefined) {
+            for(var i = 0; i < options.line.length; i++){
+              options.line[i].show = true;
+            }
+          }
+        }
+        this.viewer.scene.requestRender(); // dit à Cesium de recalculer la page
+      } else{
+        if(this.dataSources[name] !== undefined){
+          // on rezoome la timeline sur aujourd'hui et on reset les paramètres de l'horloge
+          var today = Cesium.JulianDate.now();
+          var demain = Cesium.JulianDate.addDays(today, 1, new Cesium.JulianDate());
+          globe.viewer.clock.shouldAnimate = false;
+          globe.viewer.clock.currentTime = today;
+          globe.viewer.clock.startTime = Cesium.JulianDate.addDays(today, -10, new Cesium.JulianDate());
+          globe.viewer.clock.stopTime = Cesium.JulianDate.addDays(today, 10, new Cesium.JulianDate());
+          globe.viewer.clock.multiplier = 1.0;
+          globe.viewer.timeline.zoomTo(today, demain);
+
+          this.viewer.clock.onTick.removeEventListener();
+          console.log('salut');
+
+          this.dataSources[name].show = false;
+          console.log(billboardData);
+
+          console.log(this.viewer.scene.primitives._primitives[1]._billboards);
+          for(var i = 0; i < this.viewer.scene.primitives._primitives[1]._billboards.length; i++) {
+            let billboardtemp = this.viewer.scene.primitives._primitives[1]._billboards[i];
+            this.viewer.entities.remove(billboardtemp);
+            //billboardtemp.show = false;
+            /*this.viewer.scene.primitives._primitives[1]._billboards[i]._show = false;
+            console.log(this.viewer.scene.primitives._primitives[1]._billboards[i]);*/
+            this.viewer.scene.requestRender();
+          }
+          billboardData.destroy();
+          console.log(billboardData);
+
+          if(options.line !== undefined) {
+            for(var i = 0; i < options.line.length; i++){
+              options.line[i].show = false;
+            }
+          }
+          this.viewer.scene.requestRender();
+        }
+      }
+    }
+
 
     /**
     * Récupère les 9 tuiles du plu détaillé à afficher en fonction des coordonnées du centre de l'écran
