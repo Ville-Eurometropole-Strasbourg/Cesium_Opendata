@@ -1231,47 +1231,6 @@
         },
         {
           "type_donnee": "point",
-          "animation": "oui",
-          "id_data": "ODQualiteAirStras",
-          "name": "Qualité de l'air de Strasbourg (sur un an)",
-          "url_info": "https://data.strasbourg.eu/explore/dataset/indices-de-qualite-de-lair-a-strasbourg/information/",
-          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=indices-de-qualite-de-lair-a-strasbourg&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson",
-          "champ_classif": "valeur",
-          "image": {
-            "1": "src/img/billboard/icons8-qualite1.png",
-            "2": "src/img/billboard/icons8-qualite2.png",
-            "3": "src/img/billboard/icons8-qualite3.png",
-            "4": "src/img/billboard/icons8-qualite4.png",
-            "5": "src/img/billboard/icons8-qualite5.png",
-            "6": "src/img/billboard/icons8-qualite6.png",
-            "7": "src/img/billboard/icons8-qualite7.png",
-            "8": "src/img/billboard/icons8-qualite8.png",
-            "9": "src/img/billboard/icons8-qualite9.png",
-            "10": "src/img/billboard/icons8-qualite10.png"
-          },
-          "couleur": "#47991f",
-          "alpha": 0.7,
-          "nom_legende": "Qualite Air Strasbourg",
-          "couleur_legende": {
-            "1 Très Bon": "<img src='src/img/billboard/icons8-qualite1.png'>",
-            "2 Très Bon": "<img src='src/img/billboard/icons8-qualite2.png'>",
-            "3 Bon": "<img src='src/img/billboard/icons8-qualite3.png'>",
-            "4 Bon": "<img src='src/img/billboard/icons8-qualite4.png'>",
-            "5 Moyen": "<img src='src/img/billboard/icons8-qualite5.png'>",
-            "6 Médiocre": "<img src='src/img/billboard/icons8-qualite6.png'>",
-            "7 Médiocre": "<img src='src/img/billboard/icons8-qualite7.png'>",
-            "8 Mauvais": "<img src='src/img/billboard/icons8-qualite8.png'>",
-            "9 Mauvais": "<img src='src/img/billboard/icons8-qualite9.png'>",
-            "10 Très Mauvais": "<img src='src/img/billboard/icons8-qualite10.png'>"
-          },
-          "point_3D": false,
-          "choice": "Qualite Air Strasbourg",
-          "choiceTableau": "QualiteAirStras",
-          "start": "-366",
-          "end": "-2"
-        },
-        {
-          "type_donnee": "point",
           "id_data": "ODArbresRemarquables",
           "name": "Arbres remarquables",
           "url_info": "https://data.strasbourg.eu/explore/dataset/lieux_arbres-remarquables/information/",
@@ -1414,8 +1373,7 @@
             "Œuvres street art": "src/img/billboard/Street_art.png",
             "Musée de la ville de Strasbourg": "src/img/billboard/Musees_Strasbourg.png",
             "Institution culturelle": "src/img/billboard/Institution_Culturelle.png",
-            "Œuvres d'art dans la ville": "src/img/billboard/Oeuvre_Art.png",
-            "Autre": "src/img/billboard/marker_black.png"
+            "Œuvres d'art dans la ville": "src/img/billboard/Oeuvre_Art.png"
           },
           "couleur": "#686a6e",
           "nom_legende": "Lieux culturels",
@@ -1484,87 +1442,7 @@
     { "name_titre": "DONNEES EN ACCES RESTREINT",
       "private" : true,
       "couches": [
-        {
-          "identifiant": "salut",
-          "type_donnee": "surface",
-          "id_data": "ODPropInstitAchenheim",
-          "name": "Propriétaires institutionnels Achenheim",
-          "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",
-          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=proprietaires_institutionnels&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.nom_com=Achenheim&timezone=Europe/Berlin",
-          "champ_classif": "libelle",
-          "couleur_classif" : {
-            "Eurométropole de Strasbourg": "#DEB41F",
-            "STRASBOURG" : "#F5EC81",
-            "NON_CADASTRE": "#F3AFE5"
-          },
-          "alpha": 0.7,
-          "nom_legende": "Propriétaires institutionnels Achenheim",
-          "couleur_legende": {
-            "Eurométropole de Strasbourg": "#DEB41F",
-            "Ville de Strasbourg" : "#F5EC81",
-            "Non Cadastré": "#F3AFE5"
-          },
-          "choice": "Propriétaire instutionnel Achenheim"
-
-        },
-        {
-          "identifiant": "salut",
-          "type_donnee": "surface",
-          "id_data": "ODPropInstitEckbolsheim",
-          "name": "Propriétaires institutionnels Eckbolsheim",
-          "url_info": "https://data.strasbourg.eu/explore/dataset/proprietaires_institutionnels/information/",
-          "url_data": "https://data.strasbourg.eu/api/records/1.0/download?dataset=proprietaires_institutionnels&apikey=3adb5f640063ee29feecfbf114d284e6be5d0284b1950baecab080e8&format=geojson&refine.nom_com=Eckbolsheim&timezone=Europe/Berlin",
-          "champ_classif": "libelle",
-          "couleur_classif" : {
-            "Eurométropole de Strasbourg": "#DEB41F",
-            "STRASBOURG" : "#F5EC81",
-            "NON_CADASTRE": "#F3AFE5"
-          },
-          "alpha": 0.7,
-          "nom_legende": "Propriétaires institutionnels Eckbolsheim",
-          "couleur_legende": {
-            "Eurométropole de Strasbourg": "#DEB41F",
-            "Ville de Strasbourg" : "#F5EC81",
-            "Non Cadastré": "#F3AFE5"
-          },
-          "choice": "Propriétaire instutionnel Achenheim"
-
-        },
-        {
-          "identifiant": "danube",
-          "type_donnee": "3dtiles",
-          "id_data": "EcoleDanube",
-          "name": "Projet école Danube",
-          "url_data": "data/private/Danube/tileset.json"
-        },
-        {
-          "identifiant": "velum",
-          "type_donnee": "3dtiles",
-          "id_data": "Velum3D",
-          "name": "Velum 3D classifié",
-          "url_data": "https://3d.strasbourg.eu/TEST/Cesium2/data/Velum3D/tileset.json",
-          "couleur": {
-            "conditions": [
-              ["${CLASSIF} === 'HT'", "color('#C29D00', 0.7)"],
-              ["${CLASSIF} === 'ET'", "color('#E77200', 0.7)"],
-              ["${CLASSIF} === 'NR'", "color('#949DA5', 0.7)"],
-              ["true", "color('#1F85DE')"]
-            ]
-          },
-          "nom_legende": "Velum 3D classifié",
-          "couleur_legende": {
-            "HT": "#C29D00",
-            "ET" : "#E77200",
-            "NR": "#949DA5"
-          }
-        },
-        {
-          "identifiant": "dessin",
-          "type_donnee": "dessin",
-          "id_data": "Drawing2_7",
-          "name": "Test dessin",
-          "url_data": "data/private/drawing2_7.json"
-        }
+        
       ]
 
     }

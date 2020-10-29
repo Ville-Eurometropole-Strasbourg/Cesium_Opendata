@@ -386,6 +386,7 @@ class Globe {
     * elle permet entres autres de charger des projets 3D sans que ceux-ci ne soient impactés par les découpes effectuées dans le photomaillage
     *
     * @param  {String} link Le lien vers le fichier
+    * @param  {Number} maxError 'The maximum screen space error used to drive level of detail refinement', différent pour les deux photomaillages 2018 et PSMV
     * @param  {Object} options facultatif - Les options pour le chargement
     * @return  {tileset} tilesetPrimitive l'entité contenant le tileset
     */
@@ -402,11 +403,13 @@ class Globe {
     /**
     *
     * Afficher ou masquer la source de données 3DTiles "name" en fonction de la valeur de "show" <br/>
-    * Si elle n'a pas enore été affiché, la fonction va télécharger les données avec le lien "link" passé en parametre
+    * Si elle n'a pas enore été affiché, la fonction va télécharger les données avec le lien "link" passé en parametre <br/>
+    * Permet de visualiser les attributs au clic pour la donnée 3DTiles
     *
     * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
     * @param  {String} link Le lien vers le fichier
     * @param  {String} name Le nom qu'on donne au json
+    * @param  {Number} maxError 'The maximum screen space error used to drive level of detail refinement', différent pour les deux photomaillages 2018 et PSMV
     * @param  {Object} options facultatif - Les options pour le chargement
     */
     show3DTiles(show, name, link, maxError, options = {}){
@@ -873,9 +876,9 @@ class Globe {
     * le paramètre choice designe si on mesure (dessins temporaires) ou si on dessine
     * (dessins qui restent après fermeture de la fonction de dessin) <br/>
     * le paramètre choice2 désigne le type de dessin (line, surface, volume etc) <br/>
-    * On met tous les tableaux d'entités en paramètres de la fonction car ils seront définis dans la classe Menu
+    * On met tous les tableaux d'entités en paramètres options de la fonction car ils seront définis dans la classe Menu
     * pour garder une trace des entités et permettre leur annulation/exportation <br/>
-    * Le reste des paramètres correspond aux paramètres de personnalisation définis par l'utilisateur dans les formulaires
+    * Le reste des paramètres en options correspond aux paramètres de personnalisation définis par l'utilisateur dans les formulaires
     *
     * @param  {String} choice prend la valeur 'dessin' ou 'mesure'
     * @param  {String} choice2 le type d'entités à dessiner: 'point', 'line', 'polygon' ou 'volume'
@@ -980,12 +983,15 @@ class Globe {
             }
           }
         }
+        // affichage des labels pour les distances
         if(choice === 'line' && choice2 === 'mesure') {
+          // on créé le texte à afficher
           var labeldistance = 'Dh : ' + $("#distance").text() + ' m \n Di : ' + $("#distanceinclinee").text() + ' m \n Da : ' +$("#hauteur").text() + ' m';
+          // on récupère les coordonnées du point central
           var positionarray = globe.getMiddlePoint(coordsline);
 
+          // dès qu'on a 2 points on ajoute le label
           if(positionarray[0] != undefined) {
-
             options.label.push(globe.viewer.entities.add({
               position: positionarray[1],
               label: {
@@ -998,6 +1004,7 @@ class Globe {
               }
             }));
 
+            // on trace la ligne qui part du label jusqu'à la ligne qu'on mesure
             options.dline.push(globe.drawLine(positionarray, 1, '#000000', 0.5, false));
             globe.viewer.scene.requestRender();
           }
@@ -1326,8 +1333,9 @@ class Globe {
 
     /**
     *
-    * Retourne les coordonnées des 4 points du sommets du rectangle à partir de 2 points cliqués et d'une distance de décalage précisée
-    * par l'utilisateur
+    * Retourne les coordonnées d'un point du sommet du rectangle à partir de 2 points cliqués et d'une distance de décalage précisée
+    * par l'utilisateur <br/>
+    * Elle est appelée 2 fois dans la fonction getRectangle en inversant les deux points pour calculer les deux points inconnus
     *
     * @param  {Number} distance la distance de décalage en mètres spécifiée par l'utilisateur
     * @param  {Number} coord1 la coordonnée X du premier point
@@ -1778,9 +1786,8 @@ class Globe {
 
 
   /**
-  * La fonction show associée à loadPolygon <br/>
+  * La fonction show associée à loadGeoJson <br/>
   * Charger ou dé-charger la donnée "name" en fonction de la valeur de "show" <br/>
-  * Met un highlight sur les entités selectionnées en cliquant
   * optionnel: peut mettre un highlight sur les entités sélectionnées en cliquant
   *
   * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
@@ -2378,7 +2385,7 @@ class Globe {
         });
 
         // permet de classifier les json
-        if(options.classification && options.classificationField !== undefined){
+        if(options.classificationField !== undefined){
           let entities = dataSource.entities.values;
 
           if(options.colors != undefined){
@@ -2394,10 +2401,6 @@ class Globe {
             let entity = entities[i];
             if (Cesium.defined(entity.polygon)) {
               let color = colors[entity.properties[options.classificationField]];
-              if(!color){
-                color = Cesium.Color.fromRandom({ alpha : options.alpha || 0.8 });
-                colors[entity.properties[options.classificationField]] = color;
-              }
               entity.polygon.material = color;
               entity.polygon.classificationType = Cesium.ClassificationType.CESIUM_3D_TILE;
               entity.polygon.arcType = Cesium.ArcType.GEODESIC;
@@ -2426,7 +2429,11 @@ class Globe {
     }
 
     /**
-    * permet de charger des fichiers geojson temporels (donnée dynamique qui va s'actualiser lorsqu'on bouge le curseur temps de Cesium)
+    * permet de charger des fichiers geojson temporels ponctuels (donnée dynamique qui va s'actualiser lorsqu'on bouge le curseur temps de Cesium) <br/>
+    * Si la donnée est 2D, la fonction va créer une primitive billboard à chaque point puis le relever de 200m. On stocke ensuite la valeur de date_écheance dans
+    * la description du billboard pour pouvoir ensuite comparer cette valeur avec la date actuelle sur la timeline. Les primitives ne se suppriment pas quand on décoche
+    * la checkbox et n'affichent pas de tableau d'attributs au clic, même si on a défini une variable choiceTableau <br>
+    * Si la donnée est 3D, la fonction récupère simplement les entités et compare la valeur de l'attribut date_écheance avec la date de la timeline
     *
     * @param  {String} link Le lien vers le fichier
     * @param  {String} name Le nom qu'on donne au json
@@ -2467,30 +2474,18 @@ class Globe {
 
           var position = new Cesium.Cartesian3(X,Y,Z); // en coords cartesiennes (système ECEF)
 
-          // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
-          // l'entité billboard ne conserve pas les attributs
-          // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
-          var billboardEntity = billboardData.add({
-            billboard : {
-              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-              sizeInMeters: false,
-              scaleByDistance : new Cesium.NearFarScalar(1000, 10, 150000, 0)
-            }
-          });
-
-          billboardEntity.description = entity.properties._date_echeance._value;
-
-          if(options.classificationField !== undefined) {
-            var symbol = image[entity.properties[options.classificationField]];
-            if(symbol === undefined) {
-              var symbol = 'src/img/billboard/marker_black.png'
-            }
-            billboardEntity.image = symbol;
-          } else {
-            billboardEntity.image = image;
-          }
-
           if(point3D === false) {
+
+            // créé un billboard pour chaque entité ponctuelle (en précisant l'image à utiliser dans les paramètres)
+            // l'entité billboard ne conserve pas les attributs
+            // des billboard sont disponibles dans le dossier src/img/billboard sous le nom marker_'color' (10 couleurs)
+            var billboardEntity = billboardData.add({
+              billboard : {
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                sizeInMeters: false,
+                scaleByDistance : new Cesium.NearFarScalar(1000, 10, 150000, 0)
+              }
+            });
             // nécessité de convertir en lon/lat car la coordonnée Z en ECEF ne correspond pas à la hauteur
             let cartographic = Cesium.Cartographic.fromCartesian(position); // conversion en radians
             let longitude = cartographic.longitude;
@@ -2505,10 +2500,26 @@ class Globe {
             var lineEntity = this.drawLine(coordLigne, 2, options.couleur, 1, false);
             options.line.push(lineEntity);
 
+            billboardEntity.description = entity.properties._date_echeance._value;
             billboardEntity.position = coordHauteur;
 
+            if(options.classificationField !== undefined) {
+              var symbol = image[entity.properties[options.classificationField]];
+              if(symbol === undefined) {
+                var symbol = 'src/img/billboard/marker_black.png'
+              }
+              billboardEntity.image = symbol;
+            } else {
+              billboardEntity.image = image;
+            }
+
           } else if(point3D === true) {
-            billboardEntity.position = position;
+            if(options.classificationField !== undefined) {
+              var symbol = image[entity.properties[options.classificationField]];
+              entity.billboard.image = symbol;
+            } else {
+              entity.markerColor = '#FFFFFF';
+            }
           }
 
         } // fin du for entities
@@ -2518,33 +2529,55 @@ class Globe {
           // on garde seulement les 10 premiers chiffres pour avoir le jour (sans l'heure et secondes)
           var updateTime = Cesium.JulianDate.toIso8601(globe.viewer.clock.currentTime).substring(0, 10);
 
+          if(point3D === false) {
+            for (let i = 0; i < billboardData.length; i++) {
+              let billboardtemp = billboardData.get(i);
 
-          for (let i = 0; i < billboardData.length; i++) {
-            let billboardtemp = billboardData.get(i);
+              // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
+              // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
+              // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
+              if(choice === 'default') {
+                var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
+                var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+              } else {
+                var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
+                var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
+                var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+              }
 
-            // attention aux formats de date, ici updateTime et dateValidite sont au format AAAA-MM-JJ
-            // spécifique à la donnée, condition à rajouter pour récupérer le champ dans lequel on stocke la date
-            // on récupère la date dans les attributs et on enlève un jour car date échéance = plus valable le jour même
-            if(choice === 'default') {
-              var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
-              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
-            } else {
-              var dateIso = Cesium.JulianDate.fromIso8601(billboardtemp.description);
-              var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
-              var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+              // si la date des attributs correspond à la date de la timeline on affiche l'entité
+              if(dateValidite === updateTime) {
+                billboardtemp.show = true;
+              } else {
+                billboardtemp.show = false;
+              }
+              // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
+              globe.viewer.scene.requestRender();
+            }
+          } else if(point3D === true) {
+            for (let i = 0; i < entities.length; i++) {
+              let entity = entities[i];
+
+              if(choice === 'default') {
+                var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date._value);
+                var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+              } else {
+                var dateIso = Cesium.JulianDate.fromIso8601(entity.properties._date_echeance._value);
+                var date = Cesium.JulianDate.addDays(dateIso, -1, new Cesium.JulianDate());
+                var dateValidite = Cesium.JulianDate.toIso8601(date).substring(0, 10);
+              }
+
+              // si la date des attributs correspond à la date de la timeline on affiche l'entité
+              if(dateValidite == updateTime) {
+                entity.show = true;
+              } else {
+                entity.show = false;
+              }
+              // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
+              globe.viewer.scene.requestRender();
             }
 
-            // si la date des attributs correspond à la date de la timeline on affiche l'entité
-            if(dateValidite === updateTime) {
-              billboardtemp.show = true;
-            } else {
-              billboardtemp.show = false;
-
-            }
-            // on demande d'actualiser à chaque changement d'horloge pour voir les couleurs défiler en bougeant la timeline
-            globe.viewer.scene.requestRender();
           }
-
         });
 
         for(let i = 0; i < entities.length; i++) {
@@ -2570,7 +2603,7 @@ class Globe {
 
     /**
     *
-    * La fonction show associée à loadTimeSurf <br/>
+    * La fonction show associée à loadTimeSurf et loadTimePoint <br/>
     * permet d'afficher ou de masquer la donnée temporelle en fonction de la valeur de show
     *
     * @param  {String} show le paramètre qui spécifie quand l'affichage doit être actif - prend la valeur e.target.checked ou non
@@ -2628,23 +2661,7 @@ class Globe {
           globe.viewer.clock.multiplier = 1.0;
           globe.viewer.timeline.zoomTo(today, demain);
 
-          this.viewer.clock.onTick.removeEventListener();
-          console.log('salut');
-
           this.dataSources[name].show = false;
-          console.log(billboardData);
-
-          console.log(this.viewer.scene.primitives._primitives[1]._billboards);
-          for(var i = 0; i < this.viewer.scene.primitives._primitives[1]._billboards.length; i++) {
-            let billboardtemp = this.viewer.scene.primitives._primitives[1]._billboards[i];
-            this.viewer.entities.remove(billboardtemp);
-            //billboardtemp.show = false;
-            /*this.viewer.scene.primitives._primitives[1]._billboards[i]._show = false;
-            console.log(this.viewer.scene.primitives._primitives[1]._billboards[i]);*/
-            this.viewer.scene.requestRender();
-          }
-          billboardData.destroy();
-          console.log(billboardData);
 
           if(options.line !== undefined) {
             for(var i = 0; i < options.line.length; i++){

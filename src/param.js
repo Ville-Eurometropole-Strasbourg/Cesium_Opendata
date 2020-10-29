@@ -453,7 +453,7 @@ class Data {
             }
 
             // lancer l'animation lorsqu'on clique sur le bouton horloge
-            if(paramJson.menu[i].couches[j].type_donnee === 'surface' && paramJson.menu[i].couches[j].animation === 'oui') {
+            if((paramJson.menu[i].couches[j].type_donnee === 'surface' || paramJson.menu[i].couches[j].type_donnee === 'point') && paramJson.menu[i].couches[j].animation === 'oui') {
               document.querySelector('#' + paramJson.menu[i].couches[j].id_data + 'Time').addEventListener('click', function() {
                 var today = Cesium.JulianDate.now();
                 var start = Cesium.JulianDate.addDays(today, Number(paramJson.menu[i].couches[j].start), new Cesium.JulianDate());

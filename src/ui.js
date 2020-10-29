@@ -594,6 +594,46 @@ class Menu {
         }
       }
 
+      // Export des rectangles
+      for (let i = 0; i < rectangle.length; i++) {
+        let coordSurf = [];
+        let arraySurf = [];
+        let k = 0;
+
+        while (k < rectangle[i].polygon.hierarchy._value.positions.length) {
+
+          var typeSurf = {"type" : "Feature", "properties" : {}, "geometry" : {}};
+          typeSurf["geometry"] = {"type" : "Polygon",  "coordinates" : [[]]};
+
+          let cartesian = new Cesium.Cartesian3(rectangle[i].polygon.hierarchy._value.positions[k].x, rectangle[i].polygon.hierarchy._value.positions[k].y, rectangle[i].polygon.hierarchy._value.positions[k].z);
+          let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+          let longitude = Cesium.Math.toDegrees(cartographic.longitude);
+          let latitude = Cesium.Math.toDegrees(cartographic.latitude);
+          let coordXY = [Number(longitude), Number(latitude)];
+          coordSurf.push(coordXY);
+          k++;
+        }
+
+        // on rajoute la première coordonnée à la fin de la liste pour permettre l'affichage
+        let cartesian = new Cesium.Cartesian3(rectangle[i].polygon.hierarchy._value.positions[0].x, rectangle[i].polygon.hierarchy._value.positions[0].y, rectangle[i].polygon.hierarchy._value.positions[0].z);
+        let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        let longitude = Cesium.Math.toDegrees(cartographic.longitude);
+        let latitude = Cesium.Math.toDegrees(cartographic.latitude);
+        let coordXY = [Number(longitude), Number(latitude)];
+        coordSurf.push(coordXY);
+
+        typeSurf["properties"].color = {};
+        typeSurf["properties"]["color"].red = rectangle[i].polygon.material.color._value.red;
+        typeSurf["properties"]["color"].green = rectangle[i].polygon.material.color._value.green;
+        typeSurf["properties"]["color"].blue = rectangle[i].polygon.material.color._value.blue;
+        typeSurf["properties"]["color"].alpha = rectangle[i].polygon.material.color._value.alpha;
+
+        // il faut une array de plus pour les coordonnées des polygon pour que Cesium arrive à lire le JSON
+        arraySurf.push(coordSurf);
+        typeSurf["geometry"].coordinates = arraySurf;
+        features.push(typeSurf);
+      }
+
       // Export des surfaces
       for (let i = 0; i < surface.length; i++) {
         let coordSurf = [];

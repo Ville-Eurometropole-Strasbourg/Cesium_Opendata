@@ -743,27 +743,6 @@ createTableauQualiteAir(entity){
     entity.description += '<a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Informations sur les données</a><br/><br/>';
   }
 
-  /**
-  *
-  * Afficher le tableau d'attributs de la donnée Qualite_Air_Eurométropole avec le bon format <br/>
-  * Utilisée dans loadTimeSurf
-  *
-  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
-  */
-  createTableauQualiteAirStras(billboard, entity){
-      //Renseignement des éléments de la boite d'information
-      billboard.name = 'Qualité air Strasbourg'
-      billboard.description ='<table class="cesium-infoBox-defaultTable"><tbody>';
-      //billboard.description += '<tr><td>Date d\'échéance (AAAA/MM/JJ)</td><td>' + String(entity.properties['date_echeance']) + '</td></tr>';
-      /*billboard.description += '<tr><td>Qualificatif</td><td>' + String(entity.properties['qualificatif']) + '</td></tr>';
-      billboard.description += '<tr><td>Valeur</td><td>' + String(entity.properties['valeur']) + '</td></tr>';
-      billboard.description += '<tr><td>Commune</td><td>' + String(entity.properties['lib_zone']) + '</td></tr>';
-      billboard.description += '<tr><td>Code zone</td><td>' + String(entity.properties['code_zone']) + '</td></tr>';*/
-      billboard.description +='</tbody></table><br/>';
-      billboard.description += '<a href="https://data.strasbourg.eu/explore/dataset/indices-de-qualite-de-lair-a-strasbourg/information/" target="_blank" rel="noopener">Informations sur les données</a><br/><br/>';
-    }
-
-
   //--------------------------------------------------------------------------------------------------------------------------
   // Les fonctions appelées dans la fonction loadJsonAttribut
 
@@ -815,7 +794,8 @@ createTableauQualiteAir(entity){
             style : Cesium.LabelStyle.FILL_AND_OUTLINE,
             scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
             showBackground: true,
-            backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
+            backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab'),
+            pixelOffset: new Cesium.Cartesian2(5, 1) // on décale le label de 5 pixels sur la droite et 1 de haut
           }
         });
 
