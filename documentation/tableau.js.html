@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: tableau.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: tableau.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+  * La classe Tableau regroupe les fonctions qui permettent de charger les tableaux d'attributs spécifiques à chaque couche de donnée &lt;br/>
+  * Une fois créees ici, les fonctions sont appelées automatiquement dans la fonction load associée (sans devoir modifier la classe Globe),
+  * à condition de définir l'attribut "choiceTableau" comme suivant: nom de la fonction = createTableau + 'choiceTableau' &lt;br/>
+  * Exemple pour les limites de communes, on a défini dans le json l'attribut choiceTableau = Communes, la fonction doit donc s'appeler createTableauCommunes
+  * (attention aux majuscules) &lt;br/>
+  * Attention à respecter les paramètres en fonction des différentes fonction load
+  *
+  */
+
+
+class TableauAttribut {
+
+  //--------------------------------------------------------------------------------------------------------------------------
+  // Les fonctions appelées dans la fonction loadPolygon
+  // Note: les fonctions pour la fonction loadPolyline prennent les mêmes arguments
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée PLUi_Plan_de_zonage avec le bon format &lt;br/>
+  * Utilisée dans loadPolygon
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  */
+  createTableauPLU(entity, dataSource) {
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;br/>&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['photo'])) {
+      entity.description += '&lt;img src="https://sig.strasbourg.eu/datastrasbourg/plu_media/ims_zone/' + String(entity.properties['photo']) + '" align="center" width="99%">';
+    }
+    if (Cesium.defined(entity.properties['paraph01'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph01']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph02'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph02']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph03'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph03']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph04'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph04']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph05'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph05']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph06'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph06']) + '&lt;/p>';
+    }
+    if (Cesium.defined(entity.properties['paraph07'])) {
+      entity.description += '&lt;p>' + String(entity.properties['paraph07']) + '&lt;/p>&lt;br/>&lt;br/>';
+    }
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['commune']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Zone &lt;/td>&lt;td>' + String(entity.properties['main_type']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Secteur &lt;/td>&lt;td>' + String(entity.properties['type']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Hauteur maximale &lt;/td>&lt;td>' + String(entity.properties['ht_aff']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+
+    if (Cesium.defined(entity.properties['page'])) {
+      entity.description += '&lt;a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/reglement_actuel.pdf#page=' + String(entity.properties['page']) + '" target="_blank">Lien vers le règlement de la zone&lt;/a>&lt;br/>&lt;br/>';
+    }
+    if (Cesium.defined(entity.properties['commune'])) {
+      entity.description += '&lt;a href="https://sig.strasbourg.eu/datastrasbourg/plu_media/pdf_commune/' + String(entity.properties['commune']) + '.pdf" target="_blank">Lien vers la présentation de la commune&lt;/a>&lt;br/>&lt;br/>';
+    }
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/plu_zone_urba/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Limites_de_communes avec le bon format &lt;br/>
+  * Utilisée dans loadPolygon
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  */
+  createTableauCommunes(entity, dataSource) {
+
+    let longitudeNom = entity._properties.geo_point_2d._value[1];
+    let latitudeNom = entity._properties.geo_point_2d._value[0];
+
+    // on positionne le texte des communes (car en plusieurs morceaux)
+    if (entity._properties.nom._value == 'Schiltigheim') {
+      latitudeNom = latitudeNom - 0.0055;
+    };
+    if (entity._properties.nom._value == 'Bischheim') {
+      latitudeNom = latitudeNom - 0.0055;
+    };
+
+    // on ajoute une étiquette avec le nom de la commune
+    dataSource.entities.add({
+      name : entity._properties.nom._value + '_' + entity._properties.num_com._value,
+      position : Cesium.Cartesian3.fromDegrees(longitudeNom,latitudeNom,280),
+      label : {
+        text : entity._properties.nom._value,
+        font : '24px Helvetica',
+        fillColor : Cesium.Color.WHITE,
+        outlineColor : Cesium.Color.BLACK,
+        outlineWidth : 2,
+        style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+        scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+        verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+      }
+    });
+
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Département &lt;/td>&lt;td>' + String(entity.properties['num_dept']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['nom']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code INSEE &lt;/td>&lt;td>' + String(entity.properties['num_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code précision &lt;/td>&lt;td>' + String(entity.properties['code_preci']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/limites_de_communes/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Limite de sections avec le bon format  &lt;br/>
+  * Utilisée dans loadPolygon
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  */
+  createTableauSections(entity, dataSource) {
+
+    let longitudeNom = entity._properties.geo_point_2d._value[1];
+    let latitudeNom = entity._properties.geo_point_2d._value[0];
+    dataSource.entities.add({
+      name : entity._properties.nom_com._value + '_SECTION ' + entity._properties.n_section._value,
+      position : Cesium.Cartesian3.fromDegrees(longitudeNom,latitudeNom,280),
+      label : {
+        text : entity._properties.n_section._value,
+        font : '24px Helvetica',
+        showBackground : true,
+        fillColor : Cesium.Color.WHITE,
+        outlineColor : Cesium.Color.BLACK,
+        outlineWidth : 2,
+        style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+        scaleByDistance : new Cesium.NearFarScalar(5000, 0.8, 100000, 0),
+        verticalOrigin : Cesium.VerticalOrigin.BOTTOM
+      }
+    });
+
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>' + String(entity.properties['nom_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code INSEE &lt;/td>&lt;td>' + String(entity.properties['num_com']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Numéro SECTION &lt;/td>&lt;td>' + String(entity.properties['n_section']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs des couches de données du parcellaire cadastral avec le bon format &lt;br/>
+  * Utilisée dans loadPolygon
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  */
+  createTableauCadastre(entity, dataSource) {
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Département &lt;/td>&lt;td>' + String(entity.properties['num_dept']) + '&lt;/td>&lt;/tr>';
+    switch (String(entity.properties['num_com'])) {
+      case '049':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BLAESHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '152':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>GEISPOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '001':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ACHENHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '043':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BISCHHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '065':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>BREUSCHWICKERSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '118':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ECKBOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '119':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ECKWERSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '124':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ENTZHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '131':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ESCHAU&lt;/td>&lt;/tr>'
+      break;
+      case '137':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>FEGERSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '182':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HANGENBIETEN&lt;/td>&lt;/tr>'
+      break;
+      case '204':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HOENHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '212':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>HOLTZHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '218':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>ILLKIRCH-GRAFFENSTADEN&lt;/td>&lt;/tr>'
+      break;
+      case '247':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>KOLBSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '256':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LAMPERTHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '267':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LINGOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '268':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LIPSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '296':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>MITTELHAUSBERGEN&lt;/td>&lt;/tr>'
+      break;
+      case '309':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>MUNDOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '326':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>NIEDERHAUSBERGEN&lt;/td>&lt;/tr>'
+      break;
+      case '343':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OBERHAUSBERGEN&lt;/td>&lt;/tr>'
+      break;
+      case '350':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OBERSCHAEFFOLSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '363':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OSTHOFFEN&lt;/td>&lt;/tr>'
+      break;
+      case '365':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>OSTWALD&lt;/td>&lt;/tr>'
+      break;
+      case '378':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>PLOBSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '389':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>REICHSTETT&lt;/td>&lt;/tr>'
+      break;
+      case '447':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>SCHILTIGHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '471':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>SOUFFELWEYERSHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '482':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>STRASBOURG&lt;/td>&lt;/tr>'
+      break;
+      case '506':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>VENDENHEIM&lt;/td>&lt;/tr>'
+      break;
+      case '519':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>LA_WANTZENAU&lt;/td>&lt;/tr>'
+      break;
+      case '551':
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>WOLFISHEIM&lt;/td>&lt;/tr>'
+      break;
+      default:
+      entity.description += '&lt;tr>&lt;td>Commune &lt;/td>&lt;td>Inconnue&lt;/td>&lt;/tr>'
+    }
+    entity.description += '&lt;tr>&lt;td>Section &lt;/td>&lt;td>' + String(entity.properties['n_section']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Parcelle &lt;/td>&lt;td>' + String(entity.properties['n_parcelle']) + '&lt;/td>&lt;/tr>';
+    //entity.description += '&lt;tr>&lt;td>Code précision &lt;/td>&lt;td>' + String(entity.properties['code_preci']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Source &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date export &lt;/td>&lt;td>' + String(entity.properties['date_exprt']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Licence &lt;/td>&lt;td>' + String(entity.properties['licence']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Emplacement_réservé avec le bon format &lt;br/>
+  * Utilisée dans loadPolygon
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  */
+  createTableauER(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.name = 'Emplacement réservé n°  ' + String(entity.properties['er_numero']);
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;hr/>'
+    entity.description += '&lt;p>' + String(entity.properties['er_designation']) + '&lt;p/>';
+    entity.description += '&lt;hr/>&lt;br/>'
+    entity.description += '&lt;tr>&lt;td>Bénéficiaire&lt;/td>&lt;td>' + String(entity.properties['er_beneficiaire']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Commune&lt;/td>&lt;td>' + String(entity.properties['commune']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Surface (m²)&lt;/td>&lt;td>' + String(entity.properties['surf_m2']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/plu_prescription_s/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  createTableauParkres(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Zone&lt;/td>&lt;td>' + String(entity.properties['numero']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Détails&lt;/td>&lt;td>' + '&lt;a href= "' + String(entity.properties['url_pdf']) + '" target="_blank"> zone ' + String(entity.properties['numero']) +' &lt;/a>&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/stationnement_residant/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>';
+  }
+
+  createTableauStatpayant(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Tarif&lt;/td>&lt;td>' + String(entity.properties['libelle']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/stationnement-payant/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>';
+  }
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    // Les fonctions appelées dans la fonction loadPolyline
+
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Trafic_routier_Eurométropole avec le bon format &lt;br/>
+  * Utilisée dans loadPolyline
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolyline
+  */
+  createTableauTrafic(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['nom']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Etat du trafic&lt;/td>&lt;td>' + String(entity.properties['etat']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Date/heure de mise à jour&lt;/td>&lt;td>' + String(entity.properties['dmajetatexp']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>tauxlisse&lt;/td>&lt;td>' + String(entity.properties['tauxlisse']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>debitlisse&lt;/td>&lt;td>' + String(entity.properties['debitlisse']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>vitessebrp&lt;/td>&lt;td>' + String(entity.properties['vitessebrp']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>debit&lt;/td>&lt;td>' + String(entity.properties['debit']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>ident&lt;/td>&lt;td>' + String(entity.properties['ident']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/trafic-routier-eurometropole/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Vitaboucle avec le bon format &lt;br/>
+  * Utilisée dans loadPolyline
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolyline
+  */
+  createTableauVitaboucle(entity, dataSource){
+    //Renseignement des éléments de la boite d'information
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Commune&lt;/td>&lt;td>' + String(entity.properties['commune']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Distance&lt;/td>&lt;td>' + String(entity.properties['distance']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Difficulté&lt;/td>&lt;td>' + String(entity.properties['difficulte']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Numéro&lt;/td>&lt;td>' + String(entity.properties['numero']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Longueur du parcours&lt;/td>&lt;td>' + String(entity.properties['long_km']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['nom']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Identifiant&lt;/td>&lt;td>' + String(entity.properties['id']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/boucles_sportives_vitaboucle/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>';
+  }
+
+
+  //--------------------------------------------------------------------------------------------------------------------------
+  // Les fonctions appelées dans la fonction loadPoint
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Patrimoine de mon quartier avec le bon format&lt;br/>
+  * Utilisée dans loadPoint
+  *
+  * @param  {Array} billboard le billboard auquel on va lier l'attribut de l'entité
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauPatrimoine(billboard, entity){
+    //Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['nom_du_patrimoine']);
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['photo'])) {
+      billboard.description += '&lt;img src="https://sig.strasbourg.eu/datastrasbourg/patrimoine_quartier/' + String(entity.properties['photo']) + '" align="center" width="99%">';
+    }
+    billboard.description += '&lt;p>' + String(entity.properties['texte_de_presentation']) + '&lt;/p>';
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['nom_du_patrimoine']) + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['adresse'])) {
+      billboard.description += '&lt;tr>&lt;td>Adresse&lt;/td>&lt;td>' + String(entity.properties['adresse']) + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['quartier'])) {
+      billboard.description += '&lt;tr>&lt;td>Quartier&lt;/td>&lt;td>' + String(entity.properties['quartier']) + '&lt;/td>&lt;/tr>';
+    }
+    billboard.description += '&lt;tr>&lt;td>Quartier calculé&lt;/td>&lt;td>' + String(entity.properties['quartier_calcule']) + '&lt;/td>&lt;/tr>';
+    billboard.description += '&lt;tr>&lt;td>Type de patrimoine &lt;/td>&lt;td>' + String(entity.properties['type_de_patrimoine']) + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['ancienne_denomination'])) {
+      billboard.description += '&lt;tr>&lt;td>Ancienne dénomination&lt;/td>&lt;td>' + String(entity.properties['ancienne_denomination']) + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['nouvelle_denomination'])) {
+      billboard.description += '&lt;tr>&lt;td>Nouvelle dénomination&lt;/td>&lt;td>' + String(entity.properties['nouvelle_denomination']) + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['architecte'])) {
+      billboard.description += '&lt;tr>&lt;td>Architecte&lt;/td>&lt;td>' + String(entity.properties['architecte']) + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['annee_construction'])) {
+      billboard.description += '&lt;tr>&lt;td>Année de construction&lt;/td>&lt;td>' + String(entity.properties['annee_construction']) + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['copyright_photo'])) {
+      billboard.description += '&lt;tr>&lt;td>Source photographie &lt;/td>&lt;td>' + String(entity.properties['copyright_photo']) + '&lt;/td>&lt;/tr>';
+    }
+    billboard.description += '&lt;tr>&lt;td>Source donnée &lt;/td>&lt;td>' + String(entity.properties['source']) + '&lt;/td>&lt;/tr>';
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/patrimoine_quartier/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  createTableauParc(billboard, entity){
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+    var images = String(entity.properties['images']);
+    var copy = [];
+    if(images != undefined) {
+      var subimages = images.split('{"imageURL": "');
+      subimages.shift();
+      for(let i=0;i&lt;subimages.length;i++) {
+        copy.push(subimages[i].split('"imageCopyright"'));
+      }
+      for(let i=0;i&lt;copy.length;i++) {
+        for(let j=1;j&lt;copy[i].length;j=+2) {
+          copy[i][j] = copy[i][j].replace(': "','Copyright photographie : © ');
+          copy[i][j] = copy[i][j].replace('"},','');
+          copy[i][j] = copy[i][j].replace('"}]','');
+        }
+      }
+    }
+    var name = String(entity.properties['name']);
+    name = name.replace('"en_US": "Parc du Contades", "fr_FR": "', '');
+    name = name.replace('", "de_DE": "Garten - Parc du Contades', '');
+    name = name.replace('"en_US": "Botanical garden", "fr_FR": "', '');
+    name = name.replace('", "de_DE": "Botanischer Garten', '');
+    name = name.replace('"en_US": "Parc de la citadelle (Citadelle park)", "fr_FR": "', '');
+    name = name.replace('", "de_DE": "Park der Zitadelle', '');
+    var description = String(entity.properties['description']);
+    description = description.replace('{"de_DE": "', '');
+    description = description.replace('{"en_US": "', '');
+    description = description.replace('{"fr_FR": "', '');
+    description = description.replace('", "en_US": "', '');
+    description = description.replace('", "de_DE": "', '');
+    description = description.replace('", "fr_FR": "', '');
+    description = description.replace(/\\n/g,'');
+    description = description.replace('"}','');
+    description = description.replace('{}','');
+    description = description.replace(/\\"/g,'"');
+    var acces = String(entity.properties['access']);
+    acces = acces.replace('{"de_DE": "', '');
+    acces = acces.replace('{"fr_FR": "', '');
+    acces = acces.replace('{"en_US": "', '');
+    acces = acces.replace('", "en_US": "', '');
+    acces = acces.replace('", "fr_FR": "', '');
+    acces = acces.replace('", "de_DE": "', '');
+    acces = acces.replace(/\\n/g,'');
+    acces = acces.replace(/\\t/g,'');
+    acces = acces.replace('"}','');
+    var serviceandactivities = String(entity.properties['serviceandactivities']);
+    serviceandactivities = serviceandactivities.replace('{"de_DE": "', '');
+    serviceandactivities = serviceandactivities.replace('{"fr_FR": "', '');
+    serviceandactivities = serviceandactivities.replace('{"en_US": "', '');
+    serviceandactivities = serviceandactivities.replace('", "en_US": "', '');
+    serviceandactivities = serviceandactivities.replace('", "fr_FR": "', '');
+    serviceandactivities = serviceandactivities.replace('", "de_DE": "', '');
+    serviceandactivities = serviceandactivities.replace(/\\n/g,'');
+    serviceandactivities = serviceandactivities.replace(/\\t/g,'');
+    serviceandactivities = serviceandactivities.replace('"}','');
+
+    //Renseignement des éléments de la boite d'information
+    billboard.name = name ;
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['images'])) {
+      for(let i=0;i&lt;copy.length;i=+10) {
+        for(let j=0;j&lt;copy[i].length;j=+2) {
+          billboard.description += '&lt;figure>&lt;img src="' + copy[i][j] + '" align="center" width="99%"> &lt;figcaption> ' + copy[i][j+1] + '&lt;/figcaption>&lt;/figure>';
+        }
+      }
+    }
+    billboard.description += '&lt;p>' + description + '&lt;/p>';
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + name + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '&lt;tr>&lt;td>Adresse&lt;/td>&lt;td>' + String(entity.properties['address']) + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['access'])) {
+      billboard.description += '&lt;tr>&lt;td>Accès&lt;/td>&lt;td>' + acces + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['friendlyurl'])) {
+      billboard.description += '&lt;tr>&lt;td>Lien vers le site du parc&lt;/td>&lt;td> &lt;a href="' + String(entity.properties['friendlyurl']) + '"target="_blank">Lien&lt;/a>&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['serviceandactivities'])) {
+      billboard.description += '&lt;tr>&lt;td>Services et activités&lt;/td>&lt;td>' + serviceandactivities + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['documents'])) {
+      billboard.description += '&lt;tr>&lt;td>Documents&lt;/td>&lt;td> &lt;a href="' + String(entity.properties['documents']) + '"target="_blank">Lien vers la présentation&lt;/a>&lt;/td>&lt;/tr>';
+    }
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+
+    if (Cesium.defined(entity.properties['images'])) {
+      for(let i=1;i&lt;copy.length;i++) {
+        for(let j=0;j&lt;copy[i].length;j+=2) {
+          billboard.description += '&lt;figure>&lt;img src="' + copy[i][j] + '" align="center" width="99%"> &lt;figcaption> ' + copy[i][j+1] + '&lt;/figcaption>&lt;/figure>';
+          billboard.description += '&lt;br/>&lt;br/>';
+        }
+      }
+    }
+
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/lieux_parcs/information/" target="_blank">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée Lieux culturels avec le bon format&lt;br/>
+  * Utilisée dans loadPoint
+  *
+  * @param  {Array} billboard le billboard auquel on va lier l'attribut de l'entité
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauLieuCulturel(billboard, entity){
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+    var images = String(entity.properties['images']);
+    var copy = [];
+    if(images != undefined) {
+      var subimages = images.split('{"imageURL": "');
+      subimages.shift();
+      for(let i=0;i&lt;subimages.length;i++) {
+        copy.push(subimages[i].split('"imageCopyright"'));
+      }
+      for(let i=0;i&lt;copy.length;i++) {
+        for(let j=1;j&lt;copy[i].length;j=+2) {
+          copy[i][j] = copy[i][j].replace(': "','Copyright photographie : © ');
+          copy[i][j] = copy[i][j].replace('"},','');
+          copy[i][j] = copy[i][j].replace('"}]','');
+        }
+      }
+    }
+
+    var name = String(entity.properties['name']);
+    if(name.includes('"fr_FR":')) {
+      name = name.substring(name.indexOf('"fr_FR": "'), name.indexOf('", "de_DE": "'));
+      name = name.replace('"fr_FR": "','');
+    }
+    var description = String(entity.properties['description']);
+    description = description.replace(/&lt;a/g,'&lt;a target=_blank');
+    description = description.replace(/{"de_DE": "/g, '');
+    description = description.replace(/{"fr_FR": "/g, '');
+    description = description.replace(/{"en_US": "/g, '');
+    description = description.replace(/", "en_US": "/g, '');
+    description = description.replace(/", "de_DE": "/g, '');
+    description = description.replace('", "fr_FR": "', '');
+    description = description.replace(/\\n/g,'');
+    description = description.replace(/\\t/g,'');
+    description = description.replace('"}','');
+    description = description.replace('{}','');
+    description = description.replace(/\\"/g,'"');
+    var characteristics = String(entity.properties['characteristics']);
+    characteristics = characteristics.replace(/{"de_DE": "/g, '');
+    characteristics = characteristics.replace(/{"fr_FR": "/g, '');
+    characteristics = characteristics.replace(/{"en_US": "/g, '');
+    characteristics = characteristics.replace(/", "en_US": "/g, '');
+    characteristics = characteristics.replace(/", "de_DE": "/g, '');
+    characteristics = characteristics.replace('", "fr_FR": "', '');
+    characteristics = characteristics.replace(/\\n/g,'');
+    characteristics = characteristics.replace(/\\t/g,'');
+    characteristics = characteristics.replace('"}','');
+    characteristics = characteristics.replace('{}','');
+    characteristics = characteristics.replace(/\\"/g,'"');
+    var typelieu = String(entity.properties['types']);
+    typelieu = typelieu.replace('Cat_08_01;', '');
+    var accesslieu = String(entity.properties['access']);
+    accesslieu = accesslieu.replace(/href=\\"/g, 'href="https://www.strasbourg.eu');
+    accesslieu = accesslieu.replace('{"de_DE": "', '');
+    accesslieu = accesslieu.replace('{"fr_FR": "', '');
+    accesslieu = accesslieu.replace('{"en_US": "', '');
+    accesslieu = accesslieu.replace('", "en_US": "', '');
+    accesslieu = accesslieu.replace('", "de_DE": "', '');
+    accesslieu = accesslieu.replace('", "fr_FR": "', '');
+    accesslieu = accesslieu.replace(/\\n/g,'');
+    accesslieu = accesslieu.replace(/\\t/g,'');
+    accesslieu = accesslieu.replace('"}','');
+    accesslieu = accesslieu.replace('{}','');
+    accesslieu = accesslieu.replace(/\\"/g,'"');
+
+    //Renseignement des éléments de la boite d'information
+    billboard.name = name ;
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['images'])) {
+      for(let i=0;i&lt;copy.length;i=+10) {
+        for(let j=0;j&lt;copy[i].length;j=+2) {
+          billboard.description += '&lt;figure>&lt;img src="' + copy[i][j] + '" align="center" width="99%"> &lt;figcaption> ' + copy[i][j+1] + '&lt;/figcaption>&lt;/figure>';
+        }
+      }
+    }
+
+    billboard.description += '&lt;p>' + description + '&lt;/p>';
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + name + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['types'])) {
+      billboard.description += '&lt;tr>&lt;td>Type de lieu&lt;/td>&lt;td>' + typelieu + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '&lt;tr>&lt;td>Adresse&lt;/td>&lt;td>' + String(entity.properties['address']) + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['access'])) {
+      billboard.description += '&lt;tr>&lt;td>Accès&lt;/td>&lt;td>' + accesslieu + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['friendlyurl'])) {
+      billboard.description += '&lt;tr>&lt;td>Lien vers la page de présentation du lieu&lt;/td>&lt;td> &lt;a href="' + String(entity.properties['friendlyurl']) + '"target="_blank">Lien&lt;/a>&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['mail'])) {
+      billboard.description += '&lt;tr>&lt;td>Mail&lt;/td>&lt;td>' + String(entity.properties['mail']) + '&lt;/td>&lt;/tr>';
+    }
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    if (Cesium.defined(entity.properties['characteristics'])) {
+      billboard.description += '&lt;p>' + characteristics + '&lt;/p>';
+    }
+
+    if (Cesium.defined(entity.properties['images'])) {
+      for(let i=1;i&lt;copy.length;i++) {
+        for(let j=0;j&lt;copy[i].length;j+=2) {
+          billboard.description += '&lt;figure>&lt;img src="' + copy[i][j] + '" align="center" width="99%"> &lt;figcaption> ' + copy[i][j+1] + '&lt;/figcaption>&lt;/figure>';
+          billboard.description += '&lt;br/>&lt;br/>';
+        }
+      }
+    }
+
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/lieux_culture/information/" target="_blank">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée arbres remarquables avec le bon format&lt;br/>
+  * Utilisée dans loadPoint
+  *
+  * @param  {Array} billboard le billboard auquel on va lier l'attribut de l'entité
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  */
+  createTableauArbresRemarquables(billboard, entity){
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+    var images = String(entity.properties['images']);
+    var copy = [];
+    if(images != undefined) {
+      var subimages = images.split('{"imageURL": "');
+      subimages.shift();
+      for(let i=0;i&lt;subimages.length;i++) {
+        copy.push(subimages[i].split('"imageCopyright"'));
+      }
+      for(let i=0;i&lt;copy.length;i++) {
+        for(let j=1;j&lt;copy[i].length;j=+2) {
+          copy[i][j] = copy[i][j].replace(': "','Copyright photographie : © ');
+          copy[i][j] = copy[i][j].replace('"},','');
+          copy[i][j] = copy[i][j].replace('"}]','');
+        }
+      }
+    }
+
+    var description = String(entity.properties['description']);
+    description = description.replace(/{"de_DE": "/g, '');
+    description = description.replace(/{"fr_FR": "/g, '');
+    description = description.replace(/{"en_US": "/g, '');
+    description = description.replace(/", "en_US": "/g, '');
+    description = description.replace(/", "de_DE": "/g, '');
+    description = description.replace('", "fr_FR": "', '');
+    description = description.replace(/\\n/g,'');
+    description = description.replace(/\\t/g,'');
+    description = description.replace('"}','');
+    description = description.replace('{}','');
+    description = description.replace(/\\"/g,'"');
+    var characteristics = String(entity.properties['characteristics']);
+    characteristics = characteristics.replace(/{"de_DE": "/g, '');
+    characteristics = characteristics.replace(/{"fr_FR": "/g, '');
+    characteristics = characteristics.replace(/{"en_US": "/g, '');
+    characteristics = characteristics.replace(/", "en_US": "/g, '');
+    characteristics = characteristics.replace(/", "de_DE": "/g, '');
+    characteristics = characteristics.replace('", "fr_FR": "', '');
+    characteristics = characteristics.replace(/\\n/g,'');
+    characteristics = characteristics.replace(/\\t/g,'');
+    characteristics = characteristics.replace('"}','');
+    characteristics = characteristics.replace('{}','');
+    characteristics = characteristics.replace(/\\"/g,'"');
+
+
+    //Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['name']);
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['images'])) {
+      for(let i=0;i&lt;copy.length;i=+10) {
+        for(let j=0;j&lt;copy[i].length;j=+2) {
+          billboard.description += '&lt;figure>&lt;img src="' + copy[i][j] + '" align="center" width="99%"> &lt;figcaption> ' + copy[i][j+1] + '&lt;/figcaption>&lt;/figure>';
+        }
+      }
+    }
+    billboard.description += '&lt;p>' + description + '&lt;/p>';
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['name']) + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '&lt;tr>&lt;td>Adresse&lt;/td>&lt;td>' + String(entity.properties['address']) + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['characteristics'])) {
+      billboard.description += '&lt;tr>&lt;td>Caratéristiques&lt;/td>&lt;td>' + characteristics + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['friendlyurl'])) {
+      billboard.description += '&lt;tr>&lt;td>Lien vers la page de présentation du lieu&lt;/td>&lt;td> &lt;a href="' + String(entity.properties['friendlyurl']) + '"target="_blank">Lien&lt;/a>&lt;/td>&lt;/tr>';
+    }
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    if (Cesium.defined(entity.properties['images'])) {
+      for(let i=1;i&lt;copy.length;i++) {
+        for(let j=0;j&lt;copy[i].length;j+=2) {
+          billboard.description += '&lt;figure>&lt;img src="' + copy[i][j] + '" align="center" width="99%"> &lt;figcaption> ' + copy[i][j+1] + '&lt;/figcaption>&lt;/figure>';
+          billboard.description += '&lt;br/>&lt;br/>';
+        }
+      }
+    }
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/lieux_arbres-remarquables/information/" target="_blank">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------
+  // Les fonctions appelées dans la fonction loadTimeSurf
+
+
+/**
+*
+* Afficher le tableau d'attributs de la donnée Qualite_Air_Eurométropole avec le bon format &lt;br/>
+* Utilisée dans loadTimeSurf
+*
+* @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+*/
+createTableauQualiteAir(entity){
+    //Renseignement des éléments de la boite d'information
+    entity.name = 'Qualité air communes Eurométropole'
+    entity.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    entity.description += '&lt;tr>&lt;td>Date d\'échéance (AAAA/MM/JJ)&lt;/td>&lt;td>' + String(entity.properties['date_echeance']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Qualificatif&lt;/td>&lt;td>' + String(entity.properties['qualificatif']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Valeur&lt;/td>&lt;td>' + String(entity.properties['valeur']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Commune&lt;/td>&lt;td>' + String(entity.properties['lib_zone']) + '&lt;/td>&lt;/tr>';
+    entity.description += '&lt;tr>&lt;td>Code zone&lt;/td>&lt;td>' + String(entity.properties['code_zone']) + '&lt;/td>&lt;/tr>';
+    entity.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    entity.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/qualite-de-lair-communes-eurometropole/information/" target="_blank" rel="noopener">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------
+  // Les fonctions appelées dans la fonction loadJsonAttribut
+
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée fréquentation en temps réel avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {json} jsonAttribut l'objet Json attributaire qu'on charge par dessus le GeoJson
+  * @param  {Array} billboard le tableau qui sert à stocker le CustomDataSource dans lequel on range les billboardData
+  * @param  {Cartesian3} coordLabel les coordonnées du label
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  *
+  */
+  createTableauParkings(entity, jsonAttribut, billboard, coordLabel, dataSource) {
+    // Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['name']);
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['description'])) {
+      billboard.description += '&lt;p>' + String(entity.properties['description']) + '&lt;/p>';
+    }
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['name']) + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '&lt;tr>&lt;td>Adresse&lt;/td>&lt;td>' + String(entity.properties['address']) + '&lt;/td>&lt;/tr>';
+    }
+    billboard.description += '&lt;tr>&lt;td>Lien vers la page du parking&lt;/td>&lt;td>' + '&lt;a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' &lt;/a>&lt;/td>&lt;/tr>';
+
+    // on rentre dans le fichier json chargé pour récupérer les attributs
+    for(let j = 0; j &lt; jsonAttribut.length; j++) {
+      if(entity.name == jsonAttribut[j].fields.nom_parking) {
+        billboard.description += '&lt;tr>&lt;td>Informations Usagers&lt;/td>&lt;td>' + String(jsonAttribut[j].fields.infousager) + '&lt;/td>&lt;/tr>';
+        billboard.description += '&lt;tr>&lt;td>Nombre total de places&lt;/td>&lt;td>' + String(jsonAttribut[j].fields.total) + '&lt;/td>&lt;/tr>';
+        billboard.description += '&lt;tr>&lt;td>Nombres de places libres&lt;/td>&lt;td>' + String(jsonAttribut[j].fields.libre) + '&lt;/td>&lt;/tr>';
+        billboard.description += '&lt;tr>&lt;td>Etat descriptif&lt;/td>&lt;td>' + String(jsonAttribut[j].fields.etat_descriptif) + '&lt;/td>&lt;/tr>';
+
+        // le texte à afficher sur les labels
+        var occupation = (jsonAttribut[j].fields.infousager).toString();
+
+        // on ajoute le label
+        var statut = dataSource.entities.add({
+          position : coordLabel,
+          label : {
+            text : occupation,
+            font : '24px Helvetica',
+            outlineColor: Cesium.Color.fromCssColorString('#666a70'),
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+            scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+            showBackground: true,
+            backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab'),
+            pixelOffset: new Cesium.Cartesian2(5, 1) // on décale le label de 5 pixels sur la droite et 1 de haut
+          }
+        });
+
+      }
+    }
+
+    // le reste du tableau d'attributs
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/parkings/information/" target="_blank">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée fréquentation en temps réel avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {json} jsonAttribut l'objet Json attributaire qu'on charge par dessus le GeoJson
+  * @param  {Array} billboard le tableau qui sert à stocker le CustomDataSource dans lequel on range les billboardData
+  * @param  {Cartesian3} coordLabel les coordonnées du label
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  *
+  */
+  createTableauPiscine(entity, jsonAttribut, billboard, coordLabel, dataSource) {
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+    var acces = String(entity.properties['access']);
+    acces = acces.replace('{"fr_FR": "', '');
+    acces = acces.replace(/\\n/g,'');
+    acces = acces.replace(/\\t/g,'');
+    acces = acces.replace(/\\/g,'');
+    acces = acces.replace('"}','');
+    var service = String(entity.properties['serviceandactivities']);
+    service = service.replace('{"fr_FR": "', '');
+    service = service.replace(/\\n/g,'');
+    service = service.replace(/\\t/g,'');
+    service = service.replace('"}','');
+    var caracteristique = String(entity.properties['characteristics']);
+    caracteristique = caracteristique.replace('{"fr_FR": "', '');
+    caracteristique = caracteristique.replace(/\\n/g,'');
+    caracteristique = caracteristique.replace(/\\t/g,'');
+    caracteristique = caracteristique.replace(/\\/g,'');
+    caracteristique = caracteristique.replace('"}','');
+    var exception = String(entity.properties['exceptionalschedule']);
+    exception = exception.replace('{"fr_FR": "', '');
+    exception = exception.replace(/\\n/g,'');
+    exception = exception.replace(/\\/g,'');
+    exception = exception.replace('"}','');
+    var description = String(entity.properties['description']);
+    description = description.replace('{"fr_FR": "', '');
+    // pour que les liens dans la description fonctionnent
+    description = description.replace(/href=\\"/g, 'href=https://www.strasbourg.eu');
+    description = description.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
+    description = description.replace(/&lt;a/g,'&lt;a target=_blank');
+    description = description.replace(/style=\\"width: 300px;/g,'style=\\"align: center; width: 99%;');
+    description = description.replace(/\\n/g,'');
+    description = description.replace(/\\t/g,'');
+    description = description.replace('"}','');
+    description = description.replace('{}','');
+    var info = String(entity.properties['additionalinformation']);
+    info = info.replace('{"fr_FR": "', '');
+    info = info.replace(/href=\\"/g, 'href="https://www.strasbourg.eu');
+    info = info.replace(/src=\\"/g,'src=https://www.strasbourg.eu');
+    info = info.replace(/&lt;a/g,'&lt;a target=_blank');
+    info = info.replace('"}','');
+
+    // Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['name']);
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['imageurl'])) {
+      billboard.description += '&lt;img src="' + String(entity.properties['imageurl']) + '"align="center" width="99%">';
+    }
+
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['name']) + '&lt;/td>&lt;/tr>';
+    billboard.description += '&lt;tr>&lt;td>Mail&lt;/td>&lt;td>' + String(entity.properties['mail']) + '&lt;/td>&lt;/tr>';
+    billboard.description += '&lt;tr>&lt;td>Téléphone &lt;/td>&lt;td>' + String(entity.properties['phone']) + '&lt;/td>&lt;/tr>';
+    billboard.description += '&lt;tr>&lt;td>Adresse &lt;/td>&lt;td>' + String(entity.properties['address']) + '&lt;/td>&lt;/tr>';
+    billboard.description += '&lt;tr>&lt;td>Accès &lt;/td>&lt;td>' + acces + '&lt;/td>&lt;/tr>';
+    billboard.description += '&lt;tr>&lt;td>Lien vers le site de la piscine&lt;/td>&lt;td>' + '&lt;a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' &lt;/a>&lt;/td>&lt;/tr>';
+
+    // on rentre dans le fichier json chargé pour récupérer les attributs
+    for(let j = 0; j &lt; jsonAttribut.length; j++) {
+      if(entity.name == jsonAttribut[j].fields.name) {
+        billboard.description += '&lt;tr>&lt;td>Statut&lt;/td>&lt;td>' + String(jsonAttribut[j].fields.realtimestatus) + '&lt;/td>&lt;/tr>';
+        billboard.description += '&lt;tr>&lt;td>Occupation &lt;/td>&lt;td>' + String(jsonAttribut[j].fields.occupation) + '&lt;/td>&lt;/tr>';
+        billboard.description += '&lt;tr>&lt;td>Heure de mise à jour &lt;/td>&lt;td>' + String(jsonAttribut[j].fields.updatedate) + '&lt;/td>&lt;/tr>';
+
+        // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'
+        if(Cesium.defined(jsonAttribut[j].fields.occupation)) {
+          var occupation = (jsonAttribut[j].fields.occupation).toString();
+        } else {
+          var occupation = 'CLOSED';
+        }
+
+        // on ajoute le label
+        var statut = dataSource.entities.add({
+          position : coordLabel,
+          label : {
+            text : occupation,
+            font : '24px Helvetica',
+            outlineColor: Cesium.Color.fromCssColorString('#666a70'),
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+            scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+            showBackground: true,
+            backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
+          }
+        });
+
+        // classification du label en différentes couleurs en fonction de la fréquentation
+        if(jsonAttribut[j].fields.realtimestatus === 'GREEN') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
+        } else if(jsonAttribut[j].fields.realtimestatus === 'ORANGE') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
+        } else if(jsonAttribut[j].fields.realtimestatus === 'RED') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
+        } else if(jsonAttribut[j].fields.realtimestatus === 'BLACK') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
+        } else if(jsonAttribut[j].fields.realtimestatus === 'CLOSED') {
+          statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
+        }
+
+      }
+    }
+
+    // le reste du tableau d'attributs
+    if (Cesium.defined(entity.properties['serviceandactivities'])) {
+      billboard.description += '&lt;tr>&lt;td>Services et activités &lt;/td>&lt;td>' + service + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['characteristics'])) {
+      billboard.description += '&lt;tr>&lt;td>Caractéristiques &lt;/td>&lt;td>' + caracteristique + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['exceptionalschedule'])) {
+      billboard.description += '&lt;tr>&lt;td>Mesures exceptionnelles &lt;/td>&lt;td>' + exception + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['additionalinformation'])) {
+      billboard.description += '&lt;tr>&lt;td>Informations supplémentaires &lt;/td>&lt;td>' + info + '&lt;/td>&lt;/tr>';
+    }
+
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    billboard.description += '&lt;p>' + description + '&lt;/p>';
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/lieux_piscines/information/" target="_blank">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+
+  }
+
+  /**
+  *
+  * Afficher le tableau d'attributs de la donnée fréquentation en temps réel avec le bon format
+  *
+  * @param  {entity} entity l'entité à utiliser pour l'affichage du tableau d'attributs
+  * @param  {json} jsonAttribut l'objet Json attributaire qu'on charge par dessus le GeoJson
+  * @param  {Array} billboard le tableau qui sert à stocker le CustomDataSource dans lequel on range les billboardData
+  * @param  {Cartesian3} coordLabel les coordonnées du label
+  * @param  {promise} dataSource le GeoJsonDataSource en promise dans la fonction loadPolygon
+  *
+  */
+  createTableauMairies(entity, jsonAttribut, billboard, coordLabel, dataSource) {
+    // on nettoie les textes d'affichage des attributs (beaucoup de caractères parasites)
+    var mail = String(entity.properties['mail']);
+    mail = mail.replace('{"de_DE": "', '');
+    mail = mail.replace('{"fr_FR": "', '');
+    mail = mail.replace('{"en_US": "', '');
+    mail = mail.replace('", "en_US": "', '');
+    mail = mail.replace('", "fr_FR": "', '');
+    mail = mail.replace('", "de_DE": "', '');
+    mail = mail.replace(/\\n/g,'');
+    mail = mail.replace(/\\t/g,'');
+    mail = mail.replace('"}','');
+    var phone = String(entity.properties['phone']);
+    phone = phone.replace('{"de_DE": "', '');
+    phone = phone.replace('{"fr_FR": "', '');
+    phone = phone.replace('{"en_US": "', '');
+    phone = phone.replace('", "en_US": "', '');
+    phone = phone.replace('", "fr_FR": "', '');
+    phone = phone.replace('", "de_DE": "', '');
+    phone = phone.replace(/\\n/g,'');
+    phone = phone.replace(/\\t/g,'');
+    phone = phone.replace('"}','');
+
+
+    // Renseignement des éléments de la boite d'information
+    billboard.name = String(entity.properties['name']);
+    billboard.description ='&lt;table class="cesium-infoBox-defaultTable">&lt;tbody>';
+    if (Cesium.defined(entity.properties['description'])) {
+      billboard.description += '&lt;p>' + String(entity.properties['description']) + '&lt;/p>';
+    }
+    billboard.description += '&lt;tr>&lt;td>Nom&lt;/td>&lt;td>' + String(entity.properties['name']) + '&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['address'])) {
+      billboard.description += '&lt;tr>&lt;td>Adresse&lt;/td>&lt;td>' + String(entity.properties['address']) + '&lt;/td>&lt;/tr>';
+    }
+
+    // on rentre dans le fichier json chargé pour récupérer les attributs
+    for(let j = 0; j &lt; jsonAttribut.length; j++) {
+      if(entity.properties['idsurfs'] == jsonAttribut[j].fields.sigid) {
+        billboard.description += '&lt;tr>&lt;td>Durée d\'attente en minutes&lt;/td>&lt;td>' + String(jsonAttribut[j].fields.averagewaitingtime) + '&lt;/td>&lt;/tr>';
+
+        // on définit le texte à afficher sur le label, soit le chiffre d'occupation soit 'closed'
+        if(jsonAttribut[j].fields.isopen === 1) {
+          var occupation = (jsonAttribut[j].fields.averagewaitingtime).toString();
+        } else if(jsonAttribut[j].fields.isopen === 0) {
+          var occupation = 'FERME';
+        }
+
+        // on ajoute le label
+        var statut = dataSource.entities.add({
+          position : coordLabel,
+          label : {
+            text : occupation,
+            font : '24px Helvetica',
+            outlineColor: Cesium.Color.fromCssColorString('#666a70'),
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+            style : Cesium.LabelStyle.FILL_AND_OUTLINE,
+            scaleByDistance : new Cesium.NearFarScalar(10000, 1, 150000, 0),
+            showBackground: true,
+            backgroundColor: Cesium.Color.fromCssColorString('#a4a7ab')
+          }
+        });
+
+        // classification du label en différentes couleurs en fonction de la fréquentation
+        // if(jsonAttribut[j].fields.realtimestatus === 'GREEN') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#1d9c1a');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'ORANGE') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#d47808');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'RED') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#e61207');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'BLACK') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#1a1515');
+        // } else if(jsonAttribut[j].fields.realtimestatus === 'CLOSED') {
+        //   statut.label.fillColor = Cesium.Color.fromCssColorString('#FFFFFF');
+        // }
+
+      }
+    }
+
+    // le reste du tableau d'attributs
+    billboard.description += '&lt;tr>&lt;td>Lien vers la page de la mairie de quartier&lt;/td>&lt;td>' + '&lt;a href= "' + String(entity.properties['friendlyurl']) + '" target="_blank"> '+ String(entity.properties['friendlyurl']) +' &lt;/a>&lt;/td>&lt;/tr>';
+    if (Cesium.defined(entity.properties['mail'])) {
+      billboard.description += '&lt;tr>&lt;td>Mail&lt;/td>&lt;td>' + mail + '&lt;/td>&lt;/tr>';
+    }
+    if (Cesium.defined(entity.properties['phone'])) {
+      billboard.description += '&lt;tr>&lt;td>Téléphone&lt;/td>&lt;td>' + phone + '&lt;/td>&lt;/tr>';
+    }
+    billboard.description +='&lt;/tbody>&lt;/table>&lt;br/>';
+    billboard.description += '&lt;a href="https://data.strasbourg.eu/explore/dataset/duree-dattente-aux-mairies-en-temps-reel/information/" target="_blank">Informations sur les données&lt;/a>&lt;br/>&lt;br/>';
+
+  }
+
+
+
+
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Data.html">Data</a></li><li><a href="Geocoder.html">Geocoder</a></li><li><a href="Globe.html">Globe</a></li><li><a href="LegendManager.html">LegendManager</a></li><li><a href="Menu.html">Menu</a></li><li><a href="Raf09.html">Raf09</a></li><li><a href="TableauAttribut.html">TableauAttribut</a></li><li><a href="Tile.html">Tile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Thu Oct 29 2020 15:37:03 GMT+0100 (GMT+01:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
