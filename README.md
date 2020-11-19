@@ -1,17 +1,24 @@
 # OD@CiT
  OD@CiT : Données libres et Ville en 3D pour une vision augmentée du territoire
 
-•	Résumé du projet 
+•	Résumé
+
 OD@CiT est un service Web3D qui permet une découverte 3D intuitive du territoire accessible à tous (agents de la collectivité, secteurs public et privé, citoyens). 
 Les données libres diffusées par la plateforme data.strasbourg.eu apportent des informations complémentaires qui transforment la modélisation 3D du territoire en ville numérique augmentée. 
 OD@CiT est à la fois un outil technique d’analyse et d’aide à la décision et un service Web3D grand public. 
 
 •	Description détaillée 
+
 Le service OD@CiT s’inscrit dans la démarche globale du projet SIG3D, avec pour objectifs spécifiques :
+
 •	de proposer au plus grand nombre un accès performant, fluide et intuitif au Photomaillage 3D
+
 •	en complémentarité avec les outils existants, d’apporter des fonctionnalités 3D aux agents de la collectivité dans le cadre de leurs missions (accueil du public, urbanisme, prospective, concertation, aide à la décision) 
+
 •	simplifier pour le citoyen la découverte, la compréhension et l’usage des données diffusées en opendata
+
 •	de mutualiser les ressources et favoriser les réutilisations en publiant les développements en opensource
+
 
 A l’été 2018, une campagne de photographies aériennes a permis de produire une modélisation 3D du territoire couvrant 340 km² appelée Photomaillage 3D (maillage 3D texturé). 
 Exhaustive, précise, détaillée, innovante, cette production représente un volume de données très important. 
