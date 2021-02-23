@@ -16,6 +16,14 @@ proj4.defs([
 // Créer le globe ; appelle le constucteur globe créé dans la classe correspondante
 let globe = new Globe('cesiumContainer', new Geocoder("https://adict.strasbourg.eu/addok/search"));
 
+// Charger le photomailage 2017 ; appelle la fonction créée dans la classe globe
+// On le charge d'abord au format tileset
+let tileset2017 = globe.loadPhotomaillage('https://3d.strasbourg.eu/CESIUM/DATA/PM3D_PSMV_OPTIM/PSMV_CESIUM.json', 1);
+// Avant de l'ajouter au projet sous forme d'entités
+var terrain2017 = globe.addPhotomaillage(tileset2017);
+
+
+
 // Charger le photomailage 2018 ; appelle la fonction créée dans la classe globe
 // On le charge d'abord au format tileset
 let tileset = globe.loadPhotomaillage('https://3d.strasbourg.eu/CESIUM/DATA/PM3D_2018/3DTiles/EMS_CESIUM.json', 1);
@@ -36,5 +44,13 @@ cesiumEventOD.couchesJson();
 
 // Une fois le photo maillage chargé, l'enregister dans la liste des dataSource pour pouvoir interagir avec lui dans les évènements
 terrain.then(function(dataSource){
-  cesiumEvent.addDataSource("photoMaillage", dataSource)
+  cesiumEvent.addDataSource("photoMaillage", dataSource);
+  console.log("dataSource2018");
+});
+
+// Une fois le photo maillage 2017 chargé, l'enregister dans la liste des dataSource pour pouvoir interagir avec lui dans les évènements
+terrain2017.then(function(dataSource){
+  cesiumEvent.addDataSource("photoMaillage2017", dataSource);
+  console.log("dataSource2017");
+  globe.show3DTiles(false, 'photoMaillage2017', 'https://3d.strasbourg.eu/CESIUM/DATA/PM3D_PSMV_OPTIM/PSMV_CESIUM.json', 1);
 });
