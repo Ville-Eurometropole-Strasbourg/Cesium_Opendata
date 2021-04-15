@@ -138,7 +138,7 @@ class Globe {
     * Si l’URL contient des paramètres spécifiques (outil partage de liens), elle lit ces paramètres pour zoomer à l’endroit voulu et définit le zoom par défaut sur cet endroit
     *
     */
-    setHome(){
+     setHome(){
       var params = this.getAllUrlParams(window.location.href);
       let X = params.x;
       let Y = params.y;
@@ -160,7 +160,22 @@ class Globe {
         });
       } else {
         // sinon on lit les paramètres présents dans l'URL
-        let position = new Cesium.Cartesian3(X,Y,Z);
+        //Modif PSL du 14/04/2021 pour donner la possibilité de saisir les coordonnées de caméra en Géocentric ou en CC48
+        let position = new Cesium.Cartesian3(X,Y,Z);  //Si les coordonnées saisies sont géocentriques il n'y a rien à faire
+        //console.log(position);
+        if (X<=3000000) {    //si coordonnées XYZ saisies en CC48 et IGN69, il faut les transformer en géocentrique
+          //console.log("Coordonnées CC48");
+          var longlat = proj4('EPSG:3948','EPSG:4326', [X, Y]);
+          //console.log(longlat);
+          var Hellips = (Number(Z) + 40).toFixed(2);
+          //console.log(Hellips);
+          let cartographic = Cesium.Cartographic.fromDegrees(longlat[0], longlat[1], Hellips);
+          //console.log(cartographic);
+          let CartesianPosition = Cesium.Cartographic.toCartesian(cartographic);
+          //console.log(CartesianPosition);
+          position = CartesianPosition;
+          //console.log(position);
+        }
         this.viewer.camera.setView({
           destination : position,
           orientation: {
@@ -169,18 +184,20 @@ class Globe {
             roll : roll
           }
         });
+
+        //Fin de modif de PSL
       }
       // Définir ce qu'il se passe lorsqu'on clique sur le bouton "maison" (ici retour à l'écran d'accueil)
       this.viewer.homeButton.viewModel.command.beforeExecute.addEventListener((e) => {
         e.cancel = true;
-        if(X === undefined || Y === undefined || Z === undefined || heading === undefined || pitch === undefined || roll === undefined) {
+       // if(X === undefined || Y === undefined || Z === undefined || heading === undefined || pitch === undefined || roll === undefined) {
           let position = new Cesium.Cartesian3(4227894, 573584, 4758748)
           this.fly(position, 0.0, -0.808, 0);
 
-        } else {
-          let position = new Cesium.Cartesian3(X,Y,Z);
-          this.fly(position, heading, pitch, roll);
-        }
+       // } else {
+       //   let position = new Cesium.Cartesian3(X,Y,Z);
+       //   this.fly(position, heading, pitch, roll);
+        //}
       });
     }
 
